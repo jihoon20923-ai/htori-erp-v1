@@ -99,3 +99,26 @@ body {
 #content {
     width: 100%;
 }
+/* ============================
+   FIX SIDEBAR MENU SIZE (FINAL)
+============================ */
+
+/* 사이드바 메뉴 전체 고정 */
+.menu-list li {
+    height: 48px !important;          /* 메뉴 높이 고정 */
+    padding: 0 20px !important;       /* 좌우 여백 고정 */
+    display: flex !important;         /* 정렬 방식 고정 */
+    align-items: center !important;   /* 수직 가운데 정렬 */
+    font-size: 15px !important;       /* 글자 크기 고정 */
+    border-bottom: 1px solid #2a2a2a; /* 기본 구분선 */
+    cursor: pointer;
+    white-space: nowrap !important;   /* 줄바꿈 방지 */
+    line-height: normal !important;   /* 다양한 페이지 영향 차단 */
+}
+
+/* Hover & Active 또한 고정 */
+.menu-list li:hover,
+.menu-list li.active {
+    background: #333 !important;
+    height: 48px !important;
+}
