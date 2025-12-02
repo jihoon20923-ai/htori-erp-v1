@@ -1390,7 +1390,7 @@ const PageTemplates = {
       <tbody id="supplierTableBody"></tbody>
     </table>
   `;
-}
+},
 
 
 
