@@ -1134,7 +1134,7 @@ function renderDashboardPage() {
 }
 
 /*************************************************
- * PAGE TEMPLATES
+ * PAGE TEMPLATES (정상 버전)
  *************************************************/
 const PageTemplates = {
   dashboard(lang) {
@@ -1184,7 +1184,6 @@ const PageTemplates = {
     return `
       <h2>${t.stockTitle}</h2>
       <p>${t.stockDesc}</p>
-
       <table class="erp-table">
         <thead>
           <tr>
@@ -1214,7 +1213,7 @@ const PageTemplates = {
           <option value="KRW">KRW</option>
         </select>
         <select id="pSupplier">
-          ${suppliers.map(s => `<option value="${s}">${s}</option>`).join("")}
+          ${suppliers.map(s => `<option value="${s.name}">${s.name}</option>`).join("")}
         </select>
         <button onclick="onPurchase()" class="btn-primary">입고 등록</button>
         <button onclick="downloadPurchaseCSV()" class="btn-secondary">Excel 다운로드</button>
@@ -1353,47 +1352,44 @@ const PageTemplates = {
     `;
   },
 
- suppliers(lang) {
-  const t = i18n[lang].pages;
-  return `
-    <h2>${t.suppliersTitle}</h2>
-    <p>${t.suppliersDesc}</p>
+  suppliers(lang) {
+    const t = i18n[lang].pages;
+    return `
+      <h2>${t.suppliersTitle}</h2>
+      <p>${t.suppliersDesc}</p>
 
-    <div class="form-row" style="flex-wrap: wrap; gap: 10px;">
-      <input id="newSupplier" placeholder="Supplier Name" style="min-width:130px;">
-      <input id="supplierVendorName" placeholder="Vendor Name" style="min-width:130px;">
-      <input id="supplierContact" placeholder="Contact Person" style="min-width:130px;">
-      <input id="supplierEmail" placeholder="Email" style="min-width:160px;">
-      <input id="supplierAddress" placeholder="Address" style="min-width:180px;">
-      <input id="supplierPhone" placeholder="Phone" style="min-width:120px;">
-      <input id="supplierBankName" placeholder="Bank Name" style="min-width:120px;">
-      <input id="supplierBankAccount" placeholder="Account Number" style="min-width:140px;">
-      <input id="supplierBankHolder" placeholder="Account Holder" style="min-width:140px;">
-      <button onclick="addSupplier()" class="btn-primary">추가</button>
-    </div>
+      <div class="form-row" style="flex-wrap: wrap; gap: 10px;">
+        <input id="newSupplier" placeholder="Supplier Name" style="min-width:130px;">
+        <input id="supplierVendorName" placeholder="Vendor Name" style="min-width:130px;">
+        <input id="supplierContact" placeholder="Contact Person" style="min-width:130px;">
+        <input id="supplierEmail" placeholder="Email" style="min-width:160px;">
+        <input id="supplierAddress" placeholder="Address" style="min-width:180px;">
+        <input id="supplierPhone" placeholder="Phone" style="min-width:120px;">
+        <input id="supplierBankName" placeholder="Bank Name" style="min-width:120px;">
+        <input id="supplierBankAccount" placeholder="Account Number" style="min-width:140px;">
+        <input id="supplierBankHolder" placeholder="Account Holder" style="min-width:140px;">
+        <button onclick="addSupplier()" class="btn-primary">추가</button>
+      </div>
 
-    <table class="erp-table" style="margin-top:20px;">
-      <thead>
-        <tr>
-          <th>Supplier</th>
-          <th>Vendor</th>
-          <th>Contact</th>
-          <th>Email</th>
-          <th>Address</th>
-          <th>Phone</th>
-          <th>Bank Info</th>
-          <th>Total Qty</th>
-          <th>Total Amount</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="supplierTableBody"></tbody>
-    </table>
-  `;
-},
-
-
-
+      <table class="erp-table" style="margin-top:20px;">
+        <thead>
+          <tr>
+            <th>Supplier</th>
+            <th>Vendor</th>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Bank Info</th>
+            <th>Total Qty</th>
+            <th>Total Amount</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="supplierTableBody"></tbody>
+      </table>
+    `;
+  },
 
   employees(lang) {
     const t = i18n[lang].pages;
@@ -1409,7 +1405,7 @@ const PageTemplates = {
     return `
       <h2>${t.attendanceTitle}</h2>
       <p>${t.attendanceDesc}</p>
-      <p>※ 근태 기능은 추후에 실제 출근/퇴근 기록 기능으로 확장 가능합니다.</p>
+      <p>※ 근태 기능은 추후 확장 예정.</p>
     `;
   },
 
@@ -1418,7 +1414,7 @@ const PageTemplates = {
     return `
       <h2>${t.payrollTitle}</h2>
       <p>${t.payrollDesc}</p>
-      <p>※ 급여 기능은 추후에 HR 모듈과 연동 예정입니다.</p>
+      <p>※ 급여 기능은 추후 HR 모듈과 연동 예정.</p>
     `;
   },
 
@@ -1446,6 +1442,7 @@ const PageTemplates = {
     `;
   },
 };
+
 
 /*************************************************
  * RENDERING
