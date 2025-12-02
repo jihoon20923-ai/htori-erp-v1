@@ -1131,7 +1131,7 @@ function renderDashboardPage() {
       }
     }));
   }
-},
+}
 
 /*************************************************
  * PAGE TEMPLATES
