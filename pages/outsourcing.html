@@ -1,0 +1,41 @@
+<h2>Outsourcing</h2>
+<p>Out → In with vendor and defect tracking.</p>
+
+<div class="form-row">
+
+  <h3>OUT</h3>
+  <input id="outOutCode" placeholder="Out Code">
+  <input id="outOutName" placeholder="Out Name">
+  <input id="outOutQty" type="number" placeholder="Qty Out">
+
+  <h3>IN</h3>
+  <input id="outInCode" placeholder="In Code">
+  <input id="outInName" placeholder="In Name">
+  <input id="outInQty" type="number" placeholder="Qty In">
+
+  <h3>Vendor</h3>
+  <select id="outVendor"></select>
+
+  <button class="btn-primary" onclick="onOutsourcing()" style="margin-top:10px;">
+    외주 등록
+  </button>
+</div>
+
+<table class="erp-table" style="margin-top:20px;">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>OutCode</th>
+      <th>OutName</th>
+      <th>QtyOut</th>
+      <th>InCode</th>
+      <th>InName</th>
+      <th>QtyIn</th>
+      <th>Defect</th>
+      <th>Vendor</th>
+      <th>Updated</th>
+    </tr>
+  </thead>
+  <tbody id="outsourcingTableBody"></tbody>
+</table>
+

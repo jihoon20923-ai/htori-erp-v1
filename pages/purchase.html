@@ -1,0 +1,26 @@
+<h2>Purchase</h2>
+<p>Incoming materials.</p>
+
+<div class="form-row">
+  <input id="pCode" placeholder="Material Code">
+  <input id="pName" placeholder="Material Name">
+  <input id="pQty" type="number" placeholder="Qty">
+  <input id="pPrice" type="number" placeholder="Unit Price">
+  <select id="pCurrency">
+    <option>USD</option><option>IDR</option><option>KRW</option>
+  </select>
+  <select id="pSupplier"></select>
+  <button onclick="onPurchase()" class="btn-primary">입고 등록</button>
+  <button onclick="downloadPurchaseCSV()" class="btn-secondary">Excel 다운로드</button>
+</div>
+
+<table class="erp-table" style="margin-top:20px;">
+  <thead>
+    <tr>
+      <th>Date</th><th>Supplier</th><th>Code</th><th>Name</th>
+      <th>Qty</th><th>Price</th><th>Cur</th><th>Updated</th><th>Edit</th>
+    </tr>
+  </thead>
+  <tbody id="purchaseTableBody"></tbody>
+</table>
+

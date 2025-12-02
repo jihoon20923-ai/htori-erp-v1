@@ -1,0 +1,25 @@
+<h2>BOM</h2>
+<p>Bill of Materials.</p>
+
+<div class="form-row">
+  <input id="bomProduct" placeholder="Product">
+  <input id="bomMatCode" placeholder="Material Code">
+  <input id="bomMatName" placeholder="Material Name">
+  <input id="bomQty" type="number" placeholder="Qty per 1 product">
+
+  <button class="btn-primary" onclick="saveBOMItem()">BOM 저장</button>
+</div>
+
+<table class="erp-table" style="margin-top:20px;">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>MatCode</th>
+      <th>MatName</th>
+      <th>Qty</th>
+      <th>Updated</th>
+    </tr>
+  </thead>
+  <tbody id="bomTableBody"></tbody>
+</table>
+
