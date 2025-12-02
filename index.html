@@ -4,23 +4,28 @@
   <meta charset="UTF-8" />
   <title>HTORI ERP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- 기본 스타일 -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-  <!-- 전체 WRAPPER -->
+  <!-- HEADER는 항상 최상단 고정 -->
+  <header class="header">
+    <div class="header-title">HTORI ERP</div>
+    <div class="lang-buttons">
+      <button onclick="setLanguage('EN')">EN</button>
+      <button onclick="setLanguage('KR')">KR</button>
+      <button onclick="setLanguage('ID')">ID</button>
+    </div>
+  </header>
+
+  <!-- 전체 레이아웃 WRAPPER -->
   <div class="app-wrapper">
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-logo">HTORI ERP</div>
-
       <ul class="menu-list">
         <li data-page="dashboard">Dashboard</li>
         <li data-page="stock">Stock</li>
@@ -39,29 +44,15 @@
       </ul>
     </aside>
 
-    <!-- MAIN CONTENT -->
-    <div class="main">
+    <!-- 메인 컨텐츠 -->
+    <main class="main">
+      <div id="content"></div>
+    </main>
 
-      <!-- HEADER -->
-      <header class="header">
-        <div class="header-title">HTORI ERP</div>
-        <div class="lang-buttons">
-          <button onclick="setLanguage('EN')">EN</button>
-          <button onclick="setLanguage('KR')">KR</button>
-          <button onclick="setLanguage('ID')">ID</button>
-        </div>
-      </header>
-
-      <!-- PAGE CONTENT -->
-      <main id="content"></main>
-
-    </div>
   </div>
 
-  <!-- JS (한 번만 로드) -->
   <script src="app.js"></script>
 
-  <!-- Sidebar Click -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll(".menu-list li").forEach(li => {
