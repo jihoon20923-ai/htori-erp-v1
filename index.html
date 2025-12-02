@@ -13,58 +13,65 @@
 </head>
 
 <body>
-  <!-- SIDEBAR -->
-  <ul class="sidebar">
-    <h2 class="logo">HTORI ERP</h2>
-    <li data-page="dashboard">Dashboard</li>
-    <li data-page="stock">Stock</li>
-    <li data-page="purchase">Purchase</li>
-    <li data-page="outgoing">Outgoing</li>
-    <li data-page="production">Production</li>
-    <li data-page="bom">BOM</li>
-    <li data-page="outsourcing">Outsourcing</li>
-    <li data-page="finished">Finished Goods</li>
-    <li data-page="suppliers">Suppliers</li>
-    <li data-page="employees">Employees</li>
-    <li data-page="attendance">Attendance</li>
-    <li data-page="payroll">Payroll</li>
-    <li data-page="logs">Logs</li>
-    <li data-page="settings">Settings</li>
-  </ul>
 
-  <!-- MAIN WRAPPER -->
-  <div class="main">
+  <!-- 전체 WRAPPER -->
+  <div class="app-wrapper">
 
-    <!-- HEADER -->
-    <div class="header">
-      <div class="logo">HTORI ERP</div>
-      <div class="lang-buttons">
-        <button onclick="setLanguage('EN')">EN</button>
-        <button onclick="setLanguage('KR')">KR</button>
-        <button onclick="setLanguage('ID')">ID</button>
-      </div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">HTORI ERP</div>
+
+      <ul class="menu-list">
+        <li data-page="dashboard">Dashboard</li>
+        <li data-page="stock">Stock</li>
+        <li data-page="purchase">Purchase</li>
+        <li data-page="outgoing">Outgoing</li>
+        <li data-page="production">Production</li>
+        <li data-page="bom">BOM</li>
+        <li data-page="outsourcing">Outsourcing</li>
+        <li data-page="finished">Finished Goods</li>
+        <li data-page="suppliers">Suppliers</li>
+        <li data-page="employees">Employees</li>
+        <li data-page="attendance">Attendance</li>
+        <li data-page="payroll">Payroll</li>
+        <li data-page="logs">Logs</li>
+        <li data-page="settings">Settings</li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-title">HTORI ERP</div>
+        <div class="lang-buttons">
+          <button onclick="setLanguage('EN')">EN</button>
+          <button onclick="setLanguage('KR')">KR</button>
+          <button onclick="setLanguage('ID')">ID</button>
+        </div>
+      </header>
+
+      <!-- PAGE CONTENT -->
+      <main id="content"></main>
+
     </div>
-
-    <!-- PAGE CONTENT -->
-    <div id="content"></div>
   </div>
 
-  <!-- JS 로딩 (딱 1번만!) -->
+  <!-- JS (한 번만 로드) -->
   <script src="app.js"></script>
 
+  <!-- Sidebar Click -->
   <script>
-    /* 사이드바 클릭 이벤트 */
-    document.querySelectorAll(".sidebar li").forEach(li => {
-      li.addEventListener("click", () => {
-        const page = li.dataset.page;
-        if (page) loadPage(page);
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".menu-list li").forEach(li => {
+        li.addEventListener("click", () => {
+          const page = li.dataset.page;
+          if (page) loadPage(page);
+        });
       });
     });
-
-    /* 초기 렌더링 */
-    document.addEventListener("DOMContentLoaded", () => {
-      rerenderAll();
-    });
   </script>
+
 </body>
 </html>
