@@ -75,7 +75,16 @@ const i18n = {
       attendanceDesc: "Clock-in / Clock-out records.",
       payrollTitle: "Payroll",
       payrollDesc: "Monthly payroll overview.",
+      btnRegister: "Register",
+btnDownloadExcel: "Excel Download",
+btnOutgoing: "Outgoing",
+btnSave: "Save",
+btnAdd: "Add",
+btnProduction: "Register Production",
+btnOutsourcing: "Outsourcing Register",
+
     },
+    
   },
   KR: {
     appTitle: "HTORI ERP",
@@ -127,6 +136,14 @@ const i18n = {
       attendanceDesc: "출근/퇴근 기록.",
       payrollTitle: "급여 관리",
       payrollDesc: "월별 급여 현황.",
+      btnRegister: "등록",
+btnDownloadExcel: "Excel 다운로드",
+btnOutgoing: "출고",
+btnSave: "저장",
+btnAdd: "추가",
+btnProduction: "생산 등록",
+btnOutsourcing: "외주 등록",
+
     },
   },
   ID: {
@@ -179,6 +196,14 @@ const i18n = {
       attendanceDesc: "Data masuk / pulang.",
       payrollTitle: "Gaji",
       payrollDesc: "Ringkasan gaji bulanan.",
+      btnRegister: "Daftar",
+btnDownloadExcel: "Unduh Excel",
+btnOutgoing: "Pengeluaran",
+btnSave: "Simpan",
+btnAdd: "Tambah",
+btnProduction: "Daftar Produksi",
+btnOutsourcing: "Daftar Outsourcing",
+
     },
   },
 };
