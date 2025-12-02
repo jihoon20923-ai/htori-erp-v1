@@ -1,72 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>HTORI ERP</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f5f6fa;
-      display: flex;
-      height: 100vh;
-    }
-    .sidebar {
-      width: 200px;
-      background: #2f3542;
-      color: white;
-      padding: 0;
-      list-style: none;
-      margin: 0;
-      flex-shrink: 0;
-      overflow-y: auto;
-    }
-    .sidebar h2 {
-      text-align: center;
-      padding: 15px 0;
-      margin: 0;
-      border-bottom: 1px solid #57606f;
-    }
-    .sidebar li {
-      padding: 12px 16px;
-      cursor: pointer;
-      border-bottom: 1px solid #3c4452;
-      user-select: none;
-    }
-    .sidebar li:hover {
-      background: #57606f;
-    }
-    .sidebar li.active {
-      background: #747d8c;
-      font-weight: bold;
-    }
-    .main {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-    .header {
-      background: white;
-      padding: 12px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #ddd;
-    }
-    #content {
-      padding: 20px;
-      overflow-y: auto;
-      flex-grow: 1;
-    }
-  </style>
+  <!-- 기본 스타일 -->
+  <link rel="stylesheet" href="style.css" />
 
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
 
+<body>
   <!-- SIDEBAR -->
   <ul class="sidebar">
     <h2 class="logo">HTORI ERP</h2>
@@ -86,6 +32,7 @@
     <li data-page="settings">Settings</li>
   </ul>
 
+  <!-- MAIN WRAPPER -->
   <div class="main">
 
     <!-- HEADER -->
@@ -98,52 +45,26 @@
       </div>
     </div>
 
+    <!-- PAGE CONTENT -->
     <div id="content"></div>
   </div>
 
-  <!-- APP JS -->
+  <!-- JS 로딩 (딱 1번만!) -->
   <script src="app.js"></script>
 
-  <!-- PAGE LOADER -->
   <script>
-  function loadPage(page) {
-    fetch(`pages/${page}.html`)
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById('content').innerHTML = html;
-        state.page = page;
-        localStorage.setItem("htori_page", page);
-
-        if (page === "stock") renderStockPage();
-        else if (page === "purchase") renderPurchasePage();
-        else if (page === "outgoing") renderOutgoingPage();
-        else if (page === "production") renderProductionPage();
-        else if (page === "bom") renderBOMPage();
-        else if (page === "outsourcing") renderOutsourcingPage();
-        else if (page === "finished") renderFGPage();
-        else if (page === "logs") renderLogsPage();
-        else if (page === "suppliers") renderSupplierPage();
-        else if (page === "dashboard") renderDashboardPage();
-
-        highlightSidebar(page);
-      });
-  }
-
-  function highlightSidebar(page) {
+    /* 사이드바 클릭 이벤트 */
     document.querySelectorAll(".sidebar li").forEach(li => {
-      li.classList.toggle("active", li.dataset.page === page);
+      li.addEventListener("click", () => {
+        const page = li.dataset.page;
+        if (page) loadPage(page);
+      });
     });
-  }
 
-  document.querySelectorAll(".sidebar li").forEach(li => {
-    li.addEventListener("click", () => {
-      loadPage(li.dataset.page);
+    /* 초기 렌더링 */
+    document.addEventListener("DOMContentLoaded", () => {
+      rerenderAll();
     });
-  });
-
-  // 첫 화면 로딩
-  loadPage(localStorage.getItem("htori_page") || "dashboard");
   </script>
-
 </body>
 </html>
