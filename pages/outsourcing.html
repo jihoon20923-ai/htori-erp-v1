@@ -1,28 +1,32 @@
-<h2>Outsourcing</h2>
-<p>Out → In with vendor and defect tracking.</p>
+<h2>외주 관리</h2>
+<p>외주 출고/입고 및 불량.</p>
 
-<div class="form-row">
+<h3>OUT</h3>
+<input id="outCode" placeholder="Out Code">
+<input id="outName" placeholder="Out Name">
+<input id="qtyOut" placeholder="Qty Out" type="number">
 
-  <h3>OUT</h3>
-  <input id="outOutCode" placeholder="Out Code">
-  <input id="outOutName" placeholder="Out Name">
-  <input id="outOutQty" type="number" placeholder="Qty Out">
+<h3>IN</h3>
+<input id="inCode" placeholder="In Code">
+<input id="inName" placeholder="In Name">
+<input id="qtyIn" placeholder="Qty In" type="number">
 
-  <h3>IN</h3>
-  <input id="outInCode" placeholder="In Code">
-  <input id="outInName" placeholder="In Name">
-  <input id="outInQty" type="number" placeholder="Qty In">
+<h3>불량</h3>
+<input id="defectQty" placeholder="Defect Qty" type="number">
 
-  <h3>Vendor</h3>
-  <select id="outVendor"></select>
+<h3>Vendor</h3>
+<select id="vendor">
+  <option value="Vendor A">Vendor A</option>
+  <option value="Vendor B">Vendor B</option>
+</select>
 
-  <button onclick="onOutsourcing()" class="btn-primary">${t.btnOutsourcing}</button>
+<h3>Note</h3>
+<input id="outNote" placeholder="Note (메모)">
 
-    외주 등록
-  </button>
-</div>
+<br><br>
+<button onclick="registerOutsourcing()" class="btn-primary">외주 등록</button>
 
-<table class="erp-table" style="margin-top:20px;">
+<table class="erp-table">
   <thead>
     <tr>
       <th>Date</th>
@@ -34,9 +38,9 @@
       <th>QtyIn</th>
       <th>Defect</th>
       <th>Vendor</th>
+      <th>Note</th>
       <th>Updated</th>
     </tr>
   </thead>
   <tbody id="outsourcingTableBody"></tbody>
 </table>
-
