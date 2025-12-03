@@ -172,3 +172,68 @@ body {
 .btn-secondary:hover {
     background: #b4e1ff;
 }
+/* ============================================
+   GLOBAL FORM UI UPGRADE (HTORI ERP ALL PAGES)
+   ============================================*/
+
+/* 공통 입력박스 크기 */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="file"],
+select,
+textarea {
+    width: 280px;                /* ★ 입력 박스 넓이 통일 */
+    padding: 10px 12px;          /* 내부 여백 */
+    margin: 6px 0;               /* 위아래 간격 */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+/* 입력 포커스 시 하이라이트 */
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #1F3C88;
+    box-shadow: 0 0 6px rgba(31, 60, 136, .35);
+}
+
+/* 라벨 + 입력박스 정렬 */
+.form-row {
+    display: flex;
+    gap: 18px;        /* 입력박스 사이 공간 */
+    flex-wrap: wrap;  /* 한 줄 넘치면 자동 줄바꿈 */
+    margin-bottom: 15px;
+}
+
+/* 공통 버튼 스타일 */
+button,
+.btn-primary,
+.btn-secondary {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: #1F3C88;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #3558b2;
+}
+
+.btn-secondary {
+    background: #eaeaea;
+    color: #222;
+}
+
+.btn-secondary:hover {
+    background: #d5d5d5;
+}
