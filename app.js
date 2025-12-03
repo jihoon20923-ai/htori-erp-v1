@@ -464,6 +464,7 @@ function updateStock(code, name, qty) {
       code,
       name,
       qty,
+      defect: 0,       // ★ 불량 누적용 필드 추가
       minQty: 0,
       unit: "SET",
       lastUpdate: now,
@@ -471,6 +472,7 @@ function updateStock(code, name, qty) {
   }
   saveStock(s);
 }
+
 
 function editStockQty(code) {
   let s = getStock();
@@ -498,6 +500,7 @@ function renderStockPage() {
         <td>${i.code}</td>
         <td>${i.name}</td>
         <td>${i.qty}</td>
+        <td>${i.defect || 0}</td>   <!-- ★ 불량 표시 -->
         <td>${i.minQty || 0}</td>
         <td>${i.unit || "SET"}</td>
         <td>${i.lastUpdate || ""}</td>
@@ -506,6 +509,35 @@ function renderStockPage() {
     `;
   });
 }
+/* ★★★ 불량 누적용 헬퍼 함수 ★★★ */
+function addDefectToStock(code, defectQty) {
+  defectQty = Number(defectQty);
+  if (!defectQty || defectQty <= 0) return;
+
+  const s = getStock();
+  let item = s.find(i => i.code === code);
+  const now = new Date().toLocaleString();
+
+  if (!item) {
+    // 완제품 코드가 아직 없으면 새로 생성
+    item = {
+      code,
+      name: code,
+      qty: 0,
+      defect: defectQty,
+      minQty: 0,
+      unit: "SET",
+      lastUpdate: now,
+    };
+    s.push(item);
+  } else {
+    item.defect = (item.defect || 0) + defectQty;
+    item.lastUpdate = now;
+  }
+
+  saveStock(s);
+}
+
 
 /*************************************************
  * PURCHASE MODULE (기록 + 수정 + CSV)
@@ -983,6 +1015,7 @@ function onOutsourcing() {
 
   const defect = outQty - inQty;
   const now = new Date().toLocaleString();
+  addDefectToStock(inCode, defect);
   const list = getOutsourcing();
   list.push({
     date: new Date().toLocaleDateString(),
@@ -1210,13 +1243,21 @@ const PageTemplates = {
       <h2>${t.stockTitle}</h2>
       <p>${t.stockDesc}</p>
       <table class="erp-table">
-        <thead>
-          <tr>
-            <th>Code</th><th>Name</th><th>Qty</th><th>Min</th><th>Unit</th><th>Updated</th><th>Edit</th>
-          </tr>
-        </thead>
-        <tbody id="stockTableBody"></tbody>
-      </table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Qty</th>
+      <th>Defect</th>   <!-- ★ 추가 -->
+      <th>Min</th>
+      <th>Unit</th>
+      <th>Updated</th>
+      <th>Edit</th>
+    </tr>
+  </thead>
+  <tbody id="stockTableBody"></tbody>
+</table>
+
     `;
   },
 
