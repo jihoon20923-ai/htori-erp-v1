@@ -1554,3 +1554,44 @@ window.downloadOutgoingCSV = downloadOutgoingCSV;
 window.downloadProductionCSV = downloadProductionCSV;
 window.addSupplier = addSupplier;
 window.deleteSupplier = deleteSupplier;
+/*************************************************
+ *  BACKUP & RESTORE (LOCAL STORAGE)
+ *************************************************/
+
+// 전체 localStorage 저장 → JSON 파일 다운로드
+function backupToFile() {
+  const data = JSON.stringify(localStorage, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "HTORI_backup.json";
+  link.click();
+}
+
+// JSON 파일 → localStorage 로 복원
+function restoreFromFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    try {
+      const json = JSON.parse(e.target.result);
+
+      // 기존 localStorage 삭제 후 전체 복원
+      localStorage.clear();
+      for (let key in json) {
+        localStorage.setItem(key, json[key]);
+      }
+
+      alert("복원 완료! 페이지가 새로고침됩니다.");
+      location.reload();
+    } catch (err) {
+      alert("JSON 파일이 잘못되었습니다.");
+    }
+  };
+
+  reader.readAsText(file);
+}
