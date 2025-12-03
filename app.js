@@ -1174,30 +1174,30 @@ const PageTemplates = {
           <div class="card-value" id="dashRaw">0</div>
         </div>
         <div class="card">
-          <div class="card-label">완제품 재고</div>
+          <div class="card-label">Inventory of finished products</div>
           <div class="card-value" id="dashFinished">0</div>
         </div>
         <div class="card">
-          <div class="card-label">오늘 생산량</div>
+          <div class="card-label">Today's production</div>
           <div class="card-value" id="dashTodayProd">0</div>
         </div>
         <div class="card">
-          <div class="card-label">외주 불량률</div>
+          <div class="card-label">Outsourcing defect rate</div>
           <div class="card-value" id="dashDefect">0%</div>
         </div>
       </div>
 
       <div class="chart-grid">
         <div>
-          <h3>입고 (7일)</h3>
+          <h3>Receiving the product (7 days)</h3>
           <canvas id="chartPurchase"></canvas>
         </div>
         <div>
-          <h3>출고 (7일)</h3>
+          <h3>Product shipped (7 days)</h3>
           <canvas id="chartOutgoing"></canvas>
         </div>
         <div>
-          <h3>생산 (7일)</h3>
+          <h3>Production (7 days)</h3>
           <canvas id="chartProduction"></canvas>
         </div>
       </div>
