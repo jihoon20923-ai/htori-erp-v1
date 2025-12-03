@@ -1479,7 +1479,7 @@ const PageTemplates = {
     <input id="restoreFile" type="file" accept="application/json"
            style="display:none;" onchange="restoreFromFile(event)">
   `;
-}
+},
 
 
 
