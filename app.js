@@ -1480,7 +1480,7 @@ const PageTemplates = {
            style="display:none;" onchange="restoreFromFile(event)">
   `;
 },
-
+}; 
 
 
 /*************************************************
