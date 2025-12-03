@@ -1170,7 +1170,7 @@ const PageTemplates = {
 
       <div class="cards">
         <div class="card">
-          <div class="card-label">원자재 재고</div>
+          <div class="card-label">Material inventory</div>
           <div class="card-value" id="dashRaw">0</div>
         </div>
         <div class="card">
