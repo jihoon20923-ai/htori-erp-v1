@@ -1461,26 +1461,30 @@ const PageTemplates = {
   settings(lang) {
   const t = i18n[lang].pages;
   return `
-    <h2>${t.settingsTitle}</h2>
-    <p>${t.settingsDesc}</p>
-    <p>언어 변경은 상단 버튼을 사용하세요.</p>
+    <div class="settings-section">
 
-    <h3>백업 & 복원</h3>
+      <h2>${t.settingsTitle}</h2>
+      <p>${t.settingsDesc}</p>
+      <p>언어 변경은 상단 버튼을 사용하세요.</p>
 
-    <button onclick="backupToFile()" class="btn-primary">
-      백업 다운로드
-    </button>
+      <h3>백업 & 복원</h3>
 
-    <br><br>
+      <button onclick="backupToFile()" class="btn-primary">
+        백업 다운로드
+      </button>
 
-    <label for="restoreFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
-      백업 파일 불러오기
-    </label>
-    <input id="restoreFile" type="file" accept="application/json"
-           style="display:none;" onchange="restoreFromFile(event)">
+      <br><br>
+
+      <label for="restoreFile" class="btn-secondary">
+        백업 파일 불러오기
+      </label>
+
+      <input id="restoreFile" type="file" accept="application/json"
+             style="display:none;" onchange="restoreFromFile(event)">
+
+    </div>
   `;
 },
-}; 
 
 
 /*************************************************
