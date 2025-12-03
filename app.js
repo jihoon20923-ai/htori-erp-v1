@@ -1595,3 +1595,30 @@ function restoreFromFile(event) {
 
   reader.readAsText(file);
 }
+// ============================
+// 전역(Global) 바인딩
+// ============================
+
+window.setLanguage = setLanguage;
+window.loadPage = loadPage;
+
+window.backupToFile = backupToFile;
+window.restoreFromFile = restoreFromFile;
+
+window.onPurchase = onPurchase;
+window.onOutgoing = onOutgoing;
+window.onProduction = onProduction;
+window.onOutsourcing = onOutsourcing;
+
+window.saveBOMItem = saveBOMItem;
+window.editStockQty = editStockQty;
+window.editPurchase = editPurchase;
+window.editProduction = editProduction;
+
+window.downloadPurchaseCSV = downloadPurchaseCSV;
+window.downloadOutgoingCSV = downloadOutgoingCSV;
+window.downloadProductionCSV = downloadProductionCSV;
+
+window.addSupplier = addSupplier;
+window.deleteSupplier = deleteSupplier;
+
