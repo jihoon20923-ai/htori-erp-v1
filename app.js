@@ -61,6 +61,14 @@ const i18n = {
       bomDesc: "Bill of Materials.",
       outsourcingTitle: "Outsourcing",
       outsourcingDesc: "Out → In with vendor and defect.",
+      outsourcingOutTitle: "OUT",
+      outsourcingInTitle: "IN",
+      outsourcingVendorTitle: "Vendor",
+      outsourcingDefectTitle: "Defect",
+      outsourcingNoteTitle: "Note",
+      outsourcingRegisterBtn: "Register Outsourcing",
+      outsourcingTableDate: "Date",
+      outsourcingTableUpdated: "Updated",      
       finishedTitle: "Finished Goods",
       finishedDesc: "Finished products stock.",
       suppliersTitle: "Supplier Management",
@@ -122,6 +130,15 @@ btnOutsourcing: "Outsourcing Register",
       bomDesc: "제품별 필요 자재.",
       outsourcingTitle: "외주 관리",
       outsourcingDesc: "외주 출고/입고 및 불량.",
+      outsourcingOutTitle: "OUT",
+      outsourcingInTitle: "IN",
+      outsourcingVendorTitle: "외주 업체",
+      outsourcingDefectTitle: "불량",
+      outsourcingNoteTitle: "비고",
+      outsourcingRegisterBtn: "외주 등록",
+      outsourcingTableDate: "날짜",
+      outsourcingTableUpdated: "변경일",
+      outsourcingDesc: "외주 출고/입고 및 불량.",
       finishedTitle: "완제품 재고",
       finishedDesc: "완제품 재고 현황.",
       suppliersTitle: "공급업체 관리",
@@ -181,6 +198,15 @@ btnOutsourcing: "외주 등록",
       bomTitle: "BOM",
       bomDesc: "Bill of Materials.",
       outsourcingTitle: "Outsourcing",
+      outsourcingDesc: "Out → In dengan vendor dan cacat.",
+      outsourcingOutTitle: "OUT",
+      outsourcingInTitle: "IN",
+      outsourcingVendorTitle: "Vendor",
+      outsourcingDefectTitle: "Cacat",
+      outsourcingNoteTitle: "Catatan",
+      outsourcingRegisterBtn: "Daftar Outsourcing",
+      outsourcingTableDate: "Tanggal",
+      outsourcingTableUpdated: "Diupdate",
       outsourcingDesc: "Out → In dengan vendor.",
       finishedTitle: "Barang Jadi",
       finishedDesc: "Stok barang jadi.",
@@ -500,7 +526,7 @@ function renderStockPage() {
         <td>${i.code}</td>
         <td>${i.name}</td>
         <td>${i.qty}</td>
-        <td>${i.defect || 0}</td>   <!-- ★ 불량 표시 -->
+        <td>${i.defect || 0}</td>
         <td>${i.minQty || 0}</td>
         <td>${i.unit || "SET"}</td>
         <td>${i.lastUpdate || ""}</td>
@@ -509,31 +535,24 @@ function renderStockPage() {
     `;
   });
 }
-/* ★★★ 불량 누적용 헬퍼 함수 ★★★ */
+
+/* 불량 수량을 stock 항목에 누적하는 헬퍼 */
 function addDefectToStock(code, defectQty) {
   defectQty = Number(defectQty);
   if (!defectQty || defectQty <= 0) return;
 
-  const s = getStock();
+  let s = getStock();
   let item = s.find(i => i.code === code);
   const now = new Date().toLocaleString();
 
   if (!item) {
-    // 완제품 코드가 아직 없으면 새로 생성
-    item = {
-      code,
-      name: code,
-      qty: 0,
-      defect: defectQty,
-      minQty: 0,
-      unit: "SET",
-      lastUpdate: now,
-    };
-    s.push(item);
-  } else {
-    item.defect = (item.defect || 0) + defectQty;
-    item.lastUpdate = now;
+    // 해당 코드가 없으면 새로 만들 수도 있지만
+    // 외주/생산에서 이미 존재하는 코드만 사용한다고 가정
+    return;
   }
+
+  item.defect = (item.defect || 0) + defectQty;
+  item.lastUpdate = now;
 
   saveStock(s);
 }
@@ -975,34 +994,54 @@ function onOutsourcing() {
   const outCode = document.getElementById("outOutCode").value.trim();
   const outName = document.getElementById("outOutName").value.trim();
   const outQtyStr = document.getElementById("outOutQty").value.trim();
+
   const inCode = document.getElementById("outInCode").value.trim();
   const inName = document.getElementById("outInName").value.trim();
   const inQtyStr = document.getElementById("outInQty").value.trim();
+
+  const defectStr = document.getElementById("outDefectQty").value.trim();
   const vendor = document.getElementById("outVendor").value.trim();
+  const note = document.getElementById("outNote").value.trim();
 
   const outQty = Number(outQtyStr);
   const inQty = Number(inQtyStr);
+  const defect = Number(defectStr) || 0;
 
-  if (!outCode || !inCode || !vendor || !outQty || !inQty) {
-    return alert("모든 값을 입력하세요.");
+  if (!outCode || !outName || !outQty) {
+    return alert("OUT 정보를 모두 입력하세요.");
   }
-  if (inQty > outQty) return alert("입고 수량이 출고보다 많을 수 없음.");
+  if (!inCode || !inName) {
+    return alert("IN 정보를 모두 입력하세요.");
+  }
+  if (isNaN(outQty) || outQty <= 0) {
+    return alert("출고 수량을 올바르게 입력하세요.");
+  }
+  if (isNaN(inQty) || inQty < 0) {
+    return alert("입고 수량을 올바르게 입력하세요.");
+  }
+  if (defect < 0) {
+    return alert("불량 수량을 올바르게 입력하세요.");
+  }
 
+  // 재고 처리
   let stock = getStock();
   let outItem = stock.find(s => s.code === outCode);
   if (!outItem || outItem.qty < outQty) {
-    return alert("OUT 재고 부족.");
+    return alert("OUT 재고가 부족합니다.");
   }
 
+  // OUT: 재고 감소
   outItem.qty -= outQty;
   outItem.lastUpdate = new Date().toLocaleString();
 
+  // IN: 재고 증가
   let inItem = stock.find(s => s.code === inCode);
   if (!inItem) {
     stock.push({
       code: inCode,
       name: inName,
       qty: inQty,
+      defect: 0,
       minQty: 0,
       unit: "SET",
       lastUpdate: new Date().toLocaleString(),
@@ -1011,11 +1050,15 @@ function onOutsourcing() {
     inItem.qty += inQty;
     inItem.lastUpdate = new Date().toLocaleString();
   }
+
   saveStock(stock);
 
-  const defect = outQty - inQty;
+  // 불량 수량을 IN 코드 기준으로 누적 (필요에 따라 outCode로 바꿔도 됨)
+  if (defect > 0) {
+    addDefectToStock(inCode, defect);
+  }
+
   const now = new Date().toLocaleString();
-  addDefectToStock(inCode, defect);
   const list = getOutsourcing();
   list.push({
     date: new Date().toLocaleDateString(),
@@ -1027,15 +1070,16 @@ function onOutsourcing() {
     inQty,
     defect,
     vendor,
+    note,
     updated: now,
   });
   saveOutsourcing(list);
 
   writeLog("OUTSOURCING", `OUT:${outCode} → IN:${inCode}, 불량:${defect}, vendor:${vendor}`);
+
   alert("외주 등록 완료.");
   loadPage("outsourcing");
 }
-
 function renderOutsourcingPage() {
   const tbody = document.getElementById("outsourcingTableBody");
   if (!tbody) return;
@@ -1053,6 +1097,7 @@ function renderOutsourcingPage() {
         <td>${r.inQty}</td>
         <td>${r.defect}</td>
         <td>${r.vendor}</td>
+        <td>${r.note || ""}</td>
         <td>${r.updated}</td>
       </tr>
     `;
@@ -1365,7 +1410,7 @@ const PageTemplates = {
     `;
   },
 
-  outsourcing(lang) {
+    outsourcing(lang) {
     const t = i18n[lang].pages;
     const vendors = getVendors();
     return `
@@ -1373,35 +1418,53 @@ const PageTemplates = {
       <p>${t.outsourcingDesc}</p>
 
       <div class="form-row">
-        <h3>OUT</h3>
+        <h3>${t.outsourcingOutTitle}</h3>
         <input id="outOutCode" placeholder="Out Code">
         <input id="outOutName" placeholder="Out Name">
         <input id="outOutQty" type="number" placeholder="Qty Out">
 
-        <h3>IN</h3>
+        <h3>${t.outsourcingInTitle}</h3>
         <input id="outInCode" placeholder="In Code">
         <input id="outInName" placeholder="In Name">
         <input id="outInQty" type="number" placeholder="Qty In">
 
-        <h3>Vendor</h3>
+        <h3>${t.outsourcingDefectTitle}</h3>
+        <input id="outDefectQty" type="number" placeholder="${t.outsourcingDefectTitle}">
+
+        <h3>${t.outsourcingVendorTitle}</h3>
         <select id="outVendor">
           ${vendors.map(v => `<option value="${v}">${v}</option>`).join("")}
         </select>
 
-        <button onclick="onOutsourcing()" class="btn-primary" style="margin-top:10px;">외주 등록</button>
+        <h3>${t.outsourcingNoteTitle}</h3>
+        <input id="outNote" placeholder="${t.outsourcingNoteTitle}">
+
+        <button onclick="onOutsourcing()" class="btn-primary" style="margin-top:10px;">
+          ${t.outsourcingRegisterBtn}
+        </button>
       </div>
 
       <table class="erp-table" style="margin-top:20px;">
         <thead>
           <tr>
-            <th>Date</th><th>OutCode</th><th>OutName</th><th>QtyOut</th>
-            <th>InCode</th><th>InName</th><th>QtyIn</th><th>Defect</th><th>Vendor</th><th>Updated</th>
+            <th>${t.outsourcingTableDate}</th>
+            <th>OutCode</th>
+            <th>OutName</th>
+            <th>QtyOut</th>
+            <th>InCode</th>
+            <th>InName</th>
+            <th>QtyIn</th>
+            <th>${t.outsourcingDefectTitle}</th>
+            <th>${t.outsourcingVendorTitle}</th>
+            <th>${t.outsourcingNoteTitle}</th>
+            <th>${t.outsourcingTableUpdated}</th>
           </tr>
         </thead>
         <tbody id="outsourcingTableBody"></tbody>
       </table>
     `;
   },
+
 
   finished(lang) {
     const t = i18n[lang].pages;
