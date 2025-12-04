@@ -259,3 +259,15 @@ button,
         font-size: 12px;
     }
 }
+/* === TABLE 화면 넘침 방지 === */
+.content {
+    overflow-x: auto;       /* 가로 스크롤 자동 생성 */
+}
+
+/* 테이블이 화면을 넘지 않도록 */
+.erp-table {
+    width: 100%;
+    table-layout: auto;
+    word-break: break-word; /* 긴 글자 자동 줄바꿈 */
+    white-space: normal;    /* 줄바꿈 허용 */
+}
