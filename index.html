@@ -1,33 +1,72 @@
-settings(lang) {
-  const t = i18n[lang].pages;
-  return `
-    <h2>${t.settingsTitle}</h2>
-    <p>${t.settingsDesc}</p>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTORI ERP</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
 
-    <h3>백업 & 복원</h3>
+<body>
 
-    <button onclick="backupToFile()" class="btn-primary">
-      백업 다운로드
-    </button>
+    <!-- ============================
+         HEADER (PC + MOBILE 공통)
+         ============================ -->
+    <header class="header">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
 
-    <br><br>
+        <div class="logo">HTORI ERP</div>
 
-    <label for="restoreFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
-      백업 파일 불러오기
-    </label>
-    <input id="restoreFile" type="file" accept="application/json"
-           style="display:none;" onchange="restoreFromFile(event)">
+        <div class="lang-buttons">
+            <button onclick="setLanguage('EN')">EN</button>
+            <button onclick="setLanguage('KR')">KR</button>
+            <button onclick="setLanguage('ID')">ID</button>
+        </div>
+    </header>
 
-    <hr style="margin:20px 0;">
+    <!-- ============================
+         SIDEBAR
+         ============================ -->
+    <aside class="sidebar">
+        <ul>
+            <li data-page="dashboard">Dashboard</li>
+            <li data-page="stock">Stock</li>
+            <li data-page="purchase">Purchase</li>
+            <li data-page="outgoing">Outgoing</li>
+            <li data-page="production">Production</li>
+            <li data-page="bom">BOM</li>
+            <li data-page="outsourcing">Outsourcing</li>
+            <li data-page="finished">Finished Goods</li>
+            <li data-page="suppliers">Suppliers</li>
+            <li data-page="employees">Employees</li>
+            <li data-page="attendance">Attendance</li>
+            <li data-page="payroll">Payroll</li>
+            <li data-page="logs">Logs</li>
+            <li data-page="settings">Settings</li>
+        </ul>
+    </aside>
 
-    <h3>Excel 업로드</h3>
+    <!-- ============================
+         MAIN CONTENT
+         ============================ -->
+    <main id="content" class="content"></main>
 
-    <p>엑셀(.xlsx, .xlsm) 파일을 불러와 Stock / Purchase / Production / BOM 데이터로 변환할 수 있습니다.</p>
+    <!-- ============================
+         APP SCRIPT
+         ============================ -->
+    <script src="app.js"></script>
 
-    <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
-      Excel 파일 선택
-    </label>
-    <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
-           style="display:none;" onchange="handleExcelUpload(event)">
-  `;
-},
+    <script>
+        // 메뉴 클릭 이벤트 (index에서 반드시 필요!)
+        document.addEventListener("click", function (e) {
+            if (e.target.matches(".sidebar li")) {
+                const page = e.target.dataset.page;
+                if (page) loadPage(page);
+            }
+        });
+    </script>
+
+</body>
+</html>
