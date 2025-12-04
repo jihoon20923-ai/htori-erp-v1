@@ -1,13 +1,8 @@
 /*************************************************
  * HTORI ERP – Full Single Page App
- * - Multi Language (간단 EN/KR/ID)
+ * - Multi Language (EN / KR / ID)
  * - Stock / Purchase / Outgoing / Production / BOM / Outsourcing
- * - Supplier + Unit Price + Currency
- * - Logs 자동 기록
- * - Dashboard: 입고/출고/생산 그래프 분리
- * - Supplier 관리 페이지
- * - Finished Goods 관리
- * - CSV(Excel) 다운로드
+ * - Supplier 관리, Logs, Dashboard 등
  *************************************************/
 
 /*************************************************
@@ -21,7 +16,7 @@ const state = {
 };
 
 /*************************************************
- * I18N (간단 버전)
+ * I18N (다국어)
  *************************************************/
 const i18n = {
   EN: {
@@ -35,30 +30,35 @@ const i18n = {
       bom: "BOM",
       outsourcing: "Outsourcing",
       finished: "Finished Goods",
+      suppliers: "Suppliers",
       employees: "Employees",
       attendance: "Attendance",
       payroll: "Payroll",
       logs: "Logs",
-      suppliers: "Suppliers",
       settings: "Settings",
     },
     pages: {
       dashboardTitle: "Dashboard",
       dashboardDesc: "Factory indicators and charts.",
+
       stockTitle: "Stock",
       stockDesc: "Raw / semi-finished / finished inventory.",
+
       purchaseTitle: "Purchase",
       purchaseDesc: "Incoming materials.",
-      // 폼 placeholder
       purchaseFormCodePlaceholder: "Material Code",
       purchaseFormNamePlaceholder: "Material Name",
       purchaseFormQtyPlaceholder: "Qty",
+
       outgoingTitle: "Outgoing",
       outgoingDesc: "Manual outgoing.",
+
       productionTitle: "Production",
       productionDesc: "Production and material usage.",
+
       bomTitle: "BOM",
       bomDesc: "Bill of Materials.",
+
       outsourcingTitle: "Outsourcing",
       outsourcingDesc: "Out → In with vendor and defect.",
       outsourcingOutTitle: "OUT",
@@ -68,32 +68,37 @@ const i18n = {
       outsourcingNoteTitle: "Note",
       outsourcingRegisterBtn: "Register Outsourcing",
       outsourcingTableDate: "Date",
-      outsourcingTableUpdated: "Updated",      
+      outsourcingTableUpdated: "Updated",
+
       finishedTitle: "Finished Goods",
       finishedDesc: "Finished products stock.",
+
       suppliersTitle: "Supplier Management",
       suppliersDesc: "Add / delete suppliers.",
+
       logsTitle: "Logs",
       logsDesc: "System activity history.",
+
       settingsTitle: "Settings",
       settingsDesc: "ERP basic settings.",
+
       employeesTitle: "Employees",
       employeesDesc: "Employee master data.",
       attendanceTitle: "Attendance",
       attendanceDesc: "Clock-in / Clock-out records.",
       payrollTitle: "Payroll",
       payrollDesc: "Monthly payroll overview.",
-      btnRegister: "Register",
-btnDownloadExcel: "Excel Download",
-btnOutgoing: "Outgoing",
-btnSave: "Save",
-btnAdd: "Add",
-btnProduction: "Register Production",
-btnOutsourcing: "Outsourcing Register",
 
+      btnRegister: "Register",
+      btnDownloadExcel: "Excel Download",
+      btnOutgoing: "Outgoing",
+      btnSave: "Save",
+      btnAdd: "Add",
+      btnProduction: "Register Production",
+      btnOutsourcing: "Outsourcing Register",
     },
-    
   },
+
   KR: {
     appTitle: "HTORI ERP",
     sidebar: {
@@ -105,29 +110,35 @@ btnOutsourcing: "Outsourcing Register",
       bom: "BOM",
       outsourcing: "외주",
       finished: "완제품",
+      suppliers: "공급업체",
       employees: "직원",
       attendance: "근태",
       payroll: "급여",
       logs: "로그",
-      suppliers: "공급업체",
       settings: "설정",
     },
     pages: {
       dashboardTitle: "대시보드",
       dashboardDesc: "공장 지표 및 그래프.",
+
       stockTitle: "재고 관리",
       stockDesc: "원자재 / 반제품 / 완제품 재고.",
+
       purchaseTitle: "입고 관리",
       purchaseDesc: "자재 입고 기록.",
       purchaseFormCodePlaceholder: "자재 코드",
       purchaseFormNamePlaceholder: "자재 이름",
       purchaseFormQtyPlaceholder: "수량",
+
       outgoingTitle: "출고 관리",
       outgoingDesc: "자재 출고 기록.",
+
       productionTitle: "생산 관리",
       productionDesc: "생산 및 자재 사용.",
+
       bomTitle: "BOM 관리",
       bomDesc: "제품별 필요 자재.",
+
       outsourcingTitle: "외주 관리",
       outsourcingDesc: "외주 출고/입고 및 불량.",
       outsourcingOutTitle: "OUT",
@@ -138,31 +149,36 @@ btnOutsourcing: "Outsourcing Register",
       outsourcingRegisterBtn: "외주 등록",
       outsourcingTableDate: "날짜",
       outsourcingTableUpdated: "변경일",
-      outsourcingDesc: "외주 출고/입고 및 불량.",
+
       finishedTitle: "완제품 재고",
       finishedDesc: "완제품 재고 현황.",
+
       suppliersTitle: "공급업체 관리",
       suppliersDesc: "공급업체 추가/삭제.",
+
       logsTitle: "로그",
       logsDesc: "시스템 작업 기록.",
+
       settingsTitle: "설정",
       settingsDesc: "기본 설정.",
+
       employeesTitle: "직원 관리",
       employeesDesc: "직원 기본 정보.",
       attendanceTitle: "근태 관리",
       attendanceDesc: "출근/퇴근 기록.",
       payrollTitle: "급여 관리",
       payrollDesc: "월별 급여 현황.",
-      btnRegister: "등록",
-btnDownloadExcel: "Excel 다운로드",
-btnOutgoing: "출고",
-btnSave: "저장",
-btnAdd: "추가",
-btnProduction: "생산 등록",
-btnOutsourcing: "외주 등록",
 
+      btnRegister: "등록",
+      btnDownloadExcel: "Excel 다운로드",
+      btnOutgoing: "출고",
+      btnSave: "저장",
+      btnAdd: "추가",
+      btnProduction: "생산 등록",
+      btnOutsourcing: "외주 등록",
     },
   },
+
   ID: {
     appTitle: "HTORI ERP",
     sidebar: {
@@ -174,29 +190,35 @@ btnOutsourcing: "외주 등록",
       bom: "BOM",
       outsourcing: "Outsourcing",
       finished: "Barang Jadi",
+      suppliers: "Pemasok",
       employees: "Karyawan",
       attendance: "Absensi",
       payroll: "Gaji",
       logs: "Log",
-      suppliers: "Pemasok",
       settings: "Pengaturan",
     },
     pages: {
       dashboardTitle: "Dashboard",
       dashboardDesc: "Indikator dan grafik pabrik.",
+
       stockTitle: "Stok",
       stockDesc: "Stok bahan baku / semi / jadi.",
+
       purchaseTitle: "Pembelian",
       purchaseDesc: "Data bahan masuk.",
       purchaseFormCodePlaceholder: "Kode Material",
       purchaseFormNamePlaceholder: "Nama Material",
       purchaseFormQtyPlaceholder: "Qty",
+
       outgoingTitle: "Pengeluaran",
       outgoingDesc: "Data bahan keluar.",
+
       productionTitle: "Produksi",
       productionDesc: "Produksi & pemakaian bahan.",
+
       bomTitle: "BOM",
       bomDesc: "Bill of Materials.",
+
       outsourcingTitle: "Outsourcing",
       outsourcingDesc: "Out → In dengan vendor dan cacat.",
       outsourcingOutTitle: "OUT",
@@ -207,35 +229,39 @@ btnOutsourcing: "외주 등록",
       outsourcingRegisterBtn: "Daftar Outsourcing",
       outsourcingTableDate: "Tanggal",
       outsourcingTableUpdated: "Diupdate",
-      outsourcingDesc: "Out → In dengan vendor.",
+
       finishedTitle: "Barang Jadi",
       finishedDesc: "Stok barang jadi.",
+
       suppliersTitle: "Manajemen Supplier",
       suppliersDesc: "Tambah / hapus supplier.",
+
       logsTitle: "Log",
       logsDesc: "Riwayat aktivitas.",
+
       settingsTitle: "Pengaturan",
       settingsDesc: "Pengaturan dasar.",
+
       employeesTitle: "Karyawan",
       employeesDesc: "Data karyawan.",
       attendanceTitle: "Absensi",
       attendanceDesc: "Data masuk / pulang.",
       payrollTitle: "Gaji",
       payrollDesc: "Ringkasan gaji bulanan.",
-      btnRegister: "Daftar",
-btnDownloadExcel: "Unduh Excel",
-btnOutgoing: "Pengeluaran",
-btnSave: "Simpan",
-btnAdd: "Tambah",
-btnProduction: "Daftar Produksi",
-btnOutsourcing: "Daftar Outsourcing",
 
+      btnRegister: "Daftar",
+      btnDownloadExcel: "Unduh Excel",
+      btnOutgoing: "Pengeluaran",
+      btnSave: "Simpan",
+      btnAdd: "Tambah",
+      btnProduction: "Daftar Produksi",
+      btnOutsourcing: "Daftar Outsourcing",
     },
   },
 };
 
 /*************************************************
- * MENU ORDER
+ * MENU ORDER (사이드바 순서)
  *************************************************/
 const MENU_ORDER = [
   "dashboard",
@@ -246,12 +272,12 @@ const MENU_ORDER = [
   "bom",
   "outsourcing",
   "finished",
-  "suppliers",   // 🔹 suppliers 로 통일
+  "suppliers",
   "employees",
   "attendance",
   "payroll",
   "logs",
-  "settings"
+  "settings",
 ];
 
 /*************************************************
@@ -271,8 +297,8 @@ function writeLog(action, detail) {
 function downloadCSV(filename, headers, rows) {
   let csv = "";
   if (headers && headers.length) csv += headers.join(",") + "\n";
-  rows.forEach(r => {
-    csv += r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",") + "\n";
+  rows.forEach((r) => {
+    csv += r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",") + "\n";
   });
 
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -300,7 +326,7 @@ function renderLogsPage() {
   if (!tbody) return;
   const logs = getLogs();
   tbody.innerHTML = "";
-  logs.forEach(l => {
+  logs.forEach((l) => {
     tbody.innerHTML += `
       <tr>
         <td>${l.time}</td>
@@ -312,14 +338,14 @@ function renderLogsPage() {
 }
 
 /*************************************************
- * SUPPLIER MODULE (Email + 담당자 + Vendor Name 추가)
+ * SUPPLIER MODULE
  *************************************************/
 function getSuppliers() {
   let raw = JSON.parse(localStorage.getItem("suppliers") || "[]");
 
-  // 예전 버전 호환
-  raw = raw.map(old => ({
-    name: old.name || old,   // 기존 문자열버전 자동 변환
+  // 예전 버전 호환 (문자열만 있던 경우)
+  raw = raw.map((old) => ({
+    name: old.name || old,
     vendorName: old.vendorName || "",
     contactPerson: old.contactPerson || "",
     email: old.email || "",
@@ -342,22 +368,39 @@ function saveSuppliers(list) {
   let s = getSuppliers();
   if (s.length === 0) {
     s = [
-      { name: "Supplier A", vendorName: "", contactPerson: "", email: "", address: "", phone: "", bankName: "", bankAccount: "", bankHolder: "" },
-      { name: "Supplier B", vendorName: "", contactPerson: "", email: "", address: "", phone: "", bankName: "", bankAccount: "", bankHolder: "" },
+      {
+        name: "Supplier A",
+        vendorName: "",
+        contactPerson: "",
+        email: "",
+        address: "",
+        phone: "",
+        bankName: "",
+        bankAccount: "",
+        bankHolder: "",
+      },
+      {
+        name: "Supplier B",
+        vendorName: "",
+        contactPerson: "",
+        email: "",
+        address: "",
+        phone: "",
+        bankName: "",
+        bankAccount: "",
+        bankHolder: "",
+      },
     ];
     saveSuppliers(s);
   }
 })();
 
-/*************************************************
- * Supplier 통계 계산
- *************************************************/
 function getSupplierStats(name) {
   const purchase = JSON.parse(localStorage.getItem("purchase") || "[]");
   let totalQty = 0;
   let totalAmount = 0;
 
-  purchase.forEach(p => {
+  purchase.forEach((p) => {
     if (p.supplier === name) {
       totalQty += Number(p.qty) || 0;
       totalAmount += (Number(p.qty) || 0) * (Number(p.price) || 0);
@@ -367,9 +410,6 @@ function getSupplierStats(name) {
   return { totalQty, totalAmount };
 }
 
-/*************************************************
- * Supplier 렌더링
- *************************************************/
 function renderSupplierPage() {
   const tbody = document.getElementById("supplierTableBody");
   if (!tbody) return;
@@ -377,7 +417,7 @@ function renderSupplierPage() {
   const list = getSuppliers();
   tbody.innerHTML = "";
 
-  list.forEach(s => {
+  list.forEach((s) => {
     const stat = getSupplierStats(s.name);
 
     tbody.innerHTML += `
@@ -403,9 +443,6 @@ function renderSupplierPage() {
   });
 }
 
-/*************************************************
- * Supplier 추가
- *************************************************/
 function addSupplier() {
   const name = document.getElementById("newSupplier").value.trim();
   const vendorName = document.getElementById("supplierVendorName").value.trim();
@@ -420,7 +457,7 @@ function addSupplier() {
   if (!name) return alert("공급업체명을 입력하세요.");
 
   const list = getSuppliers();
-  if (list.some(s => s.name === name)) {
+  if (list.some((s) => s.name === name)) {
     return alert("이미 존재하는 공급업체입니다.");
   }
 
@@ -439,33 +476,39 @@ function addSupplier() {
   saveSuppliers(list);
   writeLog("SUPPLIER ADD", name);
 
-  // 입력 초기화
   [
-    "newSupplier","supplierVendorName","supplierContact","supplierEmail",
-    "supplierAddress","supplierPhone","supplierBankName","supplierBankAccount","supplierBankHolder"
-  ].forEach(id => document.getElementById(id).value = "");
+    "newSupplier",
+    "supplierVendorName",
+    "supplierContact",
+    "supplierEmail",
+    "supplierAddress",
+    "supplierPhone",
+    "supplierBankName",
+    "supplierBankAccount",
+    "supplierBankHolder",
+  ].forEach((id) => (document.getElementById(id).value = ""));
 
   renderSupplierPage();
 }
 
-/*************************************************
- * Supplier 삭제
- *************************************************/
 function deleteSupplier(nameOverride) {
-  const name = nameOverride || document.getElementById("newSupplier").value.trim();
-  if (!name) return alert("삭제할 공급업체명을 입력하거나 테이블 삭제 버튼을 사용하세요.");
+  const name =
+    nameOverride || document.getElementById("newSupplier").value.trim();
+  if (!name)
+    return alert(
+      "삭제할 공급업체명을 입력하거나 테이블의 삭제 버튼을 사용하세요."
+    );
 
   let list = getSuppliers();
-  if (!list.some(s => s.name === name)) return alert("해당 공급업체가 없습니다.");
+  if (!list.some((s) => s.name === name))
+    return alert("해당 공급업체가 없습니다.");
 
-  list = list.filter(s => s.name !== name);
+  list = list.filter((s) => s.name !== name);
   saveSuppliers(list);
   writeLog("SUPPLIER DELETE", name);
 
   renderSupplierPage();
 }
-
-
 
 /*************************************************
  * STOCK MODULE
@@ -481,7 +524,7 @@ function updateStock(code, name, qty) {
   let s = getStock();
   qty = Number(qty);
   const now = new Date().toLocaleString();
-  let item = s.find(i => i.code === code);
+  let item = s.find((i) => i.code === code);
   if (item) {
     item.qty += qty;
     item.lastUpdate = now;
@@ -490,7 +533,7 @@ function updateStock(code, name, qty) {
       code,
       name,
       qty,
-      defect: 0,       // ★ 불량 누적용 필드 추가
+      defect: 0,
       minQty: 0,
       unit: "SET",
       lastUpdate: now,
@@ -499,10 +542,9 @@ function updateStock(code, name, qty) {
   saveStock(s);
 }
 
-
 function editStockQty(code) {
   let s = getStock();
-  let i = s.find(x => x.code === code);
+  let i = s.find((x) => x.code === code);
   if (!i) return alert("재고 없음.");
   const newQtyStr = prompt("새 수량:", i.qty);
   if (newQtyStr === null) return;
@@ -520,7 +562,7 @@ function renderStockPage() {
   if (!tbody) return;
   const stock = getStock();
   tbody.innerHTML = "";
-  stock.forEach(i => {
+  stock.forEach((i) => {
     tbody.innerHTML += `
       <tr>
         <td>${i.code}</td>
@@ -536,30 +578,23 @@ function renderStockPage() {
   });
 }
 
-/* 불량 수량을 stock 항목에 누적하는 헬퍼 */
+/* 불량 수량을 stock 항목에 누적 */
 function addDefectToStock(code, defectQty) {
   defectQty = Number(defectQty);
   if (!defectQty || defectQty <= 0) return;
 
   let s = getStock();
-  let item = s.find(i => i.code === code);
+  let item = s.find((i) => i.code === code);
+  if (!item) return;
   const now = new Date().toLocaleString();
-
-  if (!item) {
-    // 해당 코드가 없으면 새로 만들 수도 있지만
-    // 외주/생산에서 이미 존재하는 코드만 사용한다고 가정
-    return;
-  }
 
   item.defect = (item.defect || 0) + defectQty;
   item.lastUpdate = now;
 
   saveStock(s);
 }
-
-
 /*************************************************
- * PURCHASE MODULE (기록 + 수정 + CSV)
+ * PURCHASE MODULE
  *************************************************/
 function getPurchase() {
   return JSON.parse(localStorage.getItem("purchase") || "[]");
@@ -579,7 +614,9 @@ function onPurchase() {
   const qty = Number(qtyStr);
   const price = Number(priceStr);
 
-  if (!code || !name || !qty || !price) return alert("모든 값을 입력하세요.");
+  if (!code || !name || !qty || !price) {
+    return alert("모든 값을 입력하세요.");
+  }
 
   updateStock(code, name, qty);
   writeLog("PURCHASE", `${supplier} / ${code} ${qty} EA @ ${price} ${currency}`);
@@ -593,7 +630,7 @@ function onPurchase() {
     qty,
     price,
     currency,
-    updated: new Date().toLocaleString(),
+    updated: new Date().toLocaleString()
   });
   savePurchase(list);
 
@@ -606,6 +643,7 @@ function renderPurchasePage() {
   if (!tbody) return;
   const list = getPurchase();
   tbody.innerHTML = "";
+
   list.forEach((p, idx) => {
     tbody.innerHTML += `
       <tr>
@@ -626,6 +664,7 @@ function renderPurchasePage() {
 function editPurchase(index) {
   let list = getPurchase();
   let p = list[index];
+
   const newQtyStr = prompt("새 수량:", p.qty);
   const newPriceStr = prompt("새 단가:", p.price);
   if (newQtyStr === null || newPriceStr === null) return;
@@ -637,9 +676,13 @@ function editPurchase(index) {
   }
 
   const diff = newQty - p.qty;
+
+  // 재고 처리
   let stock = getStock();
-  let item = stock.find(i => i.code === p.code);
-  if (!item && diff < 0) return alert("재고 부족.");
+  let item = stock.find((i) => i.code === p.code);
+
+  if (!item && diff < 0) return alert("재고 부족");
+
   if (!item) {
     updateStock(p.code, p.name, diff);
   } else {
@@ -657,16 +700,21 @@ function editPurchase(index) {
   loadPage("purchase");
 }
 
-/* Purchase CSV 다운로드 */
 function downloadPurchaseCSV() {
   const list = getPurchase();
-  const headers = ["Date","Supplier","Code","Name","Qty","Price","Currency","Updated"];
-  const rows = list.map(p => [p.date,p.supplier,p.code,p.name,p.qty,p.price,p.currency,p.updated]);
+  const headers = [
+    "Date","Supplier","Code","Name",
+    "Qty","Price","Currency","Updated"
+  ];
+  const rows = list.map(p => [
+    p.date,p.supplier,p.code,p.name,
+    p.qty,p.price,p.currency,p.updated
+  ]);
+
   downloadCSV("purchase.csv", headers, rows);
 }
-
 /*************************************************
- * OUTGOING MODULE (기록 + CSV)
+ * OUTGOING MODULE
  *************************************************/
 function getOutgoing() {
   return JSON.parse(localStorage.getItem("outgoing") || "[]");
@@ -680,28 +728,31 @@ function onOutgoing() {
   const name = document.getElementById("oName").value.trim();
   const qtyStr = document.getElementById("oQty").value.trim();
   const qty = Number(qtyStr);
+
   if (!code || !name || !qty) return alert("모두 입력하세요.");
+
   let stock = getStock();
   let item = stock.find(i => i.code === code);
   if (!item) return alert("해당 재고 없음.");
   if (item.qty < qty) return alert("재고 부족.");
 
+  // 출고
   item.qty -= qty;
   item.lastUpdate = new Date().toLocaleString();
   saveStock(stock);
 
-  // outgoing 기록
-  const out = getOutgoing();
-  out.push({
+  const list = getOutgoing();
+  list.push({
     date: new Date().toLocaleDateString(),
     code,
     name,
     qty,
-    updated: new Date().toLocaleString(),
+    updated: new Date().toLocaleString()
   });
-  saveOutgoing(out);
 
+  saveOutgoing(list);
   writeLog("OUTGOING", `${code} ${qty} 출고`);
+
   alert("출고 완료!");
   loadPage("outgoing");
 }
@@ -709,8 +760,10 @@ function onOutgoing() {
 function renderOutgoingPage() {
   const tbody = document.getElementById("outgoingTableBody");
   if (!tbody) return;
+
   const list = getOutgoing();
   tbody.innerHTML = "";
+
   list.forEach(o => {
     tbody.innerHTML += `
       <tr>
@@ -728,9 +781,9 @@ function downloadOutgoingCSV() {
   const list = getOutgoing();
   const headers = ["Date","Code","Name","Qty","Updated"];
   const rows = list.map(o => [o.date,o.code,o.name,o.qty,o.updated]);
+
   downloadCSV("outgoing.csv", headers, rows);
 }
-
 /*************************************************
  * BOM MODULE
  *************************************************/
@@ -740,6 +793,7 @@ function getBOM() {
 function saveBOMData(bom) {
   localStorage.setItem("bom", JSON.stringify(bom));
 }
+
 function saveBOMItem() {
   const product = document.getElementById("bomProduct").value.trim();
   const matCode = document.getElementById("bomMatCode").value.trim();
@@ -747,7 +801,9 @@ function saveBOMItem() {
   const qtyStr = document.getElementById("bomQty").value.trim();
   const qty = Number(qtyStr);
 
-  if (!product || !matCode || !matName || !qty) return alert("모두 입력.");
+  if (!product || !matCode || !matName || !qty) {
+    return alert("모두 입력.");
+  }
 
   const bom = getBOM();
   bom.push({
@@ -757,20 +813,25 @@ function saveBOMItem() {
     qty,
     updated: new Date().toLocaleString(),
   });
-  saveBOMData(bom);
 
-  writeLog("BOM ADD", `${product} / ${matCode} x ${qty}`);
+  saveBOMData(bom);
+  writeLog("BOM ADD", `${product} / ${matCode} × ${qty}`);
+
   alert("BOM 저장 완료.");
   loadPage("bom");
 }
+
 function getBomForProduct(product) {
   return getBOM().filter(b => b.product === product);
 }
+
 function renderBOMPage() {
   const tbody = document.getElementById("bomTableBody");
   if (!tbody) return;
+
   const bom = getBOM();
   tbody.innerHTML = "";
+
   bom.forEach(b => {
     tbody.innerHTML += `
       <tr>
@@ -783,9 +844,8 @@ function renderBOMPage() {
     `;
   });
 }
-
 /*************************************************
- * PRODUCTION MODULE (기록 + 수정 + CSV)
+ * PRODUCTION MODULE
  *************************************************/
 function getProduction() {
   return JSON.parse(localStorage.getItem("production") || "[]");
@@ -797,13 +857,16 @@ function saveProduction(list) {
 function runProduction(product, qty) {
   qty = Number(qty);
   if (!product || !qty) return false;
+
   const bomList = getBomForProduct(product);
   if (bomList.length === 0) {
     alert("BOM 없음.");
     return false;
   }
+
   let stock = getStock();
-  // 재고 체크
+
+  // 재고 확인
   for (const b of bomList) {
     const need = b.qty * qty;
     const mat = stock.find(s => s.code === b.matCode);
@@ -812,6 +875,7 @@ function runProduction(product, qty) {
       return false;
     }
   }
+
   // 자재 차감
   bomList.forEach(b => {
     const need = b.qty * qty;
@@ -819,7 +883,8 @@ function runProduction(product, qty) {
     mat.qty -= need;
     mat.lastUpdate = new Date().toLocaleString();
   });
-  // 완제품 증가 (코드 = product)
+
+  // 완제품 증가
   let fg = stock.find(s => s.code === product);
   if (!fg) {
     stock.push({
@@ -828,12 +893,13 @@ function runProduction(product, qty) {
       qty,
       minQty: 0,
       unit: "SET",
-      lastUpdate: new Date().toLocaleString(),
+      lastUpdate: new Date().toLocaleString()
     });
   } else {
     fg.qty += qty;
     fg.lastUpdate = new Date().toLocaleString();
   }
+
   saveStock(stock);
   return true;
 }
@@ -842,18 +908,23 @@ function onProduction() {
   const product = document.getElementById("prodProduct").value.trim();
   const qtyStr = document.getElementById("prodQty").value.trim();
   const qty = Number(qtyStr);
+
   if (!product || !qty) return alert("모두 입력.");
+
   const ok = runProduction(product, qty);
   if (!ok) return;
+
   const list = getProduction();
   list.push({
     date: new Date().toLocaleDateString(),
     product,
     qty,
-    updated: new Date().toLocaleString(),
+    updated: new Date().toLocaleString()
   });
+
   saveProduction(list);
   writeLog("PRODUCTION", `${product} ${qty} 생산`);
+
   alert("생산 등록 완료.");
   loadPage("production");
 }
@@ -861,8 +932,10 @@ function onProduction() {
 function renderProductionPage() {
   const tbody = document.getElementById("prodTableBody");
   if (!tbody) return;
+
   const list = getProduction();
   tbody.innerHTML = "";
+
   list.forEach((p, idx) => {
     tbody.innerHTML += `
       <tr>
@@ -870,102 +943,13 @@ function renderProductionPage() {
         <td>${p.product}</td>
         <td>${p.qty}</td>
         <td>${p.updated}</td>
-        <td><button class="btn-mini" onclick="editProduction(${idx})">수정</button></td>
+        <td>
+          <button class="btn-mini" onclick="editProduction(${idx})">수정</button>
+        </td>
       </tr>
     `;
   });
 }
-
-function editProduction(index) {
-  let list = getProduction();
-  let p = list[index];
-  const newQtyStr = prompt("새 생산 수량:", p.qty);
-  if (newQtyStr === null) return;
-  const newQty = Number(newQtyStr);
-  if (isNaN(newQty) || newQty <= 0) return alert("올바른 수량 아님.");
-  const diff = newQty - p.qty;
-  if (diff === 0) return;
-
-  // diff > 0 추가 생산, diff < 0 생산 취소
-  let stock = getStock();
-  const bomList = getBomForProduct(p.product);
-  if (bomList.length === 0) return alert("BOM 없음.");
-
-  if (diff > 0) {
-    // 추가 생산 → 추가 자재 필요
-    for (const b of bomList) {
-      const need = b.qty * diff;
-      const mat = stock.find(s => s.code === b.matCode);
-      if (!mat || mat.qty < need) {
-        return alert(`재고 부족: ${b.matCode} 필요:${need}, 현재:${mat ? mat.qty : 0}`);
-      }
-    }
-    bomList.forEach(b => {
-      const need = b.qty * diff;
-      const mat = stock.find(s => s.code === b.matCode);
-      mat.qty -= need;
-      mat.lastUpdate = new Date().toLocaleDateString();
-    });
-    let fg = stock.find(s => s.code === p.product);
-    if (!fg) {
-      stock.push({
-        code: p.product,
-        name: p.product,
-        qty: diff,
-        minQty: 0,
-        unit: "SET",
-        lastUpdate: new Date().toLocaleString(),
-      });
-    } else {
-      fg.qty += diff;
-      fg.lastUpdate = new Date().toLocaleString();
-    }
-  } else {
-    // 생산 감소 → 자재 되돌려 넣기
-    const backDiff = -diff;
-    bomList.forEach(b => {
-      const back = b.qty * backDiff;
-      let mat = stock.find(s => s.code === b.matCode);
-      if (!mat) {
-        mat = {
-          code: b.matCode,
-          name: b.matName,
-          qty: back,
-          minQty: 0,
-          unit: "SET",
-          lastUpdate: new Date().toLocaleString(),
-        };
-        stock.push(mat);
-      } else {
-        mat.qty += back;
-        mat.lastUpdate = new Date().toLocaleString();
-      }
-    });
-    let fg = stock.find(s => s.code === p.product);
-    if (fg) {
-      fg.qty -= backDiff;
-      if (fg.qty < 0) fg.qty = 0;
-      fg.lastUpdate = new Date().toLocaleString();
-    }
-  }
-
-  saveStock(stock);
-
-  p.qty = newQty;
-  p.updated = new Date().toLocaleString();
-  saveProduction(list);
-  writeLog("PRODUCTION EDIT", `${p.product} → ${newQty}`);
-  alert("생산 수정 완료.");
-  loadPage("production");
-}
-
-function downloadProductionCSV() {
-  const list = getProduction();
-  const headers = ["Date","Product","Qty","Updated"];
-  const rows = list.map(p => [p.date,p.product,p.qty,p.updated]);
-  downloadCSV("production.csv", headers, rows);
-}
-
 /*************************************************
  * OUTSOURCING MODULE
  *************************************************/
@@ -975,6 +959,8 @@ function getVendors() {
 function saveVendors(list) {
   localStorage.setItem("vendors", JSON.stringify(list));
 }
+
+// 기본 vendor 생성
 (function initVendors() {
   let v = getVendors();
   if (v.length === 0) {
@@ -1007,35 +993,23 @@ function onOutsourcing() {
   const inQty = Number(inQtyStr);
   const defect = Number(defectStr) || 0;
 
-  if (!outCode || !outName || !outQty) {
+  if (!outCode || !outName || !outQty)
     return alert("OUT 정보를 모두 입력하세요.");
-  }
-  if (!inCode || !inName) {
+  if (!inCode || !inName)
     return alert("IN 정보를 모두 입력하세요.");
-  }
-  if (isNaN(outQty) || outQty <= 0) {
-    return alert("출고 수량을 올바르게 입력하세요.");
-  }
-  if (isNaN(inQty) || inQty < 0) {
-    return alert("입고 수량을 올바르게 입력하세요.");
-  }
-  if (defect < 0) {
-    return alert("불량 수량을 올바르게 입력하세요.");
-  }
 
-  // 재고 처리
   let stock = getStock();
-  let outItem = stock.find(s => s.code === outCode);
-  if (!outItem || outItem.qty < outQty) {
-    return alert("OUT 재고가 부족합니다.");
-  }
+  let outItem = stock.find(i => i.code === outCode);
 
-  // OUT: 재고 감소
+  if (!outItem || outItem.qty < outQty)
+    return alert("출고 재고 부족.");
+
+  // OUT 재고 차감
   outItem.qty -= outQty;
   outItem.lastUpdate = new Date().toLocaleString();
 
-  // IN: 재고 증가
-  let inItem = stock.find(s => s.code === inCode);
+  // IN 재고 증가
+  let inItem = stock.find(i => i.code === inCode);
   if (!inItem) {
     stock.push({
       code: inCode,
@@ -1044,7 +1018,7 @@ function onOutsourcing() {
       defect: 0,
       minQty: 0,
       unit: "SET",
-      lastUpdate: new Date().toLocaleString(),
+      lastUpdate: new Date().toLocaleString()
     });
   } else {
     inItem.qty += inQty;
@@ -1053,13 +1027,12 @@ function onOutsourcing() {
 
   saveStock(stock);
 
-  // 불량 수량을 IN 코드 기준으로 누적 (필요에 따라 outCode로 바꿔도 됨)
-  if (defect > 0) {
-    addDefectToStock(inCode, defect);
-  }
+  // 불량 누적
+  if (defect > 0) addDefectToStock(inCode, defect);
 
   const now = new Date().toLocaleString();
   const list = getOutsourcing();
+
   list.push({
     date: new Date().toLocaleDateString(),
     outCode,
@@ -1071,20 +1044,26 @@ function onOutsourcing() {
     defect,
     vendor,
     note,
-    updated: now,
+    updated: now
   });
-  saveOutsourcing(list);
 
-  writeLog("OUTSOURCING", `OUT:${outCode} → IN:${inCode}, 불량:${defect}, vendor:${vendor}`);
+  saveOutsourcing(list);
+  writeLog(
+    "OUTSOURCING",
+    `OUT:${outCode} → IN:${inCode}, 불량:${defect}, vendor:${vendor}`
+  );
 
   alert("외주 등록 완료.");
   loadPage("outsourcing");
 }
+
 function renderOutsourcingPage() {
   const tbody = document.getElementById("outsourcingTableBody");
   if (!tbody) return;
+
   const list = getOutsourcing();
   tbody.innerHTML = "";
+
   list.forEach(r => {
     tbody.innerHTML += `
       <tr>
@@ -1097,21 +1076,22 @@ function renderOutsourcingPage() {
         <td>${r.inQty}</td>
         <td>${r.defect}</td>
         <td>${r.vendor}</td>
-        <td>${r.note || ""}</td>
+        <td>${r.note}</td>
         <td>${r.updated}</td>
       </tr>
     `;
   });
 }
-
 /*************************************************
- * FINISHED GOODS VIEW (VC* 코드만)
+ * FINISHED GOODS (VC* 코드만)
  *************************************************/
 function renderFGPage() {
   const tbody = document.getElementById("fgTableBody");
   if (!tbody) return;
+
   const stock = getStock().filter(i => i.code.startsWith("VC"));
   tbody.innerHTML = "";
+
   stock.forEach(i => {
     tbody.innerHTML += `
       <tr>
@@ -1123,9 +1103,8 @@ function renderFGPage() {
     `;
   });
 }
-
 /*************************************************
- * DASHBOARD (통계 + 입고/출고/생산 그래프)
+ * DASHBOARD
  *************************************************/
 function getDashboardStats() {
   const stock = getStock();
@@ -1134,18 +1113,22 @@ function getDashboardStats() {
 
   const totalRaw = stock
     .filter(i => !i.code.startsWith("VC"))
-    .reduce((a, b) => a + (Number(b.qty) || 0), 0);
+    .reduce((a, b) => a + Number(b.qty || 0), 0);
+
   const totalFinished = stock
     .filter(i => i.code.startsWith("VC"))
-    .reduce((a, b) => a + (Number(b.qty) || 0), 0);
+    .reduce((a, b) => a + Number(b.qty || 0), 0);
+
   const today = new Date().toLocaleDateString();
   const todayProd = prod
     .filter(p => p.date === today)
-    .reduce((a,b)=>a + (Number(b.qty) || 0),0);
+    .reduce((a, b) => a + Number(b.qty || 0), 0);
 
-  const totalOutQty = out.reduce((a,b)=>a + (Number(b.outQty) || 0),0);
-  const totalDefect = out.reduce((a,b)=>a + (Number(b.defect) || 0),0);
-  const defectRate = totalOutQty === 0 ? 0 : Math.round((totalDefect / totalOutQty) * 100);
+  const totalOutQty = out.reduce((a, b) => a + Number(b.outQty || 0), 0);
+  const totalDefect = out.reduce((a, b) => a + Number(b.defect || 0), 0);
+
+  const defectRate =
+    totalOutQty === 0 ? 0 : Math.round((totalDefect / totalOutQty) * 100);
 
   return { totalRaw, totalFinished, todayProd, defectRate };
 }
@@ -1153,6 +1136,7 @@ function getDashboardStats() {
 function getLastNDaysLabels(n) {
   const labels = [];
   const base = new Date();
+
   for (let i = n - 1; i >= 0; i--) {
     const d = new Date(base);
     d.setDate(d.getDate() - i);
@@ -1165,11 +1149,13 @@ function aggregateDaily(list, days) {
   const labels = getLastNDaysLabels(days);
   const map = {};
   labels.forEach(l => (map[l] = 0));
+
   list.forEach(item => {
     if (map[item.date] != null) {
       map[item.date] += Number(item.qty) || 0;
     }
   });
+
   return labels.map(l => map[l]);
 }
 
@@ -1182,16 +1168,17 @@ function destroyDashboardCharts() {
 
 function renderDashboardPage() {
   const stat = getDashboardStats();
+
   const sRaw = document.getElementById("dashRaw");
   const sFin = document.getElementById("dashFinished");
   const sToday = document.getElementById("dashTodayProd");
   const sDef = document.getElementById("dashDefect");
+
   if (sRaw) sRaw.textContent = stat.totalRaw;
   if (sFin) sFin.textContent = stat.totalFinished;
   if (sToday) sToday.textContent = stat.todayProd;
   if (sDef) sDef.textContent = stat.defectRate + "%";
 
-  // 그래프
   destroyDashboardCharts();
 
   const purchases = getPurchase();
@@ -1208,72 +1195,73 @@ function renderDashboardPage() {
   const ctxPr = document.getElementById("chartProduction");
 
   if (ctxP) {
-    dashboardCharts.push(new Chart(ctxP, {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [{ label: "Purchase Qty", data: pData }]
-      }
-    }));
+    dashboardCharts.push(
+      new Chart(ctxP, {
+        type: "bar",
+        data: { labels, datasets: [{ label: "Purchase Qty", data: pData }] }
+      })
+    );
   }
+
   if (ctxO) {
-    dashboardCharts.push(new Chart(ctxO, {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [{ label: "Outgoing Qty", data: oData }]
-      }
-    }));
+    dashboardCharts.push(
+      new Chart(ctxO, {
+        type: "bar",
+        data: { labels, datasets: [{ label: "Outgoing Qty", data: oData }] }
+      })
+    );
   }
+
   if (ctxPr) {
-    dashboardCharts.push(new Chart(ctxPr, {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [{ label: "Production Qty", data: prData }]
-      }
-    }));
+    dashboardCharts.push(
+      new Chart(ctxPr, {
+        type: "bar",
+        data: { labels, datasets: [{ label: "Production Qty", data: prData }] }
+      })
+    );
   }
 }
-
 /*************************************************
- * PAGE TEMPLATES (정상 버전)
+ * PAGE TEMPLATES
  *************************************************/
 const PageTemplates = {
-  dashboard(lang) {
-    const t = i18n[lang].pages;
-    return `
-      <h2>${t.dashboardTitle}</h2>
-      <p>${t.dashboardDesc}</p>
 
+  dashboard(lang) {
+    return `
+      <h2>Dashboard</h2>
       <div class="cards">
         <div class="card">
-          <div class="card-label">Material inventory</div>
-          <div class="card-value" id="dashRaw">0</div>
+          <div class="label">Raw Material</div>
+          <div id="dashRaw" class="value">0</div>
         </div>
+
         <div class="card">
-          <div class="card-label">Inventory of finished products</div>
-          <div class="card-value" id="dashFinished">0</div>
+          <div class="label">Finished Goods</div>
+          <div id="dashFinished" class="value">0</div>
         </div>
+
         <div class="card">
-          <div class="card-label">Today's production</div>
-          <div class="card-value" id="dashTodayProd">0</div>
+          <div class="label">Today Production</div>
+          <div id="dashTodayProd" class="value">0</div>
         </div>
+
         <div class="card">
-          <div class="card-label">Outsourcing defect rate</div>
-          <div class="card-value" id="dashDefect">0%</div>
+          <div class="label">Defect Rate</div>
+          <div id="dashDefect" class="value">0%</div>
         </div>
       </div>
 
       <div class="chart-grid">
         <div>
-          <h3>Receiving the product (7 days)</h3>
+          <h3>Purchase (7 days)</h3>
           <canvas id="chartPurchase"></canvas>
         </div>
+
         <div>
-          <h3>Product shipped (7 days)</h3>
+          <h3>Outgoing (7 days)</h3>
           <canvas id="chartOutgoing"></canvas>
         </div>
+
         <div>
           <h3>Production (7 days)</h3>
           <canvas id="chartProduction"></canvas>
@@ -1282,59 +1270,62 @@ const PageTemplates = {
     `;
   },
 
+  /***********************
+   * STOCK
+   ************************/
   stock(lang) {
-    const t = i18n[lang].pages;
     return `
-      <h2>${t.stockTitle}</h2>
-      <p>${t.stockDesc}</p>
-      <table class="erp-table">
-  <thead>
-    <tr>
-      <th>Code</th>
-      <th>Name</th>
-      <th>Qty</th>
-      <th>Defect</th>   <!-- ★ 추가 -->
-      <th>Min</th>
-      <th>Unit</th>
-      <th>Updated</th>
-      <th>Edit</th>
-    </tr>
-  </thead>
-  <tbody id="stockTableBody"></tbody>
-</table>
+      <h2>Stock</h2>
 
+      <div class="form-row">
+        <input id="sCode" placeholder="Code">
+        <input id="sName" placeholder="Name">
+        <input id="sQty" placeholder="Qty">
+        <input id="sMin" placeholder="Min Qty">
+        <input id="sUnit" placeholder="Unit">
+        <input id="sNote" placeholder="Note">
+        <button class="btn-primary" onclick="saveStockItem()">Save</button>
+      </div>
+
+      <table class="erp-table">
+        <thead>
+          <tr>
+            <th>Code</th><th>Name</th><th>Qty</th>
+            <th>Min</th><th>Unit</th><th>Note</th>
+            <th>Updated</th><th>Edit</th>
+          </tr>
+        </thead>
+
+        <tbody id="stockTableBody"></tbody>
+      </table>
     `;
   },
 
+  /***********************
+   * PURCHASE
+   ************************/
   purchase(lang) {
-    const t = i18n[lang].pages;
-    const suppliers = getSuppliers();
     return `
-      <h2>${t.purchaseTitle}</h2>
-      <p>${t.purchaseDesc}</p>
+      <h2>Purchase</h2>
 
       <div class="form-row">
-        <input id="pCode" placeholder="${t.purchaseFormCodePlaceholder}">
-        <input id="pName" placeholder="${t.purchaseFormNamePlaceholder}">
-        <input id="pQty" type="number" placeholder="${t.purchaseFormQtyPlaceholder}">
-        <input id="pPrice" type="number" placeholder="Unit Price">
-        <select id="pCurrency">
-          <option value="USD">USD</option>
-          <option value="IDR">IDR</option>
-          <option value="KRW">KRW</option>
-        </select>
-        <select id="pSupplier">
-          ${suppliers.map(s => `<option value="${s.name}">${s.name}</option>`).join("")}
-        </select>
-        <button onclick="onPurchase()" class="btn-primary">입고 등록</button>
-        <button onclick="downloadPurchaseCSV()" class="btn-secondary">Excel 다운로드</button>
+        <input id="pCode" placeholder="Material Code">
+        <input id="pName" placeholder="Material Name">
+        <input id="pQty" placeholder="Qty">
+        <input id="pPrice" placeholder="Unit Price">
+        <input id="pCurrency" placeholder="Currency">
+        <input id="pSupplier" placeholder="Supplier">
+        <button class="btn-primary" onclick="onPurchase()">Register</button>
       </div>
 
-      <table class="erp-table" style="margin-top:20px;">
+      <button class="btn-secondary" onclick="downloadPurchaseCSV()">CSV Download</button>
+
+      <table class="erp-table">
         <thead>
           <tr>
             <th>Date</th><th>Supplier</th><th>Code</th><th>Name</th>
-            <th>Qty</th><th>Price</th><th>Cur</th><th>Updated</th><th>Edit</th>
+            <th>Qty</th><th>Unit Price</th><th>Currency</th>
+            <th>Updated</th><th>Edit</th>
           </tr>
         </thead>
         <tbody id="purchaseTableBody"></tbody>
@@ -1342,122 +1333,124 @@ const PageTemplates = {
     `;
   },
 
+  /***********************
+   * OUTGOING
+   ************************/
   outgoing(lang) {
-    const t = i18n[lang].pages;
     return `
-      <h2>${t.outgoingTitle}</h2>
-      <p>${t.outgoingDesc}</p>
+      <h2>Outgoing</h2>
 
       <div class="form-row">
-        <input id="oCode" placeholder="Code">
-        <input id="oName" placeholder="Name">
-        <input id="oQty" type="number" placeholder="Qty">
-        <button onclick="onOutgoing()" class="btn-secondary">출고</button>
-        <button onclick="downloadOutgoingCSV()" class="btn-secondary">Excel 다운로드</button>
+        <input id="oCode" placeholder="Material Code">
+        <input id="oName" placeholder="Material Name">
+        <input id="oQty" placeholder="Qty">
+        <button class="btn-primary" onclick="onOutgoing()">Register</button>
       </div>
 
-      <table class="erp-table" style="margin-top:20px;">
+      <button class="btn-secondary" onclick="downloadOutgoingCSV()">CSV Download</button>
+
+      <table class="erp-table">
         <thead>
-          <tr><th>Date</th><th>Code</th><th>Name</th><th>Qty</th><th>Updated</th></tr>
+          <tr>
+            <th>Date</th><th>Code</th><th>Name</th>
+            <th>Qty</th><th>Updated</th>
+          </tr>
         </thead>
         <tbody id="outgoingTableBody"></tbody>
       </table>
     `;
   },
 
+  /***********************
+   * PRODUCTION
+   ************************/
   production(lang) {
-    const t = i18n[lang].pages;
     return `
-      <h2>${t.productionTitle}</h2>
-      <p>${t.productionDesc}</p>
+      <h2>Production</h2>
 
       <div class="form-row">
-        <input id="prodProduct" placeholder="Product (완제품 코드)">
-        <input id="prodQty" type="number" placeholder="Qty">
-        <button onclick="onProduction()" class="btn-primary">생산 등록</button>
-        <button onclick="downloadProductionCSV()" class="btn-secondary">Excel 다운로드</button>
+        <input id="prodProduct" placeholder="Product Code">
+        <input id="prodQty" placeholder="Qty">
+        <button class="btn-primary" onclick="onProduction()">Register</button>
       </div>
 
-      <table class="erp-table" style="margin-top:20px;">
+      <table class="erp-table">
         <thead>
-          <tr><th>Date</th><th>Product</th><th>Qty</th><th>Updated</th><th>Edit</th></tr>
+          <tr>
+            <th>Date</th><th>Product</th><th>Qty</th>
+            <th>Updated</th><th>Edit</th>
+          </tr>
         </thead>
         <tbody id="prodTableBody"></tbody>
       </table>
     `;
   },
 
+  /***********************
+   * BOM
+   ************************/
   bom(lang) {
-    const t = i18n[lang].pages;
     return `
-      <h2>${t.bomTitle}</h2>
-      <p>${t.bomDesc}</p>
+      <h2>BOM</h2>
 
       <div class="form-row">
-        <input id="bomProduct" placeholder="Product">
+        <input id="bomProduct" placeholder="Product Code">
         <input id="bomMatCode" placeholder="Material Code">
         <input id="bomMatName" placeholder="Material Name">
-        <input id="bomQty" type="number" placeholder="Qty per 1 product">
-        <button onclick="saveBOMItem()" class="btn-primary">BOM 저장</button>
+        <input id="bomQty" placeholder="Qty per 1 product">
+        <button class="btn-primary" onclick="saveBOMItem()">Add BOM</button>
       </div>
 
-      <table class="erp-table" style="margin-top:20px;">
+      <table class="erp-table">
         <thead>
-          <tr><th>Product</th><th>MatCode</th><th>MatName</th><th>Qty</th><th>Updated</th></tr>
+          <tr>
+            <th>Product</th><th>Material Code</th>
+            <th>Material Name</th><th>Qty</th><th>Updated</th>
+          </tr>
         </thead>
         <tbody id="bomTableBody"></tbody>
       </table>
     `;
   },
 
-    outsourcing(lang) {
-    const t = i18n[lang].pages;
+  /***********************
+   * OUTSOURCING
+   ************************/
+  outsourcing(lang) {
     const vendors = getVendors();
     return `
-      <h2>${t.outsourcingTitle}</h2>
-      <p>${t.outsourcingDesc}</p>
+      <h2>Outsourcing</h2>
 
+      <h3>OUT → 외주 출고</h3>
       <div class="form-row">
-        <h3>${t.outsourcingOutTitle}</h3>
-        <input id="outOutCode" placeholder="Out Code">
-        <input id="outOutName" placeholder="Out Name">
-        <input id="outOutQty" type="number" placeholder="Qty Out">
-
-        <h3>${t.outsourcingInTitle}</h3>
-        <input id="outInCode" placeholder="In Code">
-        <input id="outInName" placeholder="In Name">
-        <input id="outInQty" type="number" placeholder="Qty In">
-
-        <h3>${t.outsourcingDefectTitle}</h3>
-        <input id="outDefectQty" type="number" placeholder="${t.outsourcingDefectTitle}">
-
-        <h3>${t.outsourcingVendorTitle}</h3>
-        <select id="outVendor">
-          ${vendors.map(v => `<option value="${v}">${v}</option>`).join("")}
-        </select>
-
-        <h3>${t.outsourcingNoteTitle}</h3>
-        <input id="outNote" placeholder="${t.outsourcingNoteTitle}">
-
-        <button onclick="onOutsourcing()" class="btn-primary" style="margin-top:10px;">
-          ${t.outsourcingRegisterBtn}
-        </button>
+        <input id="outOutCode" placeholder="OUT Code">
+        <input id="outOutName" placeholder="OUT Name">
+        <input id="outOutQty" placeholder="OUT Qty">
       </div>
 
-      <table class="erp-table" style="margin-top:20px;">
+      <h3>IN → 외주 입고</h3>
+      <div class="form-row">
+        <input id="outInCode" placeholder="IN Code">
+        <input id="outInName" placeholder="IN Name">
+        <input id="outInQty" placeholder="IN Qty">
+      </div>
+
+      <div class="form-row">
+        <input id="outDefectQty" placeholder="Defect Qty">
+        <select id="outVendor">
+          ${vendors.map(v => `<option>${v}</option>`).join("")}
+        </select>
+        <input id="outNote" placeholder="Note">
+        <button class="btn-primary" onclick="onOutsourcing()">Register</button>
+      </div>
+
+      <table class="erp-table">
         <thead>
           <tr>
-            <th>${t.outsourcingTableDate}</th>
-            <th>OutCode</th>
-            <th>OutName</th>
-            <th>QtyOut</th>
-            <th>InCode</th>
-            <th>InName</th>
-            <th>QtyIn</th>
-            <th>${t.outsourcingDefectTitle}</th>
-            <th>${t.outsourcingVendorTitle}</th>
-            <th>${t.outsourcingNoteTitle}</th>
-            <th>${t.outsourcingTableUpdated}</th>
+            <th>Date</th>
+            <th>OUT Code</th><th>OUT Name</th><th>OUT Qty</th>
+            <th>IN Code</th><th>IN Name</th><th>IN Qty</th>
+            <th>Defect</th><th>Vendor</th><th>Note</th><th>Updated</th>
           </tr>
         </thead>
         <tbody id="outsourcingTableBody"></tbody>
@@ -1465,180 +1458,150 @@ const PageTemplates = {
     `;
   },
 
-
+  /***********************
+   * FINISHED
+   ************************/
   finished(lang) {
-    const t = i18n[lang].pages;
     return `
-      <h2>${t.finishedTitle}</h2>
-      <p>${t.finishedDesc}</p>
+      <h2>Finished Goods</h2>
 
       <table class="erp-table">
         <thead>
-          <tr><th>Code</th><th>Name</th><th>Qty</th><th>Edit</th></tr>
+          <tr>
+            <th>Code</th><th>Name</th><th>Qty</th><th>Edit</th>
+          </tr>
         </thead>
         <tbody id="fgTableBody"></tbody>
       </table>
     `;
   },
 
+  /***********************
+   * SUPPLIERS
+   ************************/
   suppliers(lang) {
-    const t = i18n[lang].pages;
     return `
-      <h2>${t.suppliersTitle}</h2>
-      <p>${t.suppliersDesc}</p>
+      <h2>Suppliers</h2>
 
-      <div class="form-row" style="flex-wrap: wrap; gap: 10px;">
-        <input id="newSupplier" placeholder="Supplier Name" style="min-width:130px;">
-        <input id="supplierVendorName" placeholder="Vendor Name" style="min-width:130px;">
-        <input id="supplierContact" placeholder="Contact Person" style="min-width:130px;">
-        <input id="supplierEmail" placeholder="Email" style="min-width:160px;">
-        <input id="supplierAddress" placeholder="Address" style="min-width:180px;">
-        <input id="supplierPhone" placeholder="Phone" style="min-width:120px;">
-        <input id="supplierBankName" placeholder="Bank Name" style="min-width:120px;">
-        <input id="supplierBankAccount" placeholder="Account Number" style="min-width:140px;">
-        <input id="supplierBankHolder" placeholder="Account Holder" style="min-width:140px;">
-        <button onclick="addSupplier()" class="btn-primary">추가</button>
+      <div class="form-row">
+        <input id="supName" placeholder="Supplier Name">
+        <button class="btn-primary" onclick="addSupplier()">Add</button>
       </div>
 
-      <table class="erp-table" style="margin-top:20px;">
+      <table class="erp-table">
         <thead>
-          <tr>
-            <th>Supplier</th>
-            <th>Vendor</th>
-            <th>Contact</th>
-            <th>Email</th>
-            <th>Address</th>
-            <th>Phone</th>
-            <th>Bank Info</th>
-            <th>Total Qty</th>
-            <th>Total Amount</th>
-            <th>Action</th>
-          </tr>
+          <tr><th>Supplier</th><th>Action</th></tr>
         </thead>
-        <tbody id="supplierTableBody"></tbody>
+        <tbody id="supTableBody"></tbody>
       </table>
     `;
   },
 
-  employees(lang) {
-    const t = i18n[lang].pages;
-    return `
-      <h2>${t.employeesTitle}</h2>
-      <p>${t.employeesDesc}</p>
-      <p>※ HR 모듈은 나중에 확장 예정입니다.</p>
-    `;
-  },
-
-  attendance(lang) {
-    const t = i18n[lang].pages;
-    return `
-      <h2>${t.attendanceTitle}</h2>
-      <p>${t.attendanceDesc}</p>
-      <p>※ 근태 기능은 추후 확장 예정.</p>
-    `;
-  },
-
-  payroll(lang) {
-    const t = i18n[lang].pages;
-    return `
-      <h2>${t.payrollTitle}</h2>
-      <p>${t.payrollDesc}</p>
-      <p>※ 급여 기능은 추후 HR 모듈과 연동 예정.</p>
-    `;
-  },
-
+  /***********************
+   * LOGS
+   ************************/
   logs(lang) {
-    const t = i18n[lang].pages;
     return `
-      <h2>${t.logsTitle}</h2>
-      <p>${t.logsDesc}</p>
-
+      <h2>Logs</h2>
       <table class="erp-table">
         <thead>
-          <tr><th>Time</th><th>Action</th><th>Detail</th></tr>
+          <tr><th>Time</th><th>Type</th><th>Detail</th></tr>
         </thead>
         <tbody id="logsTableBody"></tbody>
       </table>
     `;
   },
 
-settings(lang) {
-  const t = i18n[lang].pages;
-  return `
-    <h2>${t.settingsTitle}</h2>
-    <p>${t.settingsDesc}</p>
+  /***********************
+   * SETTINGS
+   ************************/
+  settings(lang) {
+    return `
+      <h2>Settings</h2>
 
-    <div class="settings-section">
-      <h3>백업 & 복원</h3>
-      <p>현재 ERP 데이터를 JSON 파일로 백업하거나 복원할 수 있습니다.</p>
+      <div class="settings-section">
+        <h3>백업 & 복원</h3>
+        <button class="btn-primary" onclick="backupToFile()">백업 다운로드</button>
 
-      <div class="settings-btn-row">
-        <button onclick="backupToFile()" class="btn-primary">
-          백업 다운로드
-        </button>
-
-        <label for="restoreFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
-          백업 파일 불러오기
+        <label class="btn-secondary" style="padding:8px; cursor:pointer;">
+          복원 파일 선택
+          <input type="file" accept="application/json"
+                style="display:none;" onchange="restoreFromFile(event)">
         </label>
-        <input id="restoreFile" type="file" accept="application/json"
-              style="display:none;" onchange="restoreFromFile(event)">
       </div>
-    </div>
 
-    <div class="settings-section">
-      <h3>Excel 업로드</h3>
-      <p>엑셀(.xlsx, .xlsm) 파일을 불러와 Stock / Purchase / Production / BOM 데이터를 변환할 수 있습니다.</p>
+      <div class="settings-section">
+        <h3>Excel 업로드</h3>
+        <p>Excel 파일을 불러와 데이터로 변환할 수 있습니다.</p>
 
-      <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
-        Excel 파일 선택
-      </label>
-      <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
-            style="display:none;" onchange="handleExcelUpload(event)">
-    </div>
-  `;
-},
-
-
-
-
+        <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
+          Excel 파일 선택
+        </label>
+        <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
+               style="display:none;" onchange="handleExcelUpload(event)">
+      </div>
+    `;
+  }
+};
 /*************************************************
- * RENDERING
+ * EXCEL IMPORT (XLSX)
+ *************************************************/
+function handleExcelUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: "array" });
+
+    const sheetNames = workbook.SheetNames;
+    alert("불러온 시트: " + sheetNames.join(", "));
+
+    // 예: STOCK 시트를 읽어서 적용 가능
+    if (workbook.Sheets["STOCK"]) {
+      const json = XLSX.utils.sheet_to_json(workbook.Sheets["STOCK"]);
+      alert("STOCK 변환 완료: " + json.length + "개 항목");
+    }
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+/*************************************************
+ * RENDERING ENGINE
  *************************************************/
 function renderContent() {
   const lang = state.lang;
   const page = state.page || "dashboard";
+
   const contentEl = document.getElementById("content");
   const tmpl = PageTemplates[page] || PageTemplates.dashboard;
+
   contentEl.innerHTML = tmpl(lang);
 
-  // 페이지별 후처리
-  if (page === "stock") renderStockPage();
+  if (page === "stock") renderStockTable();
   else if (page === "purchase") renderPurchasePage();
   else if (page === "outgoing") renderOutgoingPage();
   else if (page === "production") renderProductionPage();
   else if (page === "bom") renderBOMPage();
   else if (page === "outsourcing") renderOutsourcingPage();
   else if (page === "finished") renderFGPage();
-  else if (page === "logs") renderLogsPage();
   else if (page === "suppliers") renderSupplierPage();
+  else if (page === "logs") renderLogsPage();
   else if (page === "dashboard") renderDashboardPage();
 }
 
 function renderSidebar() {
-  const lang = state.lang;
-  const t = i18n[lang].sidebar;
   const items = document.querySelectorAll(".sidebar li");
-  items.forEach((li, idx) => {
-    const pageId = MENU_ORDER[idx];
-    li.dataset.page = pageId;
-    li.textContent = t[pageId];
-    li.classList.toggle("active", pageId === state.page);
+  items.forEach((li) => {
+    const pageId = li.dataset.page;
+    li.classList.toggle("active", state.page === pageId);
   });
 }
 
 function renderHeader() {
   const logoEl = document.querySelector(".logo");
-  if (logoEl) logoEl.textContent = i18n[state.lang].appTitle;
+  if (logoEl) logoEl.textContent = i18n[state.lang].appTitle || "HTORI ERP";
 }
 
 function rerenderAll() {
@@ -1646,9 +1609,8 @@ function rerenderAll() {
   renderSidebar();
   renderContent();
 }
-
 /*************************************************
- * NAV / LANGUAGE
+ * NAVIGATION / LANGUAGE
  *************************************************/
 function setLanguage(lang) {
   if (!LANGS.includes(lang)) return;
@@ -1658,39 +1620,45 @@ function setLanguage(lang) {
 }
 
 function loadPage(pageId) {
-  if (!PageTemplates[pageId]) pageId = "dashboard";
   state.page = pageId;
   localStorage.setItem("htori_page", pageId);
   rerenderAll();
+
+  // 모바일: 메뉴 자동 닫기
+  closeSidebar();
 }
 
 /*************************************************
- * INITIAL
+ * MOBILE SIDEBAR TOGGLE & CLOSE OUTSIDE
  *************************************************/
-document.addEventListener("DOMContentLoaded", rerenderAll);
+function toggleSidebar() {
+  document.querySelector(".sidebar").classList.toggle("active");
+}
+function closeSidebar() {
+  document.querySelector(".sidebar").classList.remove("active");
+}
+window.toggleSidebar = toggleSidebar;
 
-window.setLanguage = setLanguage;
-window.loadPage = loadPage;
+/* 화면 밖 클릭 시 사이드바 닫기 */
+document.addEventListener("click", (e) => {
+  const sidebar = document.querySelector(".sidebar");
 
-// 전역 함수 노출
-window.onPurchase = onPurchase;
-window.onOutgoing = onOutgoing;
-window.onProduction = onProduction;
-window.onOutsourcing = onOutsourcing;
-window.saveBOMItem = saveBOMItem;
-window.editStockQty = editStockQty;
-window.editPurchase = editPurchase;
-window.editProduction = editProduction;
-window.downloadPurchaseCSV = downloadPurchaseCSV;
-window.downloadOutgoingCSV = downloadOutgoingCSV;
-window.downloadProductionCSV = downloadProductionCSV;
-window.addSupplier = addSupplier;
-window.deleteSupplier = deleteSupplier;
+  if (!sidebar.contains(e.target) &&
+      !e.target.classList.contains("mobile-menu-btn")) {
+    sidebar.classList.remove("active");
+  }
+});
 /*************************************************
- *  BACKUP & RESTORE (LOCAL STORAGE)
+ * INITIALIZE
+ *************************************************/
+document.addEventListener("DOMContentLoaded", () => {
+  rerenderAll();
+});
+/*************************************************
+ * BACKUP & RESTORE (LOCAL STORAGE)
  *************************************************/
 
-// 전체 localStorage 저장 → JSON 파일 다운로드
+// 전체 localStorage 저장 → JSON 파일로 백업
 function backupToFile() {
   const data = JSON.stringify(localStorage, null, 2);
   const blob = new Blob([data], { type: "application/json" });
@@ -1699,6 +1667,8 @@ function backupToFile() {
   link.href = URL.createObjectURL(blob);
   link.download = "HTORI_backup.json";
   link.click();
+
+  URL.revokeObjectURL(link.href);
 }
 
 // JSON 파일 → localStorage 로 복원
@@ -1707,8 +1677,7 @@ function restoreFromFile(event) {
   if (!file) return;
 
   const reader = new FileReader();
-
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     try {
       const json = JSON.parse(e.target.result);
 
@@ -1721,22 +1690,41 @@ function restoreFromFile(event) {
       alert("복원 완료! 페이지가 새로고침됩니다.");
       location.reload();
     } catch (err) {
+      console.error(err);
       alert("JSON 파일이 잘못되었습니다.");
     }
   };
 
   reader.readAsText(file);
 }
-// ============================
-// 전역(Global) 바인딩
-// ============================
 
+/*************************************************
+ * EXCEL UPLOAD 핸들러 (Stub)
+ * - 지금은 '파일 선택됨' 알림만 띄우고
+ *   나중에 실제 importExcel 로 연결할 수 있음
+ *************************************************/
+function handleExcelUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // 여기서 importExcel(event) 를 바로 호출해도 됨
+  // ex) importExcel(event);
+  alert("엑셀 파일이 선택되었습니다. (다음 단계에서 실제 매핑 기능 추가 가능)");
+}
+
+window.handleExcelUpload = handleExcelUpload;
+
+/*************************************************
+ * NAVIGATION / LANGUAGE (전역 노출)
+ *************************************************/
+
+// 언어 변경 버튼에서 사용
 window.setLanguage = setLanguage;
+
+// 사이드바 메뉴에서 사용
 window.loadPage = loadPage;
 
-window.backupToFile = backupToFile;
-window.restoreFromFile = restoreFromFile;
-
+// 각 페이지의 onclick에 사용되는 함수들
 window.onPurchase = onPurchase;
 window.onOutgoing = onOutgoing;
 window.onProduction = onProduction;
@@ -1754,168 +1742,43 @@ window.downloadProductionCSV = downloadProductionCSV;
 window.addSupplier = addSupplier;
 window.deleteSupplier = deleteSupplier;
 
-function toggleSidebar() {
-    const bar = document.querySelector('.sidebar');
-    bar.classList.toggle('active');
-}
+window.backupToFile = backupToFile;
+window.restoreFromFile = restoreFromFile;
 
-window.toggleSidebar = toggleSidebar;
-function toggleSidebar() {
-    const bar = document.querySelector('.sidebar');
-    bar.classList.toggle('active');
-}
+// 햄버거 버튼
 window.toggleSidebar = toggleSidebar;
 
 /*************************************************
- * EXCEL IMPORT (SheetJS)
+ * SIDEBAR 클릭 이벤트 바인딩
  *************************************************/
-
-async function importExcel(event) {
-  const file = event.target.files[0];
-  if (!file) return alert("파일이 없습니다.");
-
-  const data = await file.arrayBuffer();
-  const workbook = XLSX.read(data);
-
-  let sheetNames = workbook.SheetNames;
-
-  // 시트명을 소문자로 비교하여 자동 인식
-  const stockSheet = sheetNames.find(s => s.toLowerCase().includes("stock"));
-  const purchaseSheet = sheetNames.find(s => s.toLowerCase().includes("purchase"));
-  const productionSheet = sheetNames.find(s => s.toLowerCase().includes("production"));
-  const bomSheet = sheetNames.find(s => s.toLowerCase().includes("bom"));
-
-  if (stockSheet) {
-    const json = XLSX.utils.sheet_to_json(workbook.Sheets[stockSheet]);
-    loadStockFromExcel(json);
-  }
-  if (purchaseSheet) {
-    const json = XLSX.utils.sheet_to_json(workbook.Sheets[purchaseSheet]);
-    loadPurchaseFromExcel(json);
-  }
-  if (productionSheet) {
-    const json = XLSX.utils.sheet_to_json(workbook.Sheets[productionSheet]);
-    loadProductionFromExcel(json);
-  }
-  if (bomSheet) {
-    const json = XLSX.utils.sheet_to_json(workbook.Sheets[bomSheet]);
-    loadBOMFromExcel(json);
-  }
-
-  alert("엑셀 데이터 가져오기 완료!");
-  rerenderAll();
-}
-
-
-/*************************************************
- * STOCK LOAD
- * 컬럼 기준:
- * Code / Name / Qty / Min / Unit / Note
- *************************************************/
-function loadStockFromExcel(rows) {
-  const stock = [];
-
-  rows.forEach(r => {
-    if (!r.Code) return;
-    stock.push({
-      code: String(r.Code).trim(),
-      name: r.Name || "",
-      qty: Number(r.Qty || 0),
-      minQty: Number(r.Min || 0),
-      unit: r.Unit || "SET",
-      note: r.Note || "",
-      lastUpdate: new Date().toLocaleString(),
+document.addEventListener("DOMContentLoaded", () => {
+  // 사이드바 메뉴 클릭하면 loadPage 호출
+  const menuItems = document.querySelectorAll(".sidebar li");
+  menuItems.forEach((li) => {
+    li.addEventListener("click", () => {
+      const page = li.getAttribute("data-page");
+      if (page) {
+        loadPage(page);
+      }
     });
   });
-
-  localStorage.setItem("stock", JSON.stringify(stock));
-}
-
+});
 
 /*************************************************
- * PURCHASE LOAD
- * 컬럼:
- * Date / Supplier / Code / Name / Qty / Price / Currency / Note
+ * 화면 밖 클릭 시 모바일 사이드바 닫기
  *************************************************/
-function loadPurchaseFromExcel(rows) {
-  const list = [];
+document.addEventListener("click", (e) => {
+  const sidebar = document.querySelector(".sidebar");
+  const menuBtn = document.querySelector(".mobile-menu-btn");
 
-  rows.forEach(r => {
-    if (!r.Code) return;
-    list.push({
-      date: r.Date || new Date().toLocaleDateString(),
-      supplier: r.Supplier || "",
-      code: r.Code,
-      name: r.Name || "",
-      qty: Number(r.Qty || 0),
-      price: Number(r.Price || 0),
-      currency: r.Currency || "USD",
-      note: r.Note || "",
-      updated: new Date().toLocaleString(),
-    });
-  });
+  if (!sidebar) return;
 
-  localStorage.setItem("purchase", JSON.stringify(list));
-}
+  // 사이드바 자체를 클릭한 경우는 무시
+  if (sidebar.contains(e.target)) return;
 
+  // 햄버거 버튼을 클릭한 경우도 무시
+  if (menuBtn && menuBtn.contains(e.target)) return;
 
-/*************************************************
- * PRODUCTION LOAD
- * 컬럼:
- * Date / Product / Qty / Defect / Note
- *************************************************/
-function loadProductionFromExcel(rows) {
-  const list = [];
-
-  rows.forEach(r => {
-    if (!r.Product) return;
-    list.push({
-      date: r.Date || new Date().toLocaleDateString(),
-      product: r.Product,
-      qty: Number(r.Qty || 0),
-      defect: Number(r.Defect || 0),
-      note: r.Note || "",
-      updated: new Date().toLocaleString(),
-    });
-  });
-
-  localStorage.setItem("production", JSON.stringify(list));
-}
-
-
-/*************************************************
- * BOM LOAD
- * 컬럼:
- * Product / MatCode / MatName / Qty / Note
- *************************************************/
-function loadBOMFromExcel(rows) {
-  const bom = [];
-
-  rows.forEach(r => {
-    if (!r.Product || !r.MatCode) return;
-
-    bom.push({
-      product: r.Product,
-      matCode: r.MatCode,
-      matName: r.MatName || "",
-      qty: Number(r.Qty || 0),
-      note: r.Note || "",
-      updated: new Date().toLocaleString(),
-    });
-  });
-
-  localStorage.setItem("bom", JSON.stringify(bom));
-}
-
-
-// 전역 연결
-window.importExcel = importExcel;
-
-function handleExcelUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    alert("엑셀 파일 업로드 준비됨 (다음 단계에서 데이터 매핑 기능 추가 가능)");
-}
-window.handleExcelUpload = handleExcelUpload;
-
+  // 그 외 바깥 영역 클릭 시 닫기
+  sidebar.classList.remove("active");
+});
