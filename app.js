@@ -1751,4 +1751,9 @@ function toggleSidebar() {
 }
 
 window.toggleSidebar = toggleSidebar;
+function toggleSidebar() {
+    const bar = document.querySelector('.sidebar');
+    bar.classList.toggle('active');
+}
+window.toggleSidebar = toggleSidebar;
 
