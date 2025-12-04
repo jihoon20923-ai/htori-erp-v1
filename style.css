@@ -327,9 +327,13 @@ button,
 }
 /* CONTENT 영역 전체 폭 사용 */
 #content {
-    width: calc(100% - 230px) !important;
-    max-width: none !important;
+    margin-left: 230px;
+    margin-top: 70px;
+    padding: 20px;
+    width: auto !important; 
+    max-width: 100% !important;
 }
+
 
 /* Settings, Stock, Purchase 등 내부 div를 꽉 차게 */
 .content {
