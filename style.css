@@ -64,7 +64,9 @@ body {
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 1000; /* 수정: 2000 → 1000 */
 }
+
 
 .sidebar h2 {
     text-align: center;
@@ -252,9 +254,10 @@ button,
 
     /* 헤더 위치 조정 */
     .header {
-        left: 0 !important;
-        width: 100% !important;
-    }
+    z-index: 2001; /* 헤더를 최상위로 */
+}
+
+
 
     /* 콘텐츠는 헤더 높이만큼 아래로 */
     #content {
@@ -269,3 +272,21 @@ button,
         left: 0;
     }
 }
+/* 모바일에서 메뉴 버튼 보이게 */
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: inline-block !important;
+        z-index: 3000; /* 사이드바보다 위 */
+        position: relative;
+    }
+
+    /* 사이드바 숨기기 */
+    .sidebar {
+        left: -230px;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+}
+
