@@ -324,4 +324,22 @@ button,
     background: #dadada;
     margin: 30px 0;
 }
+html, body {
+  overflow-x: hidden !important;
+}
+
+#content {
+  max-width: 100vw !important;
+  overflow-x: auto;
+}
+
+.erp-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.erp-table th,
+.erp-table td {
+  word-break: break-word;
+}
 
