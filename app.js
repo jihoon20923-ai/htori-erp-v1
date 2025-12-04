@@ -1596,7 +1596,7 @@ settings(lang) {
             style="display:none;" onchange="handleExcelUpload(event)">
     </div>
   `;
-}
+},
 
 
 
