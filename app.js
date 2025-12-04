@@ -1594,7 +1594,9 @@ settings(lang) {
     <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
            style="display:none;" onchange="handleExcelUpload(event)">
   `;
-},
+},  
+
+};   
 
 
 
