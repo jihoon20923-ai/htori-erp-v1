@@ -1562,7 +1562,7 @@ const PageTemplates = {
     `;
   },
 
- settings(lang) {
+settings(lang) {
   const t = i18n[lang].pages;
   return `
     <h2>${t.settingsTitle}</h2>
@@ -1586,7 +1586,7 @@ const PageTemplates = {
 
     <h3>Excel 업로드</h3>
 
-    <p>엑셀(.xlsx, .xlsm) 파일을 불러와 Stock / Purchase / Production / BOM에 적용할 수 있습니다.</p>
+    <p>엑셀(.xlsx, .xlsm) 파일을 불러와 Stock / Purchase / Production / BOM 데이터로 변환할 수 있습니다.</p>
 
     <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
       Excel 파일 선택
@@ -1595,6 +1595,7 @@ const PageTemplates = {
            style="display:none;" onchange="handleExcelUpload(event)">
   `;
 },
+
 
 
 /*************************************************
