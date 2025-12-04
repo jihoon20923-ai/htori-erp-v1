@@ -1757,3 +1757,147 @@ function toggleSidebar() {
 }
 window.toggleSidebar = toggleSidebar;
 
+/*************************************************
+ * EXCEL IMPORT (SheetJS)
+ *************************************************/
+
+async function importExcel(event) {
+  const file = event.target.files[0];
+  if (!file) return alert("파일이 없습니다.");
+
+  const data = await file.arrayBuffer();
+  const workbook = XLSX.read(data);
+
+  let sheetNames = workbook.SheetNames;
+
+  // 시트명을 소문자로 비교하여 자동 인식
+  const stockSheet = sheetNames.find(s => s.toLowerCase().includes("stock"));
+  const purchaseSheet = sheetNames.find(s => s.toLowerCase().includes("purchase"));
+  const productionSheet = sheetNames.find(s => s.toLowerCase().includes("production"));
+  const bomSheet = sheetNames.find(s => s.toLowerCase().includes("bom"));
+
+  if (stockSheet) {
+    const json = XLSX.utils.sheet_to_json(workbook.Sheets[stockSheet]);
+    loadStockFromExcel(json);
+  }
+  if (purchaseSheet) {
+    const json = XLSX.utils.sheet_to_json(workbook.Sheets[purchaseSheet]);
+    loadPurchaseFromExcel(json);
+  }
+  if (productionSheet) {
+    const json = XLSX.utils.sheet_to_json(workbook.Sheets[productionSheet]);
+    loadProductionFromExcel(json);
+  }
+  if (bomSheet) {
+    const json = XLSX.utils.sheet_to_json(workbook.Sheets[bomSheet]);
+    loadBOMFromExcel(json);
+  }
+
+  alert("엑셀 데이터 가져오기 완료!");
+  rerenderAll();
+}
+
+
+/*************************************************
+ * STOCK LOAD
+ * 컬럼 기준:
+ * Code / Name / Qty / Min / Unit / Note
+ *************************************************/
+function loadStockFromExcel(rows) {
+  const stock = [];
+
+  rows.forEach(r => {
+    if (!r.Code) return;
+    stock.push({
+      code: String(r.Code).trim(),
+      name: r.Name || "",
+      qty: Number(r.Qty || 0),
+      minQty: Number(r.Min || 0),
+      unit: r.Unit || "SET",
+      note: r.Note || "",
+      lastUpdate: new Date().toLocaleString(),
+    });
+  });
+
+  localStorage.setItem("stock", JSON.stringify(stock));
+}
+
+
+/*************************************************
+ * PURCHASE LOAD
+ * 컬럼:
+ * Date / Supplier / Code / Name / Qty / Price / Currency / Note
+ *************************************************/
+function loadPurchaseFromExcel(rows) {
+  const list = [];
+
+  rows.forEach(r => {
+    if (!r.Code) return;
+    list.push({
+      date: r.Date || new Date().toLocaleDateString(),
+      supplier: r.Supplier || "",
+      code: r.Code,
+      name: r.Name || "",
+      qty: Number(r.Qty || 0),
+      price: Number(r.Price || 0),
+      currency: r.Currency || "USD",
+      note: r.Note || "",
+      updated: new Date().toLocaleString(),
+    });
+  });
+
+  localStorage.setItem("purchase", JSON.stringify(list));
+}
+
+
+/*************************************************
+ * PRODUCTION LOAD
+ * 컬럼:
+ * Date / Product / Qty / Defect / Note
+ *************************************************/
+function loadProductionFromExcel(rows) {
+  const list = [];
+
+  rows.forEach(r => {
+    if (!r.Product) return;
+    list.push({
+      date: r.Date || new Date().toLocaleDateString(),
+      product: r.Product,
+      qty: Number(r.Qty || 0),
+      defect: Number(r.Defect || 0),
+      note: r.Note || "",
+      updated: new Date().toLocaleString(),
+    });
+  });
+
+  localStorage.setItem("production", JSON.stringify(list));
+}
+
+
+/*************************************************
+ * BOM LOAD
+ * 컬럼:
+ * Product / MatCode / MatName / Qty / Note
+ *************************************************/
+function loadBOMFromExcel(rows) {
+  const bom = [];
+
+  rows.forEach(r => {
+    if (!r.Product || !r.MatCode) return;
+
+    bom.push({
+      product: r.Product,
+      matCode: r.MatCode,
+      matName: r.MatName || "",
+      qty: Number(r.Qty || 0),
+      note: r.Note || "",
+      updated: new Date().toLocaleString(),
+    });
+  });
+
+  localStorage.setItem("bom", JSON.stringify(bom));
+}
+
+
+// 전역 연결
+window.importExcel = importExcel;
