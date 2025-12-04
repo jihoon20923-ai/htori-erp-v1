@@ -20,19 +20,31 @@ body {
    HEADER
    ====================================================== */
 .header {
-    width: 100%;
-    height: 60px;
     background: #1F3C88;
     color: white;
-    padding: 15px 25px;
+    padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: fixed;
-    left: 230px;
     top: 0;
-    z-index: 10;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    z-index: 5000;
 }
+.sidebar {
+    width: 230px;
+    height: 100vh;
+    background: #1A1A1A;
+    color: white;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    z-index: 2000;
+    overflow-y: auto;
+}
+
 
 .header .logo {
     font-size: 20px;
@@ -289,4 +301,29 @@ button,
         left: 0;
     }
 }
+/* 모바일 메뉴 버튼 표시 */
+.mobile-menu-btn {
+    display: none;
+    font-size: 24px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block !important;
+        z-index: 6000;
+    }
+
+    .sidebar {
+        left: -230px;
+        transition: 0.3s;
+    }
+    .sidebar.active {
+        left: 0;
+    }
+}
+
 
