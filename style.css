@@ -362,4 +362,8 @@ button,
       padding: 4px 8px;
   }
 }
+.content {
+    width: 100% !important;
+    max-width: 100% !important;
+}
 
