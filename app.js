@@ -1562,34 +1562,39 @@ const PageTemplates = {
     `;
   },
 
-  settings(lang) {
+ settings(lang) {
   const t = i18n[lang].pages;
   return `
-    <div class="settings-section">
+    <h2>${t.settingsTitle}</h2>
+    <p>${t.settingsDesc}</p>
 
-      <h2>${t.settingsTitle}</h2>
-      <p>${t.settingsDesc}</p>
-      <p>언어 변경은 상단 버튼을 사용하세요.</p>
+    <h3>백업 & 복원</h3>
 
-      <h3>백업 & 복원</h3>
+    <button onclick="backupToFile()" class="btn-primary">
+      백업 다운로드
+    </button>
 
-      <button onclick="backupToFile()" class="btn-primary">
-        백업 다운로드
-      </button>
+    <br><br>
 
-      <br><br>
+    <label for="restoreFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
+      백업 파일 불러오기
+    </label>
+    <input id="restoreFile" type="file" accept="application/json"
+           style="display:none;" onchange="restoreFromFile(event)">
 
-      <label for="restoreFile" class="btn-secondary">
-        백업 파일 불러오기
-      </label>
+    <hr style="margin:20px 0;">
 
-      <input id="restoreFile" type="file" accept="application/json"
-             style="display:none;" onchange="restoreFromFile(event)">
+    <h3>Excel 업로드</h3>
 
-    </div>
+    <p>엑셀(.xlsx, .xlsm) 파일을 불러와 Stock / Purchase / Production / BOM에 적용할 수 있습니다.</p>
+
+    <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
+      Excel 파일 선택
+    </label>
+    <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
+           style="display:none;" onchange="handleExcelUpload(event)">
   `;
 },
-};
 
 
 /*************************************************
@@ -1901,3 +1906,12 @@ function loadBOMFromExcel(rows) {
 
 // 전역 연결
 window.importExcel = importExcel;
+
+function handleExcelUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    alert("엑셀 파일 업로드 준비됨 (다음 단계에서 데이터 매핑 기능 추가 가능)");
+}
+window.handleExcelUpload = handleExcelUpload;
+
