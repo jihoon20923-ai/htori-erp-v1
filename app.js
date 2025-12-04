@@ -1568,35 +1568,36 @@ settings(lang) {
     <h2>${t.settingsTitle}</h2>
     <p>${t.settingsDesc}</p>
 
-    <h3>백업 & 복원</h3>
+    <div class="settings-section">
+      <h3>백업 & 복원</h3>
+      <p>현재 ERP 데이터를 JSON 파일로 백업하거나 복원할 수 있습니다.</p>
 
-    <button onclick="backupToFile()" class="btn-primary">
-      백업 다운로드
-    </button>
+      <div class="settings-btn-row">
+        <button onclick="backupToFile()" class="btn-primary">
+          백업 다운로드
+        </button>
 
-    <br><br>
+        <label for="restoreFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
+          백업 파일 불러오기
+        </label>
+        <input id="restoreFile" type="file" accept="application/json"
+              style="display:none;" onchange="restoreFromFile(event)">
+      </div>
+    </div>
 
-    <label for="restoreFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
-      백업 파일 불러오기
-    </label>
-    <input id="restoreFile" type="file" accept="application/json"
-           style="display:none;" onchange="restoreFromFile(event)">
+    <div class="settings-section">
+      <h3>Excel 업로드</h3>
+      <p>엑셀(.xlsx, .xlsm) 파일을 불러와 Stock / Purchase / Production / BOM 데이터를 변환할 수 있습니다.</p>
 
-    <hr style="margin:20px 0;">
-
-    <h3>Excel 업로드</h3>
-
-    <p>엑셀(.xlsx, .xlsm) 파일을 불러와 Stock / Purchase / Production / BOM 데이터로 변환할 수 있습니다.</p>
-
-    <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
-      Excel 파일 선택
-    </label>
-    <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
-           style="display:none;" onchange="handleExcelUpload(event)">
+      <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
+        Excel 파일 선택
+      </label>
+      <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
+            style="display:none;" onchange="handleExcelUpload(event)">
+    </div>
   `;
-},  
+}
 
-};   
 
 
 
