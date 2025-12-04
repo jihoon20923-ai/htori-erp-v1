@@ -5,12 +5,10 @@
   <title>HTORI ERP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- 스타일 -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
   <!-- SIDEBAR -->
@@ -32,24 +30,32 @@
     <li data-page="settings">Settings</li>
   </ul>
 
-  <!-- MAIN CONTENT 영역 -->
+  <!-- HEADER (언어 버튼 + 모바일 메뉴 버튼) -->
+  <div class="header">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+
+      <div class="logo">HTORI ERP</div>
+
+      <div class="lang-buttons">
+          <button onclick="setLanguage('EN')">EN</button>
+          <button onclick="setLanguage('KR')">KR</button>
+          <button onclick="setLanguage('ID')">ID</button>
+      </div>
+  </div>
+
+  <!-- CONTENT -->
   <div id="content"></div>
 
-  <!-- JS 로딩 -->
   <script src="app.js"></script>
 
   <script>
-    // 사이드바 메뉴 클릭 → 페이지 전환
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll(".sidebar li").forEach(li => {
-        li.addEventListener("click", () => {
-          const page = li.dataset.page;
-          if (page) loadPage(page);
-        });
+    document.querySelectorAll(".sidebar li").forEach(li => {
+      li.addEventListener("click", () => {
+        const page = li.dataset.page;
+        if (page) loadPage(page);
       });
-      // app.js 쪽에서 DOMContentLoaded에 rerenderAll() 이미 연결되어 있음
-      // → 여기서 따로 안 불러도 됨
     });
   </script>
+
 </body>
 </html>
