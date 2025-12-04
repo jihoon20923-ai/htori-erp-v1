@@ -1745,3 +1745,10 @@ window.downloadProductionCSV = downloadProductionCSV;
 window.addSupplier = addSupplier;
 window.deleteSupplier = deleteSupplier;
 
+function toggleSidebar() {
+    const bar = document.querySelector('.sidebar');
+    bar.classList.toggle('active');
+}
+
+window.toggleSidebar = toggleSidebar;
+
