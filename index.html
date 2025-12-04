@@ -57,16 +57,5 @@
          APP SCRIPT
          ============================ -->
     <script src="app.js"></script>
-
-    <script>
-        // 메뉴 클릭 이벤트 (index에서 반드시 필요!)
-        document.addEventListener("click", function (e) {
-            if (e.target.matches(".sidebar li")) {
-                const page = e.target.dataset.page;
-                if (page) loadPage(page);
-            }
-        });
-    </script>
-
 </body>
 </html>
