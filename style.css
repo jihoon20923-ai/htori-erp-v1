@@ -325,5 +325,37 @@ button,
         left: 0;
     }
 }
+/* CONTENT 영역 전체 폭 사용 */
+#content {
+    width: calc(100% - 230px) !important;
+    max-width: none !important;
+}
 
+/* Settings, Stock, Purchase 등 내부 div를 꽉 차게 */
+.content {
+    width: 100% !important;
+}
+
+/* 모바일 최적화: 768px 이하일 때 전체 화면으로 */
+@media (max-width: 768px) {
+  .sidebar {
+      position: absolute;
+      left: -230px; /* 기본은 숨김 */
+      width: 230px;
+      transition: left 0.3s;
+  }
+
+  .sidebar.active {
+      left: 0;  /* 메뉴 버튼 누르면 나타남 */
+  }
+
+  #content {
+      margin-left: 0 !important;
+      width: 100% !important;
+  }
+
+  header .lang-buttons button {
+      padding: 4px 8px;
+  }
+}
 
