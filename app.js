@@ -1714,17 +1714,16 @@ function handleExcelUpload(event) {
 
 window.handleExcelUpload = handleExcelUpload;
 
-/*************************************************
- * NAVIGATION / LANGUAGE (전역 노출)
- *************************************************/
+// ============================
+// 전역(Global) 바인딩
+// ============================
 
-// 언어 변경 버튼에서 사용
 window.setLanguage = setLanguage;
-
-// 사이드바 메뉴에서 사용
 window.loadPage = loadPage;
 
-// 각 페이지의 onclick에 사용되는 함수들
+window.backupToFile = backupToFile;
+window.restoreFromFile = restoreFromFile;
+
 window.onPurchase = onPurchase;
 window.onOutgoing = onOutgoing;
 window.onProduction = onProduction;
@@ -1733,7 +1732,7 @@ window.onOutsourcing = onOutsourcing;
 window.saveBOMItem = saveBOMItem;
 window.editStockQty = editStockQty;
 window.editPurchase = editPurchase;
-window.editProduction = editProduction;
+window.editProduction = editProduction;   // ★ 이게 반드시 있어야 함
 
 window.downloadPurchaseCSV = downloadPurchaseCSV;
 window.downloadOutgoingCSV = downloadOutgoingCSV;
@@ -1742,8 +1741,11 @@ window.downloadProductionCSV = downloadProductionCSV;
 window.addSupplier = addSupplier;
 window.deleteSupplier = deleteSupplier;
 
-window.backupToFile = backupToFile;
-window.restoreFromFile = restoreFromFile;
+window.importExcel = importExcel;
+window.handleExcelUpload = handleExcelUpload;
+
+window.toggleSidebar = toggleSidebar;
+window.closeSidebar = closeSidebar;
 
 // 햄버거 버튼
 window.toggleSidebar = toggleSidebar;
