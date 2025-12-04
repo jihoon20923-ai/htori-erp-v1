@@ -3,7 +3,6 @@ settings(lang) {
   return `
     <h2>${t.settingsTitle}</h2>
     <p>${t.settingsDesc}</p>
-    <p>언어 변경은 상단 버튼을 사용하세요.</p>
 
     <h3>백업 & 복원</h3>
 
@@ -19,14 +18,16 @@ settings(lang) {
     <input id="restoreFile" type="file" accept="application/json"
            style="display:none;" onchange="restoreFromFile(event)">
 
-    <hr style="margin:25px 0;">
+    <hr style="margin:20px 0;">
 
-    <h3>엑셀 업로드 (ERP 데이터 가져오기)</h3>
+    <h3>Excel 업로드</h3>
 
-    <label for="excelFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
-      Excel 파일 불러오기 (.xlsx, .xlsm)
+    <p>엑셀(.xlsx, .xlsm) 파일을 불러와 Stock / Purchase / Production / BOM 데이터로 변환할 수 있습니다.</p>
+
+    <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
+      Excel 파일 선택
     </label>
-    <input id="excelFile" type="file" accept=".xlsx,.xls,.xlsm"
-           style="display:none;" onchange="importExcel(event)">
+    <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
+           style="display:none;" onchange="handleExcelUpload(event)">
   `;
 },
