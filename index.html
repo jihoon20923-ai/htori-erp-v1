@@ -4,65 +4,52 @@
   <meta charset="UTF-8" />
   <title>HTORI ERP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- 스타일 -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
 
-  <!-- HEADER는 항상 최상단 고정 -->
-  <header class="header">
-    <div class="header-title">HTORI ERP</div>
-    <div class="lang-buttons">
-      <button onclick="setLanguage('EN')">EN</button>
-      <button onclick="setLanguage('KR')">KR</button>
-      <button onclick="setLanguage('ID')">ID</button>
-    </div>
-  </header>
+  <!-- SIDEBAR -->
+  <ul class="sidebar">
+    <h2 class="logo">HTORI ERP</h2>
+    <li data-page="dashboard">Dashboard</li>
+    <li data-page="stock">Stock</li>
+    <li data-page="purchase">Purchase</li>
+    <li data-page="outgoing">Outgoing</li>
+    <li data-page="production">Production</li>
+    <li data-page="bom">BOM</li>
+    <li data-page="outsourcing">Outsourcing</li>
+    <li data-page="finished">Finished Goods</li>
+    <li data-page="suppliers">Suppliers</li>
+    <li data-page="employees">Employees</li>
+    <li data-page="attendance">Attendance</li>
+    <li data-page="payroll">Payroll</li>
+    <li data-page="logs">Logs</li>
+    <li data-page="settings">Settings</li>
+  </ul>
 
-  <!-- 전체 레이아웃 WRAPPER -->
-  <div class="app-wrapper">
+  <!-- MAIN CONTENT 영역 -->
+  <div id="content"></div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="sidebar-logo">HTORI ERP</div>
-      <ul class="menu-list">
-        <li data-page="dashboard">Dashboard</li>
-        <li data-page="stock">Stock</li>
-        <li data-page="purchase">Purchase</li>
-        <li data-page="outgoing">Outgoing</li>
-        <li data-page="production">Production</li>
-        <li data-page="bom">BOM</li>
-        <li data-page="outsourcing">Outsourcing</li>
-        <li data-page="finished">Finished Goods</li>
-        <li data-page="suppliers">Suppliers</li>
-        <li data-page="employees">Employees</li>
-        <li data-page="attendance">Attendance</li>
-        <li data-page="payroll">Payroll</li>
-        <li data-page="logs">Logs</li>
-        <li data-page="settings">Settings</li>
-      </ul>
-    </aside>
-
-    <!-- 메인 컨텐츠 -->
-    <main class="main">
-      <div id="content"></div>
-    </main>
-
-  </div>
-
+  <!-- JS 로딩 -->
   <script src="app.js"></script>
 
   <script>
+    // 사이드바 메뉴 클릭 → 페이지 전환
     document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll(".menu-list li").forEach(li => {
+      document.querySelectorAll(".sidebar li").forEach(li => {
         li.addEventListener("click", () => {
           const page = li.dataset.page;
           if (page) loadPage(page);
         });
       });
+      // app.js 쪽에서 DOMContentLoaded에 rerenderAll() 이미 연결되어 있음
+      // → 여기서 따로 안 불러도 됨
     });
   </script>
-
 </body>
 </html>
