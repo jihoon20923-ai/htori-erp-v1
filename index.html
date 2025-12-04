@@ -1,89 +1,39 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <title>HTORI ERP</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-  <!-- 스타일 -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-
 <body>
 
-  <!-- ===========================
-       HEADER (PC + MOBILE 공통)
-  ============================ -->
-  <header class="header">
-    <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+    <!-- HEADER -->
+    <header class="header">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+        <div class="logo">HTORI ERP</div>
 
-    <div class="logo">HTORI ERP</div>
+        <div class="lang-buttons">
+            <button onclick="setLanguage('EN')">EN</button>
+            <button onclick="setLanguage('KR')">KR</button>
+            <button onclick="setLanguage('ID')">ID</button>
+        </div>
+    </header>
 
-    <div class="lang-buttons">
-      <button onclick="setLanguage('EN')">EN</button>
-      <button onclick="setLanguage('KR')">KR</button>
-      <button onclick="setLanguage('ID')">ID</button>
-    </div>
-  </header>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <ul>
+            <li data-page="dashboard">Dashboard</li>
+            <li data-page="stock">Stock</li>
+            <li data-page="purchase">Purchase</li>
+            <li data-page="outgoing">Outgoing</li>
+            <li data-page="production">Production</li>
+            <li data-page="bom">BOM</li>
+            <li data-page="outsourcing">Outsourcing</li>
+            <li data-page="finished">Finished Goods</li>
+            <li data-page="suppliers">Suppliers</li>
+            <li data-page="employees">Employees</li>
+            <li data-page="attendance">Attendance</li>
+            <li data-page="payroll">Payroll</li>
+            <li data-page="logs">Logs</li>
+            <li data-page="settings">Settings</li>
+        </ul>
+    </aside>
 
+    <!-- MAIN CONTENT -->
+    <main id="content" class="content"></main>
 
-  <!-- ===========================
-        SIDEBAR
-  ============================ -->
-  <aside class="sidebar">
-    <h2 class="sidebar-logo">HTORI ERP</h2>
-    <ul>
-      <li data-page="dashboard">Dashboard</li>
-      <li data-page="stock">Stock</li>
-      <li data-page="purchase">Purchase</li>
-      <li data-page="outgoing">Outgoing</li>
-      <li data-page="production">Production</li>
-      <li data-page="bom">BOM</li>
-      <li data-page="outsourcing">Outsourcing</li>
-      <li data-page="finished">Finished Goods</li>
-      <li data-page="suppliers">Suppliers</li>
-      <li data-page="employees">Employees</li>
-      <li data-page="attendance">Attendance</li>
-      <li data-page="payroll">Payroll</li>
-      <li data-page="logs">Logs</li>
-      <li data-page="settings">Settings</li>
-    </ul>
-  </aside>
-
-
-  <!-- ===========================
-        MAIN CONTENT AREA
-  ============================ -->
-  <main id="content" class="content"></main>
-
-
-  <!-- ===========================
-        JS (app.js)
-  ============================ -->
-  <script src="app.js"></script>
-
-  <script>
-    /* 페이지 로딩 시 실행 */
-    document.addEventListener("DOMContentLoaded", () => {
-      rerenderAll();
-
-      // 사이드바 메뉴 클릭 이벤트
-      document.querySelectorAll(".sidebar li").forEach(li => {
-        li.onclick = () => loadPage(li.dataset.page);
-      });
-    });
-
-    /* 모바일 사이드바 토글 */
-    function toggleSidebar() {
-      document.querySelector(".sidebar").classList.toggle("active");
-    }
-    window.toggleSidebar = toggleSidebar;
-  </script>
-
+    <script src="app.js"></script>
 </body>
-</html>
