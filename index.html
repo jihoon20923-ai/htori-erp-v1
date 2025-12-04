@@ -1,36 +1,33 @@
-<body>
+settings(lang) {
+  const t = i18n[lang].pages;
+  return `
+    <h2>${t.settingsTitle}</h2>
+    <p>${t.settingsDesc}</p>
 
-    <header class="header">
-        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
-        <div class="logo">HTORI ERP</div>
+    <h3>백업 & 복원</h3>
 
-        <div class="lang-buttons">
-            <button onclick="setLanguage('EN')">EN</button>
-            <button onclick="setLanguage('KR')">KR</button>
-            <button onclick="setLanguage('ID')">ID</button>
-        </div>
-    </header>
+    <button onclick="backupToFile()" class="btn-primary">
+      백업 다운로드
+    </button>
 
-    <aside class="sidebar">
-        <ul>
-            <li data-page="dashboard">Dashboard</li>
-            <li data-page="stock">Stock</li>
-            <li data-page="purchase">Purchase</li>
-            <li data-page="outgoing">Outgoing</li>
-            <li data-page="production">Production</li>
-            <li data-page="bom">BOM</li>
-            <li data-page="outsourcing">Outsourcing</li>
-            <li data-page="finished">Finished Goods</li>
-            <li data-page="suppliers">Suppliers</li>
-            <li data-page="employees">Employees</li>
-            <li data-page="attendance">Attendance</li>
-            <li data-page="payroll">Payroll</li>
-            <li data-page="logs">Logs</li>
-            <li data-page="settings">Settings</li>
-        </ul>
-    </aside>
+    <br><br>
 
-    <main id="content" class="content"></main>
+    <label for="restoreFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
+      백업 파일 불러오기
+    </label>
+    <input id="restoreFile" type="file" accept="application/json"
+           style="display:none;" onchange="restoreFromFile(event)">
 
-    <script src="app.js"></script>
-</body>
+    <hr style="margin:20px 0;">
+
+    <h3>Excel 업로드</h3>
+
+    <p>엑셀(.xlsx, .xlsm) 파일을 불러와 Stock / Purchase / Production / BOM 데이터로 변환할 수 있습니다.</p>
+
+    <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
+      Excel 파일 선택
+    </label>
+    <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
+           style="display:none;" onchange="handleExcelUpload(event)">
+  `;
+},
