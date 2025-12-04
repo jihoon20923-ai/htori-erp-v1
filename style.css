@@ -13,8 +13,9 @@
 body {
     background: #f5f7fa;
     color: #333;
-    display: flex;
+    /* display: flex;  <= 이 줄을 지우거나 주석 처리 */
 }
+
 
 /* ======================================================
    HEADER
@@ -108,8 +109,10 @@ body {
     margin-left: 230px;
     margin-top: 70px;
     padding: 20px;
-    width: calc(100% - 230px);
+    width: auto;
+    max-width: 100%;
 }
+
 
 #content h2 {
     font-size: 20px;
@@ -337,7 +340,8 @@ button,
 
 /* Settings, Stock, Purchase 등 내부 div를 꽉 차게 */
 .content {
-    width: 100% !important;
+    width: 100%;
+    max-width: 100%;
 }
 
 /* 모바일 최적화: 768px 이하일 때 전체 화면으로 */
@@ -366,4 +370,5 @@ button,
     width: 100% !important;
     max-width: 100% !important;
 }
+
 
