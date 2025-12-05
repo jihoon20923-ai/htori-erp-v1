@@ -1691,7 +1691,8 @@ settings(lang) {
         Excel 파일 선택
       </label>
 
-      <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
+ <input type="file" id="excelFile" onchange="handleExcelUpload(event)">
+
              style="display:none;" onchange="handleExcelUpload(event)">
     </div>
   `;
@@ -1703,25 +1704,24 @@ settings(lang) {
  * EXCEL IMPORT (XLSX)
  *************************************************/
 function handleExcelUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+    const file = event.target.files[0];
+    if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: "array" });
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
 
-    const sheetNames = workbook.SheetNames;
-    alert("불러온 시트: " + sheetNames.join(", "));
+        const sheetNames = workbook.SheetNames;
+        alert("불러온 시트: " + sheetNames.join(", "));
 
-    // 예: STOCK 시트를 읽어서 적용 가능
-    if (workbook.Sheets["STOCK"]) {
-      const json = XLSX.utils.sheet_to_json(workbook.Sheets["STOCK"]);
-      alert("STOCK 변환 완료: " + json.length + "개 항목");
-    }
-  };
+        if (workbook.Sheets["STOCK"]) {
+            const json = XLSX.utils.sheet_to_json(workbook.Sheets["STOCK"]);
+            alert("STOCK 변환 완료: " + json.length + "개 항목");
+        }
+    };
 
-  reader.readAsArrayBuffer(file);
+    reader.readAsArrayBuffer(file);
 }
 /*************************************************
  * RENDERING ENGINE
