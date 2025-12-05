@@ -1859,6 +1859,8 @@ window.handleExcelUpload = handleExcelUpload;
 window.toggleSidebar = toggleSidebar;
 window.closeSidebar = closeSidebar;
 
+window.renderStockTable = renderStockTable;
+
 // 햄버거 버튼
 window.toggleSidebar = toggleSidebar;
 
@@ -1896,3 +1898,38 @@ document.addEventListener("click", (e) => {
   // 그 외 바깥 영역 클릭 시 닫기
   sidebar.classList.remove("active");
 });
+function renderStockTable() {
+  const tbody = document.getElementById("stockTableBody");
+  if (!tbody) return;
+
+  const stock = getStock();
+  tbody.innerHTML = "";
+
+  stock.forEach((i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${i.code}</td>
+        <td>${i.name}</td>
+        <td>${i.qty}</td>
+        <td>${i.defect || 0}</td>
+        <td>${i.minQty || 0}</td>
+        <td>${i.unit || "SET"}</td>
+        <td>${i.lastUpdate || ""}</td>
+        <td><button class="btn-mini" onclick="editStockQty('${i.code}')">수정</button></td>
+      </tr>
+    `;
+  });
+}
+function downloadProductionCSV() {
+  const list = getProduction();
+
+  const headers = ["Date", "Product", "Qty", "Updated"];
+  const rows = list.map((p) => [
+    p.date,
+    p.product,
+    p.qty,
+    p.updated,
+  ]);
+
+  downloadCSV("production.csv", headers, rows);
+}
