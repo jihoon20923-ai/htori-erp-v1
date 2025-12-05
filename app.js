@@ -96,6 +96,9 @@ const i18n = {
       btnAdd: "Add",
       btnProduction: "Register Production",
       btnOutsourcing: "Outsourcing Register",
+
+      btnEdit: "Edit",
+      btnDelete: "Delete",
     },
   },
 
@@ -176,6 +179,10 @@ const i18n = {
       btnAdd: "추가",
       btnProduction: "생산 등록",
       btnOutsourcing: "외주 등록",
+
+      btnEdit: "수정",
+      btnDelete: "삭제",
+
     },
   },
 
@@ -256,6 +263,9 @@ const i18n = {
       btnAdd: "Tambah",
       btnProduction: "Daftar Produksi",
       btnOutsourcing: "Daftar Outsourcing",
+      btnEdit: "Edit",
+      btnDelete: "Hapus",
+
     },
   },
 };
@@ -436,9 +446,10 @@ function renderSupplierPage() {
         <td>${stat.totalQty}</td>
         <td>${stat.totalAmount.toLocaleString()}</td>
         <td>
-          <button class="btn-mini" onclick="deleteSupplier('${s.name}')">삭제</button>
-        </td>
-      </tr>
+   <button class="btn-mini" onclick="deleteSupplier('${s.name}')">
+    ${i18n[state.lang].pages.btnDelete}
+</button>
+
     `;
   });
 }
@@ -572,8 +583,9 @@ function renderStockPage() {
         <td>${i.minQty || 0}</td>
         <td>${i.unit || "SET"}</td>
         <td>${i.lastUpdate || ""}</td>
-        <td><button class="btn-mini" onclick="editStockQty('${i.code}')">수정</button></td>
-      </tr>
+        <td><button class="btn-mini" onclick="editStockQty('${i.code}')">
+    ${i18n[state.lang].pages.btnEdit}
+</button></td>
     `;
   });
 }
@@ -655,8 +667,10 @@ function renderPurchasePage() {
         <td>${p.price}</td>
         <td>${p.currency}</td>
         <td>${p.updated}</td>
-        <td><button class="btn-mini" onclick="editPurchase(${idx})">수정</button></td>
-      </tr>
+    <td><button class="btn-mini" onclick="editStockQty('${i.code}')">
+    ${i18n[state.lang].pages.btnEdit}
+</button></td>
+
     `;
   });
 }
@@ -944,9 +958,10 @@ function renderProductionPage() {
         <td>${p.qty}</td>
         <td>${p.updated}</td>
         <td>
-          <button class="btn-mini" onclick="editProduction(${idx})">수정</button>
-        </td>
-      </tr>
+       <td><button class="btn-mini" onclick="editStockQty('${i.code}')">
+    ${i18n[state.lang].pages.btnEdit}
+</button></td>
+
     `;
   });
 }
