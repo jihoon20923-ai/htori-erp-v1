@@ -1269,33 +1269,38 @@ const PageTemplates = {
       </div>
     `;
   },
-suppliers: () => `
-<h2>Suppliers</h2>
-<p>Vendor information.</p>
 
-<div class="form-row">
-  <input id="supCode" placeholder="Code">
-  <input id="supName" placeholder="Name">
-  <input id="supBank" placeholder="Bank Name">
-  <input id="supAccount" placeholder="Account Number">
-  <input id="supHolder" placeholder="Account Holder">
-  <input id="supPhone" placeholder="Phone">
-  <input id="supEmail" placeholder="Email">
-  <input id="supAddress" placeholder="Address">
-  <input id="supNote" placeholder="Note">
-  <button class="btn-primary" onclick="registerSupplier()">Register</button>
-</div>
+  suppliers(lang) {
+    return `
+      <h2>Suppliers</h2>
+      <p>Vendor information.</p>
 
-<table class="erp-table">
-<thead>
-<tr>
-  <th>Code</th><th>Name</th><th>Bank</th><th>Account</th><th>Holder</th>
-  <th>Phone</th><th>Email</th><th>Address</th><th>Note</th><th>Edit</th>
-</tr>
-</thead>
-<tbody id="suppliersTable"></tbody>
-</table>
-`
+      <div class="form-row">
+        <input id="supCode" placeholder="Code">
+        <input id="supName" placeholder="Name">
+        <input id="supBank" placeholder="Bank Name">
+        <input id="supAccount" placeholder="Account Number">
+        <input id="supHolder" placeholder="Account Holder">
+        <input id="supPhone" placeholder="Phone">
+        <input id="supEmail" placeholder="Email">
+        <input id="supAddress" placeholder="Address">
+        <input id="supNote" placeholder="Note">
+        <button class="btn-primary" onclick="registerSupplier()">Register</button>
+      </div>
+
+      <table class="erp-table">
+        <thead>
+          <tr>
+            <th>Code</th><th>Name</th><th>Bank</th><th>Account</th><th>Holder</th>
+            <th>Phone</th><th>Email</th><th>Address</th><th>Note</th><th>Edit</th>
+          </tr>
+        </thead>
+        <tbody id="suppliersTable"></tbody>
+      </table>
+    `;
+  }
+
+};  // 🔥 반드시 있어야 하는 PageTemplates 마무리
 
   /***********************
    * STOCK
