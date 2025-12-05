@@ -1735,7 +1735,7 @@ function renderContent() {
 
   contentEl.innerHTML = tmpl(lang);
 
-  if (page === "stock") renderStockTable();
+  if (page === "stock") renderStockPage();
   else if (page === "purchase") renderPurchasePage();
   else if (page === "outgoing") renderOutgoingPage();
   else if (page === "production") renderProductionPage();
@@ -1859,14 +1859,7 @@ function restoreFromFile(event) {
  * - 지금은 '파일 선택됨' 알림만 띄우고
  *   나중에 실제 importExcel 로 연결할 수 있음
  *************************************************/
-function handleExcelUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
 
-  // 여기서 importExcel(event) 를 바로 호출해도 됨
-  // ex) importExcel(event);
-  alert("엑셀 파일이 선택되었습니다. (다음 단계에서 실제 매핑 기능 추가 가능)");
-}
 
 window.handleExcelUpload = handleExcelUpload;
 
