@@ -950,6 +950,86 @@ function renderProductionPage() {
     `;
   });
 }
+function editProduction(index) {
+  let list = getProduction();
+  let p = list[index];
+
+  const newQtyStr = prompt("새 생산 수량:", p.qty);
+  if (newQtyStr === null) return;
+
+  const newQty = Number(newQtyStr);
+  if (isNaN(newQty) || newQty <= 0) {
+    return alert("올바른 수량이 아닙니다.");
+  }
+
+  const diff = newQty - p.qty;
+  if (diff === 0) return;
+
+  let stock = getStock();
+  const bomList = getBomForProduct(p.product);
+  if (bomList.length === 0) return alert("BOM이 없습니다.");
+
+  if (diff > 0) {
+    // 추가 생산 → 자재 차감
+    for (const b of bomList) {
+      const need = b.qty * diff;
+      const mat = stock.find(s => s.code === b.matCode);
+      if (!mat || mat.qty < need) {
+        return alert(`재고 부족: ${b.matCode} 필요:${need}, 현재:${mat ? mat.qty : 0}`);
+      }
+    }
+
+    bomList.forEach(b => {
+      const need = b.qty * diff;
+      const mat = stock.find(s => s.code === b.matCode);
+      mat.qty -= need;
+      mat.lastUpdate = new Date().toLocaleString();
+    });
+
+    let fg = stock.find(s => s.code === p.product);
+    fg.qty += diff;
+    fg.lastUpdate = new Date().toLocaleString();
+
+  } else {
+    // 생산 감소 → 자재 환불
+    const backDiff = -diff;
+
+    bomList.forEach(b => {
+      const back = b.qty * backDiff;
+      let mat = stock.find(s => s.code === b.matCode);
+
+      if (!mat) {
+        stock.push({
+          code: b.matCode,
+          name: b.matName,
+          qty: back,
+          minQty: 0,
+          unit: "SET",
+          lastUpdate: new Date().toLocaleString(),
+        });
+      } else {
+        mat.qty += back;
+        mat.lastUpdate = new Date().toLocaleString();
+      }
+    });
+
+    let fg = stock.find(s => s.code === p.product);
+    fg.qty -= backDiff;
+    if (fg.qty < 0) fg.qty = 0;
+    fg.lastUpdate = new Date().toLocaleString();
+  }
+
+  saveStock(stock);
+
+  p.qty = newQty;
+  p.updated = new Date().toLocaleString();
+  saveProduction(list);
+
+  writeLog("PRODUCTION EDIT", `${p.product} → ${newQty}`);
+
+  loadPage("production");
+}
+
 /*************************************************
  * OUTSOURCING MODULE
  *************************************************/
