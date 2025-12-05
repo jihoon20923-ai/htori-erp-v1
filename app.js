@@ -1708,7 +1708,7 @@ function handleExcelUpload(event) {
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const data = new Uint8Array(e.target.result);
     const workbook = XLSX.read(data, { type: "array" });
 
@@ -1862,7 +1862,7 @@ function restoreFromFile(event) {
  *************************************************/
 
 
-window.handleExcelUpload = handleExcelUpload;
+window.handleExcelUpload =eExcelUpload;
 
 // ============================
 // 전역(Global) 바인딩
