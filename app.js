@@ -1222,142 +1222,93 @@ function renderDashboardPage() {
   }
 }
 /*************************************************
- * PAGE TEMPLATES
+ * PAGE TEMPLATES (정상 구조)
  *************************************************/
 const PageTemplates = {
 
+  /***********************
+   * DASHBOARD
+   ***********************/
   dashboard(lang) {
+    const t = i18n[lang].pages;
     return `
-      <h2>Dashboard</h2>
+      <h2>${t.dashboardTitle}</h2>
+      <p>${t.dashboardDesc}</p>
+
       <div class="cards">
-        <div class="card">
-          <div class="label">Raw Material</div>
-          <div id="dashRaw" class="value">0</div>
-        </div>
-
-        <div class="card">
-          <div class="label">Finished Goods</div>
-          <div id="dashFinished" class="value">0</div>
-        </div>
-
-        <div class="card">
-          <div class="label">Today Production</div>
-          <div id="dashTodayProd" class="value">0</div>
-        </div>
-
-        <div class="card">
-          <div class="label">Defect Rate</div>
-          <div id="dashDefect" class="value">0%</div>
-        </div>
+        <div class="card"><div class="label">Raw Material</div><div id="dashRaw" class="value">0</div></div>
+        <div class="card"><div class="label">Finished Goods</div><div id="dashFinished" class="value">0</div></div>
+        <div class="card"><div class="label">Today Production</div><div id="dashTodayProd" class="value">0</div></div>
+        <div class="card"><div class="label">Defect Rate</div><div id="dashDefect" class="value">0%</div></div>
       </div>
 
       <div class="chart-grid">
-        <div>
-          <h3>Purchase (7 days)</h3>
-          <canvas id="chartPurchase"></canvas>
-        </div>
-
-        <div>
-          <h3>Outgoing (7 days)</h3>
-          <canvas id="chartOutgoing"></canvas>
-        </div>
-
-        <div>
-          <h3>Production (7 days)</h3>
-          <canvas id="chartProduction"></canvas>
-        </div>
+        <div><h3>Purchase (7 days)</h3><canvas id="chartPurchase"></canvas></div>
+        <div><h3>Outgoing (7 days)</h3><canvas id="chartOutgoing"></canvas></div>
+        <div><h3>Production (7 days)</h3><canvas id="chartProduction"></canvas></div>
       </div>
     `;
   },
 
-  suppliers(lang) {
-    return `
-      <h2>Suppliers</h2>
-      <p>Vendor information.</p>
-
-      <div class="form-row">
-        <input id="supCode" placeholder="Code">
-        <input id="supName" placeholder="Name">
-        <input id="supBank" placeholder="Bank Name">
-        <input id="supAccount" placeholder="Account Number">
-        <input id="supHolder" placeholder="Account Holder">
-        <input id="supPhone" placeholder="Phone">
-        <input id="supEmail" placeholder="Email">
-        <input id="supAddress" placeholder="Address">
-        <input id="supNote" placeholder="Note">
-        <button class="btn-primary" onclick="registerSupplier()">Register</button>
-      </div>
-
-      <table class="erp-table">
-        <thead>
-          <tr>
-            <th>Code</th><th>Name</th><th>Bank</th><th>Account</th><th>Holder</th>
-            <th>Phone</th><th>Email</th><th>Address</th><th>Note</th><th>Edit</th>
-          </tr>
-        </thead>
-        <tbody id="suppliersTable"></tbody>
-      </table>
-    `;
-  }
-
-};  // 🔥 반드시 있어야 하는 PageTemplates 마무리
 
   /***********************
    * STOCK
-   ************************/
+   ***********************/
   stock(lang) {
+    const t = i18n[lang].pages;
     return `
-      <h2>Stock</h2>
-
-      <div class="form-row">
-        <input id="sCode" placeholder="Code">
-        <input id="sName" placeholder="Name">
-        <input id="sQty" placeholder="Qty">
-        <input id="sMin" placeholder="Min Qty">
-        <input id="sUnit" placeholder="Unit">
-        <input id="sNote" placeholder="Note">
-        <button class="btn-primary" onclick="saveStockItem()">Save</button>
-      </div>
+      <h2>${t.stockTitle}</h2>
+      <p>${t.stockDesc}</p>
 
       <table class="erp-table">
         <thead>
           <tr>
             <th>Code</th><th>Name</th><th>Qty</th>
-            <th>Min</th><th>Unit</th><th>Note</th>
+            <th>Defect</th><th>Min</th><th>Unit</th>
             <th>Updated</th><th>Edit</th>
           </tr>
         </thead>
-
         <tbody id="stockTableBody"></tbody>
       </table>
     `;
   },
 
+
   /***********************
    * PURCHASE
-   ************************/
+   ***********************/
   purchase(lang) {
+    const t = i18n[lang].pages;
+    const suppliers = getSuppliers();
     return `
-      <h2>Purchase</h2>
+      <h2>${t.purchaseTitle}</h2>
+      <p>${t.purchaseDesc}</p>
 
       <div class="form-row">
-        <input id="pCode" placeholder="Material Code">
-        <input id="pName" placeholder="Material Name">
-        <input id="pQty" placeholder="Qty">
-        <input id="pPrice" placeholder="Unit Price">
-        <input id="pCurrency" placeholder="Currency">
-        <input id="pSupplier" placeholder="Supplier">
-        <button class="btn-primary" onclick="onPurchase()">Register</button>
-      </div>
+        <input id="pCode" placeholder="${t.purchaseFormCodePlaceholder}">
+        <input id="pName" placeholder="${t.purchaseFormNamePlaceholder}">
+        <input id="pQty" type="number" placeholder="${t.purchaseFormQtyPlaceholder}">
+        <input id="pPrice" type="number" placeholder="Unit Price">
 
-      <button class="btn-secondary" onclick="downloadPurchaseCSV()">CSV Download</button>
+        <select id="pCurrency">
+          <option value="USD">USD</option>
+          <option value="IDR">IDR</option>
+          <option value="KRW">KRW</option>
+        </select>
+
+        <select id="pSupplier">
+          ${suppliers.map(s => `<option value="${s.name}">${s.name}</option>`).join("")}
+        </select>
+
+        <button onclick="onPurchase()" class="btn-primary">${t.btnRegister}</button>
+        <button onclick="downloadPurchaseCSV()" class="btn-secondary">${t.btnDownloadExcel}</button>
+      </div>
 
       <table class="erp-table">
         <thead>
           <tr>
             <th>Date</th><th>Supplier</th><th>Code</th><th>Name</th>
-            <th>Qty</th><th>Unit Price</th><th>Currency</th>
-            <th>Updated</th><th>Edit</th>
+            <th>Qty</th><th>Price</th><th>Cur</th><th>Updated</th><th>Edit</th>
           </tr>
         </thead>
         <tbody id="purchaseTableBody"></tbody>
@@ -1365,27 +1316,29 @@ const PageTemplates = {
     `;
   },
 
+
   /***********************
    * OUTGOING
-   ************************/
+   ***********************/
   outgoing(lang) {
+    const t = i18n[lang].pages;
     return `
-      <h2>Outgoing</h2>
+      <h2>${t.outgoingTitle}</h2>
+      <p>${t.outgoingDesc}</p>
 
       <div class="form-row">
-        <input id="oCode" placeholder="Material Code">
-        <input id="oName" placeholder="Material Name">
-        <input id="oQty" placeholder="Qty">
-        <button class="btn-primary" onclick="onOutgoing()">Register</button>
-      </div>
+        <input id="oCode" placeholder="Code">
+        <input id="oName" placeholder="Name">
+        <input id="oQty" type="number" placeholder="Qty">
 
-      <button class="btn-secondary" onclick="downloadOutgoingCSV()">CSV Download</button>
+        <button onclick="onOutgoing()" class="btn-primary">${t.btnOutgoing}</button>
+        <button onclick="downloadOutgoingCSV()" class="btn-secondary">${t.btnDownloadExcel}</button>
+      </div>
 
       <table class="erp-table">
         <thead>
           <tr>
-            <th>Date</th><th>Code</th><th>Name</th>
-            <th>Qty</th><th>Updated</th>
+            <th>Date</th><th>Code</th><th>Name</th><th>Qty</th><th>Updated</th>
           </tr>
         </thead>
         <tbody id="outgoingTableBody"></tbody>
@@ -1393,96 +1346,106 @@ const PageTemplates = {
     `;
   },
 
+
   /***********************
    * PRODUCTION
-   ************************/
+   ***********************/
   production(lang) {
+    const t = i18n[lang].pages;
     return `
-      <h2>Production</h2>
+      <h2>${t.productionTitle}</h2>
+      <p>${t.productionDesc}</p>
 
       <div class="form-row">
         <input id="prodProduct" placeholder="Product Code">
-        <input id="prodQty" placeholder="Qty">
-        <button class="btn-primary" onclick="onProduction()">Register</button>
+        <input id="prodQty" type="number" placeholder="Qty">
+
+        <button onclick="onProduction()" class="btn-primary">${t.btnProduction}</button>
+        <button onclick="downloadProductionCSV()" class="btn-secondary">${t.btnDownloadExcel}</button>
       </div>
 
       <table class="erp-table">
         <thead>
-          <tr>
-            <th>Date</th><th>Product</th><th>Qty</th>
-            <th>Updated</th><th>Edit</th>
-          </tr>
+          <tr><th>Date</th><th>Product</th><th>Qty</th><th>Updated</th><th>Edit</th></tr>
         </thead>
         <tbody id="prodTableBody"></tbody>
       </table>
     `;
   },
 
+
   /***********************
    * BOM
-   ************************/
+   ***********************/
   bom(lang) {
+    const t = i18n[lang].pages;
     return `
-      <h2>BOM</h2>
+      <h2>${t.bomTitle}</h2>
+      <p>${t.bomDesc}</p>
 
       <div class="form-row">
-        <input id="bomProduct" placeholder="Product Code">
+        <input id="bomProduct" placeholder="Product">
         <input id="bomMatCode" placeholder="Material Code">
         <input id="bomMatName" placeholder="Material Name">
-        <input id="bomQty" placeholder="Qty per 1 product">
-        <button class="btn-primary" onclick="saveBOMItem()">Add BOM</button>
+        <input id="bomQty" type="number" placeholder="Qty per product">
+        <button onclick="saveBOMItem()" class="btn-primary">Save BOM</button>
       </div>
 
       <table class="erp-table">
         <thead>
-          <tr>
-            <th>Product</th><th>Material Code</th>
-            <th>Material Name</th><th>Qty</th><th>Updated</th>
-          </tr>
+          <tr><th>Product</th><th>MatCode</th><th>MatName</th><th>Qty</th><th>Updated</th></tr>
         </thead>
         <tbody id="bomTableBody"></tbody>
       </table>
     `;
   },
 
+
   /***********************
    * OUTSOURCING
-   ************************/
+   ***********************/
   outsourcing(lang) {
+    const t = i18n[lang].pages;
     const vendors = getVendors();
     return `
-      <h2>Outsourcing</h2>
-
-      <h3>OUT → 외주 출고</h3>
-      <div class="form-row">
-        <input id="outOutCode" placeholder="OUT Code">
-        <input id="outOutName" placeholder="OUT Name">
-        <input id="outOutQty" placeholder="OUT Qty">
-      </div>
-
-      <h3>IN → 외주 입고</h3>
-      <div class="form-row">
-        <input id="outInCode" placeholder="IN Code">
-        <input id="outInName" placeholder="IN Name">
-        <input id="outInQty" placeholder="IN Qty">
-      </div>
+      <h2>${t.outsourcingTitle}</h2>
+      <p>${t.outsourcingDesc}</p>
 
       <div class="form-row">
-        <input id="outDefectQty" placeholder="Defect Qty">
+        <h3>OUT</h3>
+        <input id="outOutCode" placeholder="Out Code">
+        <input id="outOutName" placeholder="Out Name">
+        <input id="outOutQty" type="number" placeholder="Qty Out">
+
+        <h3>IN</h3>
+        <input id="outInCode" placeholder="In Code">
+        <input id="outInName" placeholder="In Name">
+        <input id="outInQty" type="number" placeholder="Qty In">
+
+        <h3>Defect</h3>
+        <input id="outDefectQty" type="number" placeholder="Defect">
+
+        <h3>Vendor</h3>
         <select id="outVendor">
-          ${vendors.map(v => `<option>${v}</option>`).join("")}
+          ${vendors.map(v => `<option value="${v}">${v}</option>`).join("")}
         </select>
+
+        <h3>Note</h3>
         <input id="outNote" placeholder="Note">
-        <button class="btn-primary" onclick="onOutsourcing()">Register</button>
+
+        <button onclick="onOutsourcing()" class="btn-primary">${t.outsourcingRegisterBtn}</button>
       </div>
 
       <table class="erp-table">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>OUT Code</th><th>OUT Name</th><th>OUT Qty</th>
-            <th>IN Code</th><th>IN Name</th><th>IN Qty</th>
-            <th>Defect</th><th>Vendor</th><th>Note</th><th>Updated</th>
+            <th>${t.outsourcingTableDate}</th>
+            <th>OutCode</th><th>OutName</th><th>QtyOut</th>
+            <th>InCode</th><th>InName</th><th>QtyIn</th>
+            <th>${t.outsourcingDefectTitle}</th>
+            <th>${t.outsourcingVendorTitle}</th>
+            <th>${t.outsourcingNoteTitle}</th>
+            <th>${t.outsourcingTableUpdated}</th>
           </tr>
         </thead>
         <tbody id="outsourcingTableBody"></tbody>
@@ -1490,91 +1453,128 @@ const PageTemplates = {
     `;
   },
 
+
   /***********************
-   * FINISHED
-   ************************/
+   * FINISHED GOODS
+   ***********************/
   finished(lang) {
+    const t = i18n[lang].pages;
     return `
-      <h2>Finished Goods</h2>
+      <h2>${t.finishedTitle}</h2>
+      <p>${t.finishedDesc}</p>
 
       <table class="erp-table">
         <thead>
-          <tr>
-            <th>Code</th><th>Name</th><th>Qty</th><th>Edit</th>
-          </tr>
+          <tr><th>Code</th><th>Name</th><th>Qty</th><th>Edit</th></tr>
         </thead>
         <tbody id="fgTableBody"></tbody>
       </table>
     `;
   },
 
+
   /***********************
    * SUPPLIERS
-   ************************/
+   ***********************/
   suppliers(lang) {
+    const t = i18n[lang].pages;
     return `
-      <h2>Suppliers</h2>
+      <h2>${t.suppliersTitle}</h2>
+      <p>${t.suppliersDesc}</p>
 
       <div class="form-row">
-        <input id="supName" placeholder="Supplier Name">
-        <button class="btn-primary" onclick="addSupplier()">Add</button>
+        <input id="newSupplier" placeholder="Supplier Name">
+        <input id="supplierVendorName" placeholder="Vendor Name">
+        <input id="supplierContact" placeholder="Contact">
+        <input id="supplierEmail" placeholder="Email">
+        <input id="supplierAddress" placeholder="Address">
+        <input id="supplierPhone" placeholder="Phone">
+        <input id="supplierBankName" placeholder="Bank Name">
+        <input id="supplierBankAccount" placeholder="Account Number">
+        <input id="supplierBankHolder" placeholder="Account Holder">
+
+        <button onclick="addSupplier()" class="btn-primary">${t.btnAdd}</button>
       </div>
 
       <table class="erp-table">
         <thead>
-          <tr><th>Supplier</th><th>Action</th></tr>
+          <tr>
+            <th>Supplier</th><th>Vendor</th><th>Contact</th><th>Email</th>
+            <th>Address</th><th>Phone</th><th>Bank Info</th>
+            <th>Total Qty</th><th>Total Amount</th><th>Edit</th>
+          </tr>
         </thead>
-        <tbody id="supTableBody"></tbody>
+        <tbody id="supplierTableBody"></tbody>
       </table>
     `;
   },
 
+
+  /***********************
+   * EMPLOYEES
+   ***********************/
+  employees(lang) {
+    return `<h2>Employees</h2><p>Coming soon.</p>`;
+  },
+
+
+  /***********************
+   * ATTENDANCE
+   ***********************/
+  attendance(lang) {
+    return `<h2>Attendance</h2><p>Coming soon.</p>`;
+  },
+
+
+  /***********************
+   * PAYROLL
+   ***********************/
+  payroll(lang) {
+    return `<h2>Payroll</h2><p>Coming soon.</p>`;
+  },
+
+
   /***********************
    * LOGS
-   ************************/
+   ***********************/
   logs(lang) {
     return `
       <h2>Logs</h2>
       <table class="erp-table">
         <thead>
-          <tr><th>Time</th><th>Type</th><th>Detail</th></tr>
+          <tr><th>Time</th><th>Action</th><th>Detail</th></tr>
         </thead>
         <tbody id="logsTableBody"></tbody>
       </table>
     `;
   },
 
+
   /***********************
    * SETTINGS
-   ************************/
+   ***********************/
   settings(lang) {
+    const t = i18n[lang].pages;
     return `
-      <h2>Settings</h2>
+      <h2>${t.settingsTitle}</h2>
+      <p>${t.settingsDesc}</p>
 
       <div class="settings-section">
-        <h3>백업 & 복원</h3>
-        <button class="btn-primary" onclick="backupToFile()">백업 다운로드</button>
+        <h3>Backup & Restore</h3>
 
-        <label class="btn-secondary" style="padding:8px; cursor:pointer;">
-          복원 파일 선택
-          <input type="file" accept="application/json"
-                style="display:none;" onchange="restoreFromFile(event)">
+        <button onclick="backupToFile()" class="btn-primary">Backup Download</button>
+
+        <label for="restoreFile" class="btn-secondary" style="cursor:pointer;">
+          Load Backup File
         </label>
-      </div>
-
-      <div class="settings-section">
-        <h3>Excel 업로드</h3>
-        <p>Excel 파일을 불러와 데이터로 변환할 수 있습니다.</p>
-
-        <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
-          Excel 파일 선택
-        </label>
-        <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
-               style="display:none;" onchange="handleExcelUpload(event)">
+        <input id="restoreFile" type="file" accept="application/json" style="display:none;"
+              onchange="restoreFromFile(event)">
       </div>
     `;
   }
+
 };
+
 /*************************************************
  * EXCEL IMPORT (XLSX)
  *************************************************/
