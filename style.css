@@ -1,24 +1,23 @@
-html, body {
-    overflow-x: hidden;
-    width: 100%;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-.sidebar {
-    max-width: 250px;
-}
 
 .content {
-    overflow-x: hidden;
-    max-width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
+  padding: 20px;
+}
+.erp-table {
+  width: 100%;
+  table-layout: fixed;
 }
 
-.erp-table {
-    width: 100%;
-    table-layout: fixed;
+.erp-table th, .erp-table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+main {
+  width: calc(100% - 260px); /* 사이드바 너비 빼기 */
+  margin-left: 260px;
 }
 
 /* ======================================================
