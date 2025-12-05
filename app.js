@@ -1891,8 +1891,7 @@ window.downloadProductionCSV = downloadProductionCSV;
 window.addSupplier = addSupplier;
 window.deleteSupplier = deleteSupplier;
 
-window.importExcel = importExcel;
-window.handleExcelUpload = handleExcelUpload;
+
 
 window.toggleSidebar = toggleSidebar;
 window.closeSidebar = closeSidebar;
