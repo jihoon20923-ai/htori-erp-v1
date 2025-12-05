@@ -1648,27 +1648,56 @@ const PageTemplates = {
   /***********************
    * SETTINGS
    ***********************/
-  settings(lang) {
-    const t = i18n[lang].pages;
-    return `
-      <h2>${t.settingsTitle}</h2>
-      <p>${t.settingsDesc}</p>
+ /***********************
+ * SETTINGS (완성본)
+ ***********************/
+settings(lang) {
+  const t = i18n[lang].pages;
+  return `
+    <h2>${t.settingsTitle}</h2>
+    <p>${t.settingsDesc}</p>
 
-      <div class="settings-section">
-        <h3>Backup & Restore</h3>
+    <!-- =======================
+         Backup & Restore
+    ======================== -->
+    <div class="settings-section">
+      <h3>Backup & Restore</h3>
+      <p>현재 ERP 데이터를 JSON 파일로 저장하거나 불러올 수 있습니다.</p>
 
+      <div class="settings-btn-row">
         <button onclick="backupToFile()" class="btn-primary">Backup Download</button>
 
         <label for="restoreFile" class="btn-secondary" style="cursor:pointer;">
           Load Backup File
         </label>
-        <input id="restoreFile" type="file" accept="application/json" style="display:none;"
-              onchange="restoreFromFile(event)">
+        <input id="restoreFile" type="file" accept="application/json"
+               style="display:none;" onchange="restoreFromFile(event)">
       </div>
-    `;
-  }
+    </div>
 
-};
+    <div class="hr-divider"></div>
+
+    <!-- =======================
+         Excel Upload
+    ======================== -->
+    <div class="settings-section">
+      <h3>Excel Upload</h3>
+      <p>
+        엑셀(.xlsx, .xlsm) 파일을 업로드하여
+        <b>Stock / Purchase / Production / BOM</b> 데이터를 자동 변환할 수 있습니다.
+      </p>
+
+      <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
+        Excel 파일 선택
+      </label>
+
+      <input id="excelUpload" type="file" accept=".xlsx,.xlsm"
+             style="display:none;" onchange="handleExcelUpload(event)">
+    </div>
+  `;
+}
+
+
 
 /*************************************************
  * EXCEL IMPORT (XLSX)
