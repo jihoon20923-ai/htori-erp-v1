@@ -287,3 +287,149 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+production(lang) {
+  const t = i18n[lang].pages;
+  return `
+    <h2>${t.productionTitle}</h2>
+    <p>${t.productionDesc}</p>
+
+    <div class="form-row">
+      <input id="prodProduct" placeholder="Product Code">
+      <input id="prodQty" type="number" placeholder="Qty">
+
+      <button onclick="onProduction()" class="btn-primary">
+        ${t.btnProduction}
+      </button>
+
+      <button onclick="downloadProductionCSV()" class="btn-secondary">
+        ${t.btnDownloadExcel}
+      </button>
+    </div>
+
+    <table class="erp-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Updated</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody id="prodTableBody"></tbody>
+    </table>
+  `;
+}
+function getProduction() {
+  return JSON.parse(localStorage.getItem("production") || "[]");
+}
+
+function saveProduction(list) {
+  localStorage.setItem("production", JSON.stringify(list));
+}
+
+function onProduction() {
+  const product = document.getElementById("prodProduct").value.trim();
+  const qtyStr = document.getElementById("prodQty").value.trim();
+  const qty = Number(qtyStr);
+
+  if (!product || !qty) {
+    alert("Product와 수량을 입력하세요.");
+    return;
+  }
+
+  const bomList = getBomForProduct(product);
+  if (bomList.length === 0) {
+    alert("해당 제품의 BOM이 없습니다.");
+    return;
+  }
+
+  let stock = getStock();
+
+  // ✅ BOM 기준 자재 재고 체크
+  for (const b of bomList) {
+    const need = b.qty * qty;
+    const mat = stock.find(s => s.code === b.matCode);
+    if (!mat || mat.qty < need) {
+      alert(`재고 부족: ${b.matCode} / 필요:${need}, 현재:${mat ? mat.qty : 0}`);
+      return;
+    }
+  }
+
+  // ✅ 자재 재고 차감
+  bomList.forEach(b => {
+    const need = b.qty * qty;
+    const mat = stock.find(s => s.code === b.matCode);
+    mat.qty -= need;
+    mat.lastUpdate = new Date().toLocaleString();
+  });
+
+  // ✅ 완제품 재고 증가
+  let fg = stock.find(s => s.code === product);
+  if (!fg) {
+    stock.push({
+      code: product,
+      name: product,
+      qty,
+      minQty: 0,
+      unit: "SET",
+      lastUpdate: new Date().toLocaleString()
+    });
+  } else {
+    fg.qty += qty;
+    fg.lastUpdate = new Date().toLocaleString();
+  }
+
+  saveStock(stock);
+
+  const list = getProduction();
+  list.push({
+    date: new Date().toLocaleDateString(),
+    product,
+    qty,
+    updated: new Date().toLocaleString()
+  });
+
+  saveProduction(list);
+
+  alert("✅ 생산 등록 완료");
+  loadPage("production");
+}
+function renderProductionPage() {
+  const tbody = document.getElementById("prodTableBody");
+  if (!tbody) return;
+
+  const list = getProduction();
+  tbody.innerHTML = "";
+
+  list.forEach((p, idx) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${p.date}</td>
+        <td>${p.product}</td>
+        <td>${p.qty}</td>
+        <td>${p.updated}</td>
+        <td>
+          <button class="btn-mini" onclick="editProduction(${idx})">
+            ${i18n[state.lang].pages.btnEdit}
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+function downloadProductionCSV() {
+  const list = getProduction();
+
+  const headers = ["Date", "Product", "Qty", "Updated"];
+  const rows = list.map(p => [
+    p.date,
+    p.product,
+    p.qty,
+    p.updated
+  ]);
+
+  downloadCSV("production.csv", headers, rows);
+}
+window.onProduction = onProduction;
+window.downloadProductionCSV = downloadProductionCSV;
