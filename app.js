@@ -672,7 +672,7 @@ function renderPurchasePage() {
         <td>${p.price}</td>
         <td>${p.currency}</td>
         <td>${p.updated}</td>
-    <td><button class="btn-mini" onclick="editStockQty('${i.code}')">
+    <td><button class="btn-mini" onclick="editPurchase(${idx})"
     ${i18n[state.lang].pages.btnEdit}
 </button></td>
 
@@ -963,7 +963,11 @@ function renderProductionPage() {
         <td>${p.qty}</td>
         <td>${p.updated}</td>
         <td>
-       <td><button class="btn-mini" onclick="editStockQty('${i.code}')">
+       <td><button class="btn-mini" <td>
+  <button class="btn-mini" onclick="editProduction(${idx})">
+    ${i18n[state.lang].pages.btnEdit}
+  </button>
+</td>
     ${i18n[state.lang].pages.btnEdit}
 </button></td>
 
@@ -1662,48 +1666,38 @@ settings(lang) {
     <h2>${t.settingsTitle}</h2>
     <p>${t.settingsDesc}</p>
 
-    <!-- =======================
-         Backup & Restore
-    ======================== -->
     <div class="settings-section">
       <h3>Backup & Restore</h3>
-      <p>현재 ERP 데이터를 JSON 파일로 저장하거나 불러올 수 있습니다.</p>
 
-      <div class="settings-btn-row">
-        <button onclick="backupToFile()" class="btn-primary">Backup Download</button>
+      <button onclick="backupToFile()" class="btn-primary">Backup Download</button>
 
-        <label for="restoreFile" class="btn-secondary" style="cursor:pointer;">
-          Load Backup File
-        </label>
-        <input id="restoreFile" type="file" accept="application/json"
-               style="display:none;" onchange="restoreFromFile(event)">
-      </div>
+      <label for="restoreFile" class="btn-secondary" style="cursor:pointer;">
+        Load Backup File
+      </label>
+      <input id="restoreFile" type="file" accept="application/json"
+             style="display:none;" onchange="restoreFromFile(event)">
     </div>
 
-    <div class="hr-divider"></div>
+    <hr style="margin:30px 0;">
 
-    <!-- =======================
-         Excel Upload
-    ======================== -->
+    <!-- ✅ EXCEL UPLOAD -->
     <div class="settings-section">
       <h3>Excel Upload</h3>
-      <p>
-        엑셀(.xlsx, .xlsm) 파일을 업로드하여
-        <b>Stock / Purchase / Production / BOM</b> 데이터를 자동 변환할 수 있습니다.
-      </p>
 
-      <label for="excelUpload" class="btn-secondary" style="padding:10px; cursor:pointer;">
+      <label for="excelFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
         Excel 파일 선택
       </label>
 
-<label for="excelFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
-  Excel 파일 선택
-</label>
-
-<input type="file" id="excelFile" style="display:none;" onchange="handleExcelUpload(event)">
-
+      <input 
+        type="file" 
+        id="excelFile" 
+        accept=".xlsx,.xls"
+        style="display:none;"
+        onchange="handleExcelUpload(event)">
+    </div>
   `;
 }
+
 
 
 
@@ -1715,6 +1709,7 @@ function handleExcelUpload(event) {
   if (!file) return;
 
   const reader = new FileReader();
+
   reader.onload = function (e) {
     const data = new Uint8Array(e.target.result);
     const workbook = XLSX.read(data, { type: "array" });
@@ -1730,6 +1725,7 @@ function handleExcelUpload(event) {
 
   reader.readAsArrayBuffer(file);
 }
+
 
 /*************************************************
  * RENDERING ENGINE
@@ -1904,7 +1900,7 @@ window.deleteSupplier = deleteSupplier;
 window.toggleSidebar = toggleSidebar;
 window.closeSidebar = closeSidebar;
 
-window.renderStockTable = renderStockTable;
+
 
 // 햄버거 버튼
 window.toggleSidebar = toggleSidebar;
