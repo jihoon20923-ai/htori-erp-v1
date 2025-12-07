@@ -583,7 +583,12 @@ function renderStockPage() {
         <td>${i.minQty || 0}</td>
         <td>${i.unit || "SET"}</td>
         <td>${i.lastUpdate || ""}</td>
-        <td><button class="btn-mini" onclick="editStockQty('${i.code}')">
+       <td>
+  <button class="btn-mini" onclick="editProduction(${idx})">
+  ${i18n[state.lang].pages.btnEdit}
+  </button>
+</td>
+
     ${i18n[state.lang].pages.btnEdit}
 </button></td>
     `;
@@ -1380,10 +1385,10 @@ const PageTemplates = {
       <p>${t.purchaseDesc}</p>
 
       <div class="form-row">
-        <input id="pCode" placeholder="${t.purchaseFormCodePlaceholder}">
-        <input id="pName" placeholder="${t.purchaseFormNamePlaceholder}">
-        <input id="pQty" type="number" placeholder="${t.purchaseFormQtyPlaceholder}">
-        <input id="pPrice" type="number" placeholder="Unit Price">
+         id="pCode" placeholder="${t.purchaseFormCodePlaceholder}">
+         id="pName" placeholder="${t.purchaseFormNamePlaceholder}">
+         id="pQty" type="number" placeholder="${t.purchaseFormQtyPlaceholder}">
+         id="pPrice" type="number" placeholder="Unit Price">
 
         <select id="pCurrency">
           <option value="USD">USD</option>
@@ -1422,9 +1427,9 @@ const PageTemplates = {
       <p>${t.outgoingDesc}</p>
 
       <div class="form-row">
-        <input id="oCode" placeholder="Code">
-        <input id="oName" placeholder="Name">
-        <input id="oQty" type="number" placeholder="Qty">
+         id="oCode" placeholder="Code">
+         id="oName" placeholder="Name">
+         id="oQty" type="number" placeholder="Qty">
 
         <button onclick="onOutgoing()" class="btn-primary">${t.btnOutgoing}</button>
         <button onclick="downloadOutgoingCSV()" class="btn-secondary">${t.btnDownloadExcel}</button>
@@ -1452,7 +1457,7 @@ const PageTemplates = {
       <p>${t.productionDesc}</p>
 
       <div class="form-row">
-        <input id="prodProduct" placeholder="Product Code">
+         id="prodProduct" placeholder="Product Code">
         <input id="prodQty" type="number" placeholder="Qty">
 
         <button onclick="onProduction()" class="btn-primary">${t.btnProduction}</button>
@@ -1691,10 +1696,12 @@ settings(lang) {
         Excel 파일 선택
       </label>
 
- <input type="file" id="excelFile" onchange="handleExcelUpload(event)">
+<label for="excelFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
+  Excel 파일 선택
+</label>
 
-             style="display:none;" onchange="handleExcelUpload(event)">
-    </div>
+<input type="file" id="excelFile" style="display:none;" onchange="handleExcelUpload(event)">
+
   `;
 }
 
@@ -1862,7 +1869,8 @@ function restoreFromFile(event) {
  *************************************************/
 
 
-window.handleExcelUpload =eExcelUpload;
+window.handleExcelUpload = handleExcelUpload;
+
 
 // ============================
 // 전역(Global) 바인딩
@@ -1952,7 +1960,7 @@ function renderStockTable() {
         <td>${i.minQty || 0}</td>
         <td>${i.unit || "SET"}</td>
         <td>${i.lastUpdate || ""}</td>
-        <td><button class="btn-mini" onclick="editStockQty('${i.code}')">수정</button></td>
+        <td><button class="btn-mini" onclick="editPurchase(${idx})">수정</button></td>
       </tr>
     `;
   });
