@@ -1666,24 +1666,26 @@ settings(lang) {
     <h2>${t.settingsTitle}</h2>
     <p>${t.settingsDesc}</p>
 
-    <div class="settings-section">
-      <h3>Backup & Restore</h3>
+<div class="settings-section">
+  <h3>Excel Upload</h3>
+  <p>
+    엑셀(.xlsx, .xlsm) 파일을 업로드하여
+    <b>Stock / Purchase / Production / BOM</b> 데이터를 자동 변환할 수 있습니다.
+  </p>
 
-      <button onclick="backupToFile()" class="btn-primary">
-        Backup Download
-      </button>
+  <label for="excelFile" class="btn-secondary" style="padding:10px; cursor:pointer;">
+    Excel 파일 선택
+  </label>
 
-      <label for="restoreFile" class="btn-secondary" style="cursor:pointer;">
-        Load Backup File
-      </label>
+  <input
+    type="file"
+    id="excelFile"
+    accept=".xlsx,.xlsm"
+    style="display:none;"
+    onchange="handleExcelUpload(event)"
+  >
+</div>
 
-      <input 
-        id="restoreFile"
-        type="file"
-        accept="application/json"
-        style="display:none;"
-        onchange="restoreFromFile(event)">
-    </div>
 
     <div class="hr-divider"></div>
 
