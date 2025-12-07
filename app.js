@@ -1669,16 +1669,23 @@ settings(lang) {
     <div class="settings-section">
       <h3>Backup & Restore</h3>
 
-      <button onclick="backupToFile()" class="btn-primary">Backup Download</button>
+      <button onclick="backupToFile()" class="btn-primary">
+        Backup Download
+      </button>
 
       <label for="restoreFile" class="btn-secondary" style="cursor:pointer;">
         Load Backup File
       </label>
-      <input id="restoreFile" type="file" accept="application/json"
-             style="display:none;" onchange="restoreFromFile(event)">
+
+      <input 
+        id="restoreFile"
+        type="file"
+        accept="application/json"
+        style="display:none;"
+        onchange="restoreFromFile(event)">
     </div>
 
-    <hr style="margin:30px 0;">
+    <div class="hr-divider"></div>
 
     <div class="settings-section">
       <h3>Excel Upload</h3>
@@ -1687,7 +1694,7 @@ settings(lang) {
         Excel 파일 선택
       </label>
 
-      <input 
+      <input
         type="file"
         id="excelFile"
         accept=".xlsx,.xls"
@@ -1696,9 +1703,6 @@ settings(lang) {
     </div>
   `;
 }
-
-
-
 
 
 /*************************************************
@@ -1866,6 +1870,7 @@ function restoreFromFile(event) {
 
 
 window.handleExcelUpload = handleExcelUpload;
+
 
 
 // ============================
