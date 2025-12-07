@@ -1680,7 +1680,6 @@ settings(lang) {
 
     <hr style="margin:30px 0;">
 
-    <!-- ✅ EXCEL UPLOAD -->
     <div class="settings-section">
       <h3>Excel Upload</h3>
 
@@ -1689,14 +1688,15 @@ settings(lang) {
       </label>
 
       <input 
-        type="file" 
-        id="excelFile" 
+        type="file"
+        id="excelFile"
         accept=".xlsx,.xls"
         style="display:none;"
         onchange="handleExcelUpload(event)">
     </div>
   `;
 }
+
 
 
 
