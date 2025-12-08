@@ -42,6 +42,9 @@ const T = {
 /***********************
  LOGIN
 ***********************/
+function renderMenu() {
+if (currentUser) renderMenu();
+if (currentUser) showPage("dashboard");
 function login() {
   const id = loginId.value.trim();
   const pw = loginPw.value.trim();
@@ -61,9 +64,10 @@ function login() {
     loginBox.classList.add("hidden");
     erp.classList.remove("hidden");
 
-    renderMenu();
-    showPage("dashboard");
-  });
+ function setLanguage(l) {
+  lang = l;
+  if (currentUser) renderMenu();  // ✅ 로그인 후에만 실행
+  if (currentUser) showPage("dashboard");
 }
 
 /***********************
