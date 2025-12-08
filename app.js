@@ -14,7 +14,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 /***********************
- ✅ 최초 1회만 admin 생성 (데이터 보호)
+ ✅ 최초 1회만 admin 생성
 ***********************/
 db.ref("employees").once("value").then(snap => {
   if (!snap.exists()) {
@@ -33,8 +33,8 @@ db.ref("employees").once("value").then(snap => {
 let currentUser = null;
 
 function login(){
-  const id = loginId.value.trim();
-  const pw = loginPw.value.trim();
+  const id = document.getElementById("loginId").value.trim();
+  const pw = document.getElementById("loginPw").value.trim();
 
   db.ref("employees").once("value").then(s=>{
     const list = s.val() || {};
@@ -42,8 +42,9 @@ function login(){
     if(!found) return alert("LOGIN FAIL");
 
     currentUser = found;
-    loginBox.classList.add("hidden");
-    erp.classList.remove("hidden");
+
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("erp").classList.remove("hidden");
 
     renderMenu();
     showPage("dashboard");
@@ -63,7 +64,7 @@ const T = {
 
 function setLanguage(l){
   lang = l;
-  if (!currentUser) return;   // ✅ 로그인 전 언어 클릭 방지
+  if (!currentUser) return;
   renderMenu();
   showPage("dashboard");
 }
@@ -73,6 +74,8 @@ function setLanguage(l){
 ***********************/
 function renderMenu(){
   if (!currentUser) return;
+
+  const sidebar = document.getElementById("sidebar");
   sidebar.innerHTML="";
 
   const roleMap = {
@@ -90,13 +93,15 @@ function renderMenu(){
 }
 
 function toggleSidebar(){
-  sidebar.classList.toggle("active");
+  document.getElementById("sidebar").classList.toggle("active");
 }
 
 /***********************
  PAGES
 ***********************/
 function showPage(page){
+  const content = document.getElementById("content");
+
   if(page==="dashboard"){
     content.innerHTML = `<h2>${T[lang].dashboard}</h2><p>Realtime Connected ✅</p>`;
   }
@@ -179,14 +184,17 @@ function showPage(page){
 ***********************/
 function addEmployee(){
   const emp = {
-    id:eId.value, pw:ePw.value,
-    name:eName.value, role:eRole.value
+    id:eId.value,
+    pw:ePw.value,
+    name:eName.value,
+    role:eRole.value
   };
   db.ref("employees").push(emp);
 }
 
 function loadEmployees(){
   db.ref("employees").on("value", snap=>{
+    const empBody = document.getElementById("empBody");
     empBody.innerHTML="";
     const list = snap.val() || {};
     Object.values(list).forEach(e=>{
@@ -200,8 +208,10 @@ function loadEmployees(){
 ***********************/
 function addStock(){
   const data = {
-    date:inDate.value, vendor:inVendor.value,
-    method:inMethod.value, code:sCode.value,
+    date:inDate.value,
+    vendor:inVendor.value,
+    method:inMethod.value,
+    code:sCode.value,
     qty:Number(sQty.value)
   };
 
@@ -211,6 +221,7 @@ function addStock(){
 
 function loadStock(){
   db.ref("stock").on("value", snap=>{
+    const stockBody = document.getElementById("stockBody");
     stockBody.innerHTML="";
     const list = snap.val() || {};
     Object.values(list).forEach(s=>{
@@ -224,14 +235,18 @@ function loadStock(){
 ***********************/
 function addOrder(){
   const o = {
-    orderNo:oNo.value, product:oProduct.value,
-    qty:oQty.value, price:oPrice.value, due:oDue.value
+    orderNo:oNo.value,
+    product:oProduct.value,
+    qty:oQty.value,
+    price:oPrice.value,
+    due:oDue.value
   };
   db.ref("orders").push(o);
 }
 
 function loadOrders(){
   db.ref("orders").on("value", snap=>{
+    const orderBody = document.getElementById("orderBody");
     orderBody.innerHTML="";
     const list = snap.val() || {};
     Object.values(list).forEach(o=>{
