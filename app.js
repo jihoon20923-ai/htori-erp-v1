@@ -226,21 +226,7 @@ const PageTemplates = {
  * SETTINGS
  ***********************/
 
-const PageTemplates = {
-  dashboard(lang) {
-    return `<h2>Dashboard</h2>`;
-  },
 
-  stock(lang) {
-    return `<h2>Stock</h2>`;
-  },
-
-  suppliers(lang) {
-    return `<h2>Suppliers</h2>`;
-  },
-
-  settings(lang) {
-    const t = i18n[lang].pages;
 
     return `
       <h2>${t.settingsTitle}</h2>
