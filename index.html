@@ -5,20 +5,21 @@
   <title>Factory ERP</title>
   <style>
     body { font-family: Arial; margin: 20px; background: #f5f5f5; }
-    h2 { margin-top: 40px; }
+    h2 { margin-top: 20px; }
     .form-row { margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
     input, select, button { padding: 6px; }
     button { cursor: pointer; }
-    table { border-collapse: collapse; width: 100%; background: white; }
+    table { border-collapse: collapse; width: 100%; background: white; margin-top: 10px; }
     th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
     th { background: #eee; }
+    .page { display: none; }
   </style>
 </head>
 <body>
 
-<h1>Factory ERP (All-in-One)</h1>
+<h1>Factory ERP</h1>
 
-<!-- ================= LANGUAGE ================= -->
+<!-- ✅ 언어 선택 -->
 <div class="form-row">
   <select id="langSelect" onchange="changeLanguage(this.value)">
     <option value="ko">한국어</option>
@@ -27,123 +28,134 @@
   </select>
 </div>
 
+<!-- ✅ 상단 메뉴 -->
+<div class="form-row">
+  <button onclick="showPage('employee')">Employee</button>
+  <button onclick="showPage('bom')">BOM</button>
+  <button onclick="showPage('production')">Production</button>
+  <button onclick="showPage('stock')">Stock</button>
+  <button onclick="showPage('payroll')">Payroll</button>
+</div>
+
 <hr>
 
 <!-- ================= EMPLOYEE ================= -->
-<h2 data-i18n="empTitle">직원관리</h2>
+<div id="page-employee" class="page">
+  <h2 data-i18n="empTitle">직원 관리</h2>
+  <div class="form-row">
+    <input id="empId" placeholder="ID">
+    <input id="empName" placeholder="Name">
+    <select id="empPayType">
+      <option value="piece">건당</option>
+      <option value="monthly">월급</option>
+    </select>
+    <input id="empUnitPay" type="number" placeholder="단가/월급">
+    <button onclick="addEmployee()">추가</button>
+  </div>
 
-<div class="form-row">
-  <input id="empId" placeholder="ID">
-  <input id="empName" placeholder="Name">
-  <select id="empPayType">
-    <option value="piece">건당</option>
-    <option value="monthly">월급</option>
-  </select>
-  <input id="empUnitPay" type="number" placeholder="단가/월급">
-  <button onclick="addEmployee()">추가</button>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Name</th><th>PayType</th><th>UnitPay</th><th>삭제</th></tr>
+    </thead>
+    <tbody id="empBody"></tbody>
+  </table>
 </div>
-
-<table>
-  <thead>
-    <tr><th>ID</th><th>Name</th><th>PayType</th><th>UnitPay</th><th>삭제</th></tr>
-  </thead>
-  <tbody id="empBody"></tbody>
-</table>
-
-<hr>
 
 <!-- ================= BOM ================= -->
-<h2>BOM</h2>
+<div id="page-bom" class="page">
+  <h2>BOM</h2>
+  <div class="form-row">
+    <input id="bomProduct" placeholder="Product">
+    <input id="bomProcess" placeholder="Process">
+    <input id="bomInputCode" placeholder="Input Code">
+    <input id="bomInputQty" type="number" placeholder="Qty">
+    <input id="bomUnitCost" type="number" placeholder="Unit Cost">
+    <input id="bomOutputCode" placeholder="Output Code">
+    <button onclick="saveBOM()">Save BOM</button>
+  </div>
 
-<div class="form-row">
-  <input id="bomProduct" placeholder="Product">
-  <input id="bomProcess" placeholder="Process (1,2,OUT1 etc)">
-  <input id="bomInputCode" placeholder="Input Code">
-  <input id="bomInputQty" type="number" placeholder="Qty">
-  <input id="bomUnitCost" type="number" placeholder="Unit Cost">
-  <input id="bomOutputCode" placeholder="Output Code">
-  <button onclick="saveBOM()">Save BOM</button>
+  <table>
+    <thead>
+      <tr><th>Product</th><th>Process</th><th>Input</th><th>Qty</th><th>Cost</th><th>Output</th></tr>
+    </thead>
+    <tbody id="bomBody"></tbody>
+  </table>
 </div>
-
-<table>
-  <thead>
-    <tr><th>Product</th><th>Process</th><th>Input</th><th>Qty</th><th>Cost</th><th>Output</th></tr>
-  </thead>
-  <tbody id="bomBody"></tbody>
-</table>
-
-<hr>
 
 <!-- ================= PRODUCTION ================= -->
-<h2>Production</h2>
+<div id="page-production" class="page">
+  <h2>Production</h2>
+  <div class="form-row">
+    <input id="prodDate" type="date">
+    <input id="prodProduct" placeholder="Product">
+    <input id="prodProcess" placeholder="Process">
+    <input id="prodInputCode" placeholder="Input Code">
+    <input id="prodInputQty" type="number" placeholder="Input Qty">
+    <input id="prodOutputCode" placeholder="Output Code">
+    <input id="prodGoodQty" type="number" placeholder="Good Qty">
+    <input id="prodDefectQty" type="number" placeholder="Defect Qty">
+    <input id="prodWorker" placeholder="Worker ID">
+    <button onclick="saveProduction()">Save Production</button>
+  </div>
 
-<div class="form-row">
-  <input id="prodDate" type="date">
-  <input id="prodProduct" placeholder="Product">
-  <input id="prodProcess" placeholder="Process">
-  <input id="prodInputCode" placeholder="Input Code">
-  <input id="prodInputQty" type="number" placeholder="Input Qty">
-  <input id="prodOutputCode" placeholder="Output Code">
-  <input id="prodGoodQty" type="number" placeholder="Good Qty">
-  <input id="prodDefectQty" type="number" placeholder="Defect Qty">
-  <input id="prodWorker" placeholder="Worker ID">
-  <button onclick="saveProduction()">Save Production</button>
+  <table>
+    <thead>
+      <tr><th>Date</th><th>Product</th><th>Process</th><th>Input</th><th>Output</th><th>Good</th><th>Defect</th><th>Worker</th></tr>
+    </thead>
+    <tbody id="prodBody"></tbody>
+  </table>
 </div>
-
-<table>
-  <thead>
-    <tr><th>Date</th><th>Product</th><th>Process</th><th>Input</th><th>Output</th><th>Good</th><th>Defect</th><th>Worker</th></tr>
-  </thead>
-  <tbody id="prodBody"></tbody>
-</table>
-
-<hr>
 
 <!-- ================= STOCK ================= -->
-<h2>Stock</h2>
-<table>
-  <thead>
-    <tr><th>Code</th><th>Good</th><th>Defect</th></tr>
-  </thead>
-  <tbody id="stockBody"></tbody>
-</table>
-
-<hr>
-
-<!-- ================= PAYROLL ================= -->
-<h2>Payroll</h2>
-
-<div class="form-row">
-  <input id="payrollMonth" type="month">
-  <button onclick="calcPayroll()">Calculate</button>
-  <button onclick="downloadPayroll()">Download CSV</button>
+<div id="page-stock" class="page">
+  <h2>Stock</h2>
+  <table>
+    <thead>
+      <tr><th>Code</th><th>Good</th><th>Defect</th></tr>
+    </thead>
+    <tbody id="stockBody"></tbody>
+  </table>
 </div>
 
-<table>
-  <thead>
-    <tr><th>ID</th><th>Name</th><th>Qty</th><th>Salary</th></tr>
-  </thead>
-  <tbody id="payrollBody"></tbody>
-</table>
+<!-- ================= PAYROLL ================= -->
+<div id="page-payroll" class="page">
+  <h2>Payroll</h2>
+  <div class="form-row">
+    <input id="payrollMonth" type="month">
+    <button onclick="calcPayroll()">Calculate</button>
+    <button onclick="downloadPayroll()">Download CSV</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Name</th><th>Qty</th><th>Salary</th></tr>
+    </thead>
+    <tbody id="payrollBody"></tbody>
+  </table>
+</div>
 
 <script>
-/* ======================= COMMON ======================= */
 function load(key){ return JSON.parse(localStorage.getItem(key)||"[]");}
 function save(key,val){ localStorage.setItem(key,JSON.stringify(val));}
 
-/* ======================= LANGUAGE ======================= */
-function changeLanguage(lang){}
+/* ✅ 페이지 전환 */
+function showPage(page){
+  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+  document.getElementById("page-"+page).style.display="block";
+}
 
-/* ======================= EMPLOYEE ======================= */
+/* ✅ 직원 */
 function addEmployee(){
-  const list = load("employees");
+  if(!empId.value||!empName.value||!empUnitPay.value){alert("입력 누락");return;}
+  const list=load("employees");
   list.push({
-    id: empId.value,
-    name: empName.value,
-    payType: empPayType.value,
-    unitPay: Number(empUnitPay.value)
+    id:empId.value,
+    name:empName.value,
+    payType:empPayType.value,
+    unitPay:Number(empUnitPay.value)
   });
   save("employees",list);
+  empId.value=""; empName.value=""; empUnitPay.value="";
   renderEmployees();
 }
 function renderEmployees(){
@@ -151,20 +163,22 @@ function renderEmployees(){
   load("employees").forEach((e,i)=>{
     empBody.innerHTML+=`
       <tr>
-        <td>${e.id}</td><td>${e.name}</td><td>${e.payType}</td><td>${e.unitPay}</td>
+        <td>${e.id}</td><td>${e.name}</td>
+        <td>${e.payType}</td><td>${e.unitPay}</td>
         <td><button onclick="delEmp(${i})">X</button></td>
       </tr>`;
   });
 }
 function delEmp(i){
   const list=load("employees");
-  list.splice(i,1);
-  save("employees",list);
-  renderEmployees();
+  list.splice(i,1); save("employees",list); renderEmployees();
 }
 
-/* ======================= BOM ======================= */
+/* ✅ BOM */
 function saveBOM(){
+  if(!bomProduct.value||!bomProcess.value||!bomInputCode.value||!bomOutputCode.value){
+    alert("BOM 입력 누락"); return;
+  }
   const list=load("bom");
   list.push({
     product:bomProduct.value,
@@ -174,21 +188,21 @@ function saveBOM(){
     unitCost:Number(bomUnitCost.value),
     outputCode:bomOutputCode.value
   });
-  save("bom",list);
-  renderBOM();
+  save("bom",list); renderBOM();
 }
 function renderBOM(){
   bomBody.innerHTML="";
   load("bom").forEach(b=>{
     bomBody.innerHTML+=`
       <tr>
-        <td>${b.product}</td><td>${b.process}</td><td>${b.inputCode}</td>
-        <td>${b.inputQty}</td><td>${b.unitCost}</td><td>${b.outputCode}</td>
+        <td>${b.product}</td><td>${b.process}</td>
+        <td>${b.inputCode}</td><td>${b.inputQty}</td>
+        <td>${b.unitCost}</td><td>${b.outputCode}</td>
       </tr>`;
   });
 }
 
-/* ======================= STOCK ======================= */
+/* ✅ 재고 */
 function adjustStock(code,good,defect){
   const stock=load("stock");
   let item=stock.find(s=>s.code===code);
@@ -204,8 +218,11 @@ function renderStock(){
   });
 }
 
-/* ======================= PRODUCTION ======================= */
+/* ✅ 생산 */
 function saveProduction(){
+  if(!prodProduct.value||!prodInputCode.value||!prodOutputCode.value){
+    alert("Production 입력 누락"); return;
+  }
   const log=load("productionLog");
   const row={
     date:prodDate.value||new Date().toISOString().split("T")[0],
@@ -218,12 +235,9 @@ function saveProduction(){
     defectQty:Number(prodDefectQty.value),
     worker:prodWorker.value
   };
-  log.push(row);
-  save("productionLog",log);
-
+  log.push(row); save("productionLog",log);
   adjustStock(row.inputCode,-row.inputQty,0);
   adjustStock(row.outputCode,row.goodQty,row.defectQty);
-
   renderProduction();
 }
 function renderProduction(){
@@ -233,27 +247,27 @@ function renderProduction(){
       <tr>
         <td>${p.date}</td><td>${p.product}</td><td>${p.process}</td>
         <td>${p.inputCode}(${p.inputQty})</td>
-        <td>${p.outputCode}</td><td>${p.goodQty}</td>
-        <td>${p.defectQty}</td><td>${p.worker}</td>
+        <td>${p.outputCode}</td>
+        <td>${p.goodQty}</td>
+        <td>${p.defectQty}</td>
+        <td>${p.worker}</td>
       </tr>`;
   });
 }
 
-/* ======================= PAYROLL ======================= */
+/* ✅ 급여 */
 let payrollCache=[];
 function calcPayroll(){
-  payrollBody.innerHTML="";
-  payrollCache=[];
+  payrollBody.innerHTML=""; payrollCache=[];
   const month=payrollMonth.value;
-  const emp=load("employees");
-  const log=load("productionLog");
+  const emp=load("employees"), log=load("productionLog");
 
   emp.forEach(e=>{
     let qty=0;
     log.forEach(r=>{
       if(r.worker===e.id && r.date.startsWith(month)) qty+=r.goodQty;
     });
-    let salary = e.payType==="piece"?qty*e.unitPay:e.unitPay;
+    const salary = e.payType==="piece" ? qty*e.unitPay : e.unitPay;
     payrollBody.innerHTML+=`
       <tr><td>${e.id}</td><td>${e.name}</td><td>${qty}</td><td>${salary}</td></tr>`;
     payrollCache.push({id:e.id,name:e.name,qty,salary});
@@ -271,7 +285,8 @@ function downloadPayroll(){
   a.click();
 }
 
-/* ======================= INIT ======================= */
+/* ✅ 초기 실행 */
+showPage("employee");
 renderEmployees();
 renderBOM();
 renderProduction();
