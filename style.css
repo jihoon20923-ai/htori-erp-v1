@@ -61,3 +61,32 @@ body { background: #f5f7fa; }
   margin-top: 70px;
   padding: 20px;
 }
+/* ✅ 모바일 전용 햄버거 버튼 */
+.mobile-menu-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    transition: 0.3s;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  #content {
+    margin-left: 0;
+  }
+}
+
