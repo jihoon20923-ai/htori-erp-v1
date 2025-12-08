@@ -1,170 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>HTORI ERP - Login</title>
+<title>HTORI Realtime ERP</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-:root{
---bg:#0f172a;--card:#111827;--accent:#3b82f6;--text:#e5e7eb;--muted:#9ca3af;
-}
-*{box-sizing:border-box;}
-body{margin:0;font-family:Arial;background:linear-gradient(180deg,#0f172a,#020617);color:var(--text);}
-input,select,button{padding:8px;border-radius:6px;border:1px solid #333;background:#020617;color:#fff;}
-table{width:100%;border-collapse:collapse;margin-top:10px;}
-th,td{border:1px solid #333;padding:6px;font-size:13px;text-align:center;}
-th{background:#111827;}
-.form-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
-button{cursor:pointer;}
-.page{display:none;}
-.selected-row{background:#1f2933}
 
-/* LOGIN */
-#loginBox{
-height:100vh;display:flex;align-items:center;justify-content:center;
-}
-.login-card{
-background:#020617;padding:30px;border-radius:12px;box-shadow:0 0 0 1px #1f2933;
-width:320px;
-}
-.login-card h2{text-align:center;margin-bottom:15px}
-
-/* LAYOUT */
-header{padding:14px 20px;background:#020617;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1f2933;}
-.container{display:flex;min-height:100vh;}
-aside{width:220px;background:#020617;border-right:1px solid #1f2933;padding:15px;}
-aside button{width:100%;margin-bottom:6px;}
-main{flex:1;padding:20px;}
-</style>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
+<style>
+body{margin:0;font-family:Arial;background:#0f172a;color:#e5e7eb}
+header{background:#020617;padding:12px;display:flex;justify-content:space-between}
+aside{width:220px;background:#020617;height:100vh;padding:10px}
+main{flex:1;padding:15px}
+button,input,select{padding:8px;border-radius:6px;border:1px solid #333;background:#020617;color:#fff}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #333;padding:6px;text-align:center}
+.page{display:none}
+.layout{display:flex}
+</style>
 </head>
 
 <body>
 
-<!-- ✅ LOGIN PAGE -->
+<!-- ✅ LOGIN -->
 <div id="loginBox">
-  <div class="login-card">
-    <h2>HTORI ERP LOGIN</h2>
-    <div class="form-row"><input id="loginId" placeholder="User ID"></div>
-    <div class="form-row"><input id="loginPw" type="password" placeholder="Password"></div>
+  <h2 style="padding:20px">HTORI ERP LOGIN</h2>
+  <div style="padding:20px">
+    <input id="loginId" placeholder="ID"><br><br>
+    <input id="loginPw" type="password" placeholder="Password"><br><br>
     <button onclick="login()">LOGIN</button>
   </div>
 </div>
 
-<!-- ✅ ERP SYSTEM -->
-<div id="erpSystem" style="display:none">
+<!-- ✅ ERP -->
+<div id="erp" style="display:none">
 
 <header>
-  <h3>HTORI FACTORY ERP</h3>
-  <button onclick="logout()">LOGOUT</button>
+  <b>HTORI REALTIME ERP</b>
+  <select id="lang" onchange="setLang(this.value)">
+    <option value="ko">한국어</option>
+    <option value="en">EN</option>
+    <option value="id">INDO</option>
+  </select>
 </header>
 
-<div class="container">
-
-<aside id="menuBox"></aside>
-
+<div class="layout">
+<aside id="menu"></aside>
 <main>
 
-<!-- DASHBOARD -->
-<div id="page-dashboard" class="page">
-  <h2>Dashboard</h2>
-  <p>Welcome to HTORI ERP</p>
+<div id="page-dashboard" class="page"><h2>Dashboard</h2></div>
+
+<div id="page-employee" class="page">
+<h2>직원 등록</h2>
+<input id="eId" placeholder="ID">
+<input id="ePw" placeholder="PW">
+<input id="eName" placeholder="Name">
+<select id="eRole">
+  <option value="master">Master</option>
+  <option value="sales">Sales</option>
+  <option value="production">Production</option>
+</select>
+<button onclick="addEmployee()">등록</button>
+
+<table>
+<thead><tr><th>ID</th><th>Name</th><th>Role</th></tr></thead>
+<tbody id="empBody"></tbody>
+</table>
 </div>
 
-<!-- CUSTOMER -->
-<div id="page-customer" class="page">
-  <h2>Customer / Vendor</h2>
-  <div class="form-row">
-    <input id="cCode" placeholder="Code">
-    <input id="cName" placeholder="Company">
-    <select id="cRole">
-      <option value="buyer">Buyer</option>
-      <option value="vendor">Vendor</option>
-      <option value="both">Both</option>
-    </select>
-    <button onclick="addCustomer()">Save</button>
-  </div>
+<div id="page-stock" class="page">
+<h2>재고</h2>
+<input id="sCode" placeholder="Code">
+<input id="sQty" type="number" placeholder="Qty">
+<button onclick="addStock()">입고</button>
 
-  <table>
-    <thead><tr><th>Code</th><th>Name</th><th>Role</th></tr></thead>
-    <tbody id="cusBody"></tbody>
-  </table>
+<table>
+<thead><tr><th>Code</th><th>Qty</th></tr></thead>
+<tbody id="stockBody"></tbody>
+</table>
 </div>
 
-<!-- ORDER -->
 <div id="page-order" class="page">
-  <h2>Order</h2>
-  <div class="form-row">
-    <input id="oNo" placeholder="Order No">
-    <input id="oBuyer" placeholder="Buyer">
-    <input id="oProduct" placeholder="Product">
-    <input id="oQty" type="number" placeholder="Qty">
-    <input id="oPrice" type="number" placeholder="Price">
-    <button onclick="addOrder()">Add</button>
-  </div>
+<h2>주문</h2>
+<input id="oNo" placeholder="Order No">
+<input id="oProduct" placeholder="Product">
+<input id="oQty" type="number" placeholder="Qty">
+<button onclick="addOrder()">주문 입력</button>
 
-  <table>
-    <thead><tr><th>No</th><th>Buyer</th><th>Product</th><th>Qty</th><th>Total</th></tr></thead>
-    <tbody id="orderBody"></tbody>
-  </table>
-</div>
-
-<!-- CBM -->
-<div id="page-cbm" class="page">
-  <h2>CBM</h2>
-  <div class="form-row">
-    <input id="cbCode" placeholder="Product">
-    <input id="cbQty" type="number" placeholder="Qty">
-    <input id="cbL" type="number" placeholder="L">
-    <input id="cbW" type="number" placeholder="W">
-    <input id="cbH" type="number" placeholder="H">
-    <button onclick="calcCBM()">Calc</button>
-  </div>
-  <table>
-    <thead><tr><th>Product</th><th>Qty</th><th>CBM</th></tr></thead>
-    <tbody id="cbmBody"></tbody>
-  </table>
-</div>
-
-<!-- INVOICE -->
-<div id="page-invoice" class="page">
-  <h2>Invoice</h2>
-  <button onclick="makeInvoice()">Download CSV</button>
-  <table>
-    <thead><tr><th>Product</th><th>Qty</th><th>Amount</th></tr></thead>
-    <tbody id="invBody"></tbody>
-  </table>
-</div>
-
-<!-- ✅ USER PERMISSION (MASTER ONLY) -->
-<div id="page-users" class="page">
-  <h2>User Permission</h2>
-
-  <div class="form-row">
-    <input id="uId" placeholder="User ID">
-    <input id="uPw" placeholder="Password">
-    <select id="uRole">
-      <option value="master">Master</option>
-      <option value="sales">Sales</option>
-      <option value="production">Production</option>
-      <option value="finance">Finance</option>
-      <option value="staff">Staff</option>
-    </select>
-    <button onclick="addUser()">Add User</button>
-  </div>
-
-  <table>
-    <thead><tr><th>ID</th><th>Role</th><th>Del</th></tr></thead>
-    <tbody id="userBody"></tbody>
-  </table>
+<table>
+<thead><tr><th>No</th><th>Product</th><th>Qty</th></tr></thead>
+<tbody id="orderBody"></tbody>
+</table>
 </div>
 
 </main>
 </div>
 </div>
-// ✅ Firebase 실시간 ERP 연결 (웹 CDN 버전)
+
+<script>
+// ✅ Firebase 연결
 var firebaseConfig = {
   apiKey: "AIzaSyDwiTlPtoXraEtA7TzTctdH6DJS6gdSEGQ",
   authDomain: "htori-erp-3c22b.firebaseapp.com",
@@ -174,141 +110,106 @@ var firebaseConfig = {
   messagingSenderId: "975336397666",
   appId: "1:975336397666:web:ae45a471e51bf71e9dea3b"
 };
-
-// ✅ Firebase 초기화
 firebase.initializeApp(firebaseConfig);
-
-// ✅ 실시간 DB 객체
 var db = firebase.database();
 
-<script>
-const $=id=>document.getElementById(id);
+// ✅ 공통 함수
+function saveData(key,val){db.ref(key).set(val);}
+function listenData(key,cb){db.ref(key).on("value",s=>cb(s.val()||[]));}
 
-/* ✅ 기본 마스터 계정 자동 생성 */
-if(!localStorage.getItem("users")){
-  localStorage.setItem("users",JSON.stringify([
-    {id:"admin",pw:"1234",role:"master"}
-  ]));
+// ✅ 최초 관리자 생성
+listenData("employees", list=>{
+if(list.length===0){
+list.push({id:"admin",pw:"1234",name:"Master",role:"master"});
+saveData("employees",list);
 }
+});
 
-/* ✅ LOGIN */
+// ✅ 로그인
 let currentUser=null;
 function login(){
-  const id=loginId.value,pw=loginPw.value;
-  const users=JSON.parse(localStorage.getItem("users"));
-  const found=users.find(u=>u.id===id&&u.pw===pw);
-  if(!found){alert("Login Failed");return;}
-  currentUser=found;
-  loginBox.style.display="none";
-  erpSystem.style.display="block";
-  buildMenu();
-  showPage("dashboard");
-}
-function logout(){
-  currentUser=null;
-  erpSystem.style.display="none";
-  loginBox.style.display="flex";
+listenData("employees", list=>{
+const found=list.find(e=>e.id===loginId.value && e.pw===loginPw.value);
+if(!found){alert("로그인 실패");return;}
+currentUser=found;
+loginBox.style.display="none";
+erp.style.display="block";
+buildMenu();
+showPage("dashboard");
+});
 }
 
-/* ✅ MENU PERMISSION */
+// ✅ 메뉴 권한
 function buildMenu(){
-  menuBox.innerHTML="";
-  const map={
-    master:["dashboard","customer","order","cbm","invoice","users"],
-    sales:["dashboard","order","invoice"],
-    production:["dashboard","cbm"],
-    finance:["dashboard","customer","invoice"],
-    staff:["dashboard"]
-  };
-  map[currentUser.role].forEach(p=>{
-    const btn=document.createElement("button");
-    btn.innerText=p.toUpperCase();
-    btn.onclick=()=>showPage(p);
-    menuBox.appendChild(btn);
-  });
+menu.innerHTML="";
+const map={
+master:["dashboard","employee","stock","order"],
+sales:["dashboard","order"],
+production:["dashboard","stock"]
+};
+map[currentUser.role].forEach(p=>{
+const b=document.createElement("button");
+b.innerText=p;
+b.onclick=()=>showPage(p);
+menu.appendChild(b);
+});
 }
 
 function showPage(p){
-  document.querySelectorAll(".page").forEach(x=>x.style.display="none");
-  $("page-"+p).style.display="block";
+document.querySelectorAll(".page").forEach(x=>x.style.display="none");
+document.getElementById("page-"+p).style.display="block";
 }
 
-/* ✅ USER PERMISSION SYSTEM */
-function addUser(){
-  const list=JSON.parse(localStorage.getItem("users"));
-  list.push({id:uId.value,pw:uPw.value,role:uRole.value});
-  localStorage.setItem("users",JSON.stringify(list));
-  renderUsers();
-}
-function renderUsers(){
-  userBody.innerHTML="";
-  JSON.parse(localStorage.getItem("users")).forEach((u,i)=>{
-    userBody.innerHTML+=`<tr><td>${u.id}</td><td>${u.role}</td>
-    <td><button onclick="delUser(${i})">X</button></td></tr>`;
-  });
-}
-function delUser(i){
-  const list=JSON.parse(localStorage.getItem("users"));
-  list.splice(i,1);
-  localStorage.setItem("users",JSON.stringify(list));
-  renderUsers();
+// ✅ 직원
+function addEmployee(){
+listenData("employees", list=>{
+if(list.find(x=>x.id===eId.value)){alert("중복 ID");return;}
+list.push({id:eId.value,pw:ePw.value,name:eName.value,role:eRole.value});
+saveData("employees",list);
+});
 }
 
-/* ✅ SIMPLE DATA SYSTEM */
-function saveData(key, value){
-  db.ref(key).set(value);
+listenData("employees", list=>{
+empBody.innerHTML="";
+list.forEach(e=>{
+empBody.innerHTML+=`<tr><td>${e.id}</td><td>${e.name}</td><td>${e.role}</td></tr>`
+});
+});
+
+// ✅ 재고
+function addStock(){
+listenData("stock", list=>{
+list.push({code:sCode.value,qty:Number(sQty.value)});
+saveData("stock",list);
+});
 }
 
-function listenData(key, callback){
-  db.ref(key).on("value", function(snapshot){
-    callback(snapshot.val() || []);
-  });
-}
+listenData("stock", list=>{
+stockBody.innerHTML="";
+list.forEach(s=>{
+stockBody.innerHTML+=`<tr><td>${s.code}</td><td>${s.qty}</td></tr>`
+});
+});
 
-
-/* CUSTOMER */
-function addCustomer(){
-  const list=load("customers");
-  list.push({code:cCode.value,name:cName.value,role:cRole.value});
-  save("customers",list);
-  cusBody.innerHTML="";
-  list.forEach(c=>cusBody.innerHTML+=`<tr><td>${c.code}</td><td>${c.name}</td><td>${c.role}</td></tr>`);
-}
-
-/* ORDER */
+// ✅ 주문
 function addOrder(){
-  const list=load("orders");
-  const total=oQty.value*oPrice.value;
-  list.push({no:oNo.value,buyer:oBuyer.value,product:oProduct.value,qty:oQty.value,total});
-  save("orders",list);
-  orderBody.innerHTML="";
-  list.forEach(o=>orderBody.innerHTML+=`<tr><td>${o.no}</td><td>${o.buyer}</td><td>${o.product}</td><td>${o.qty}</td><td>${o.total}</td></tr>`);
+listenData("orders", list=>{
+list.push({no:oNo.value,product:oProduct.value,qty:oQty.value});
+saveData("orders",list);
+});
 }
 
-/* CBM */
-function calcCBM(){
-  const list=load("cbm");
-  const val=(cbL.value*cbW.value*cbH.value)/1000000;
-  list.push({product:cbCode.value,qty:cbQty.value,cbm:val});
-  save("cbm",list);
-  cbmBody.innerHTML="";
-  list.forEach(c=>cbmBody.innerHTML+=`<tr><td>${c.product}</td><td>${c.qty}</td><td>${c.cbm.toFixed(3)}</td></tr>`);
-}
+listenData("orders", list=>{
+orderBody.innerHTML="";
+list.forEach(o=>{
+orderBody.innerHTML+=`<tr><td>${o.no}</td><td>${o.product}</td><td>${o.qty}</td></tr>`
+});
+});
 
-/* INVOICE */
-function makeInvoice(){
-  invBody.innerHTML="";
-  let csv="Product,Qty,Amount\n";
-  load("orders").forEach(o=>{
-    invBody.innerHTML+=`<tr><td>${o.product}</td><td>${o.qty}</td><td>${o.total}</td></tr>`;
-    csv+=`${o.product},${o.qty},${o.total}\n`;
-  });
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([csv]));a.download="invoice.csv";a.click();
+// ✅ 다국어 기본 틀
+function setLang(l){
+alert("언어 변경: "+l+" (UI 확장 가능)");
 }
-
-/* INIT */
-renderUsers();
 </script>
 
 </body>
