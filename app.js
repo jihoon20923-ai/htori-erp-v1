@@ -221,14 +221,53 @@ const PageTemplates = {
       </table>`;
   },
 
-  settings() {
-    return `
-      <h2>Settings</h2>
-      <label for="excelFile" class="btn-secondary">Excel 파일 선택</label>
-      <input id="excelFile" type="file" style="display:none" onchange="handleExcelUpload(event)">
-    `;
-  },
+  /***********************
+ * SETTINGS
+ ***********************/
+PageTemplates.settings = function (lang) {
+  const t = i18n[lang].pages;
+
+  return `
+    <h2>${t.settingsTitle}</h2>
+    <p>${t.settingsDesc}</p>
+
+    <!-- =======================
+         Backup & Restore
+    ======================== -->
+    <div class="settings-section">
+      <h3>Backup & Restore</h3>
+
+      <button onclick="backupToFile()" class="btn-primary">
+        Backup Download
+      </button>
+
+      <label for="restoreFile" class="btn-secondary" style="cursor:pointer;">
+        Load Backup File
+      </label>
+
+      <input id="restoreFile" type="file" accept="application/json"
+             style="display:none;" onchange="restoreFromFile(event)">
+    </div>
+
+    <div class="hr-divider"></div>
+
+    <!-- =======================
+         Excel Upload
+    ======================== -->
+    <div class="settings-section">
+      <h3>Excel Upload</h3>
+
+      <label for="excelFile" class="btn-secondary" style="cursor:pointer;">
+        Excel 파일 선택
+      </label>
+
+      <input type="file" id="excelFile"
+             style="display:none;"
+             onchange="handleExcelUpload(event)">
+    </div>
+  `;
 };
+
 
 /* =========================
    RENDER ENGINE
