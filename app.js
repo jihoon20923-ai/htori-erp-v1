@@ -220,6 +220,7 @@ const PageTemplates = {
         <tbody id="supplierTableBody"></tbody>
       </table>`;
   }
+};   // ✅ ✅ ✅ 이 줄이 없어서 전부 깨지고 있었음
 
 /***********************
  * SETTINGS
