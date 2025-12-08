@@ -231,9 +231,6 @@ PageTemplates.settings = function (lang) {
     <h2>${t.settingsTitle}</h2>
     <p>${t.settingsDesc}</p>
 
-    <!-- =======================
-         Backup & Restore
-    ======================== -->
     <div class="settings-section">
       <h3>Backup & Restore</h3>
 
@@ -249,11 +246,6 @@ PageTemplates.settings = function (lang) {
              style="display:none;" onchange="restoreFromFile(event)">
     </div>
 
-    <div class="hr-divider"></div>
-
-    <!-- =======================
-         Excel Upload
-    ======================== -->
     <div class="settings-section">
       <h3>Excel Upload</h3>
 
@@ -261,12 +253,13 @@ PageTemplates.settings = function (lang) {
         Excel 파일 선택
       </label>
 
-      <input type="file" id="excelFile"
+      <input id="excelFile" type="file"
              style="display:none;"
              onchange="handleExcelUpload(event)">
     </div>
   `;
 };
+
 
 
 /* =========================
