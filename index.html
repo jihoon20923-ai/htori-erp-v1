@@ -1,72 +1,282 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HTORI ERP</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Factory ERP</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+    h2 { margin-top: 40px; }
+    .form-row { margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+    input, select, button { padding: 6px; }
+    button { cursor: pointer; }
+    table { border-collapse: collapse; width: 100%; background: white; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
+    th { background: #eee; }
+  </style>
 </head>
-
 <body>
 
-<header class="header">
-    <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
-    <div class="logo">HTORI ERP</div>
+<h1>Factory ERP (All-in-One)</h1>
 
-    <div class="lang-buttons">
-        <button onclick="setLanguage('EN')">EN</button>
-        <button onclick="setLanguage('KR')">KR</button>
-        <button onclick="setLanguage('ID')">ID</button>
-    </div>
-</header>
+<!-- ================= LANGUAGE ================= -->
+<div class="form-row">
+  <select id="langSelect" onchange="changeLanguage(this.value)">
+    <option value="ko">한국어</option>
+    <option value="en">English</option>
+    <option value="id">Bahasa</option>
+  </select>
+</div>
 
-<aside class="sidebar">
-    <ul>
-        <li data-page="dashboard">Dashboard</li>
-        <li data-page="stock">Stock</li>
-        <li data-page="purchase">Purchase</li>
-        <li data-page="outgoing">Outgoing</li>
-        <li data-page="production">Production</li>
-        <li data-page="bom">BOM</li>
-        <li data-page="outsourcing">Outsourcing</li>
-        <li data-page="finished">Finished Goods</li>
-        <li data-page="suppliers">Suppliers</li>
-        <li data-page="employees">Employees</li>
-        <li data-page="attendance">Attendance</li>
-        <li data-page="payroll">Payroll</li>
-        <li data-page="logs">Logs</li>
-        <li data-page="settings">Settings</li>
-    </ul>
-</aside>
+<hr>
 
-<main id="content" class="content"></main>
+<!-- ================= EMPLOYEE ================= -->
+<h2 data-i18n="empTitle">직원관리</h2>
 
-<script src="app.js"></script>
+<div class="form-row">
+  <input id="empId" placeholder="ID">
+  <input id="empName" placeholder="Name">
+  <select id="empPayType">
+    <option value="piece">건당</option>
+    <option value="monthly">월급</option>
+  </select>
+  <input id="empUnitPay" type="number" placeholder="단가/월급">
+  <button onclick="addEmployee()">추가</button>
+</div>
+
+<table>
+  <thead>
+    <tr><th>ID</th><th>Name</th><th>PayType</th><th>UnitPay</th><th>삭제</th></tr>
+  </thead>
+  <tbody id="empBody"></tbody>
+</table>
+
+<hr>
+
+<!-- ================= BOM ================= -->
+<h2>BOM</h2>
+
+<div class="form-row">
+  <input id="bomProduct" placeholder="Product">
+  <input id="bomProcess" placeholder="Process (1,2,OUT1 etc)">
+  <input id="bomInputCode" placeholder="Input Code">
+  <input id="bomInputQty" type="number" placeholder="Qty">
+  <input id="bomUnitCost" type="number" placeholder="Unit Cost">
+  <input id="bomOutputCode" placeholder="Output Code">
+  <button onclick="saveBOM()">Save BOM</button>
+</div>
+
+<table>
+  <thead>
+    <tr><th>Product</th><th>Process</th><th>Input</th><th>Qty</th><th>Cost</th><th>Output</th></tr>
+  </thead>
+  <tbody id="bomBody"></tbody>
+</table>
+
+<hr>
+
+<!-- ================= PRODUCTION ================= -->
+<h2>Production</h2>
+
+<div class="form-row">
+  <input id="prodDate" type="date">
+  <input id="prodProduct" placeholder="Product">
+  <input id="prodProcess" placeholder="Process">
+  <input id="prodInputCode" placeholder="Input Code">
+  <input id="prodInputQty" type="number" placeholder="Input Qty">
+  <input id="prodOutputCode" placeholder="Output Code">
+  <input id="prodGoodQty" type="number" placeholder="Good Qty">
+  <input id="prodDefectQty" type="number" placeholder="Defect Qty">
+  <input id="prodWorker" placeholder="Worker ID">
+  <button onclick="saveProduction()">Save Production</button>
+</div>
+
+<table>
+  <thead>
+    <tr><th>Date</th><th>Product</th><th>Process</th><th>Input</th><th>Output</th><th>Good</th><th>Defect</th><th>Worker</th></tr>
+  </thead>
+  <tbody id="prodBody"></tbody>
+</table>
+
+<hr>
+
+<!-- ================= STOCK ================= -->
+<h2>Stock</h2>
+<table>
+  <thead>
+    <tr><th>Code</th><th>Good</th><th>Defect</th></tr>
+  </thead>
+  <tbody id="stockBody"></tbody>
+</table>
+
+<hr>
+
+<!-- ================= PAYROLL ================= -->
+<h2>Payroll</h2>
+
+<div class="form-row">
+  <input id="payrollMonth" type="month">
+  <button onclick="calcPayroll()">Calculate</button>
+  <button onclick="downloadPayroll()">Download CSV</button>
+</div>
+
+<table>
+  <thead>
+    <tr><th>ID</th><th>Name</th><th>Qty</th><th>Salary</th></tr>
+  </thead>
+  <tbody id="payrollBody"></tbody>
+</table>
 
 <script>
+/* ======================= COMMON ======================= */
+function load(key){ return JSON.parse(localStorage.getItem(key)||"[]");}
+function save(key,val){ localStorage.setItem(key,JSON.stringify(val));}
 
-// 메뉴 클릭
-document.addEventListener("click", function(e) {
-    if (e.target.matches(".sidebar li")) {
-        const page = e.target.dataset.page;
-        if (page) loadPage(page);
+/* ======================= LANGUAGE ======================= */
+function changeLanguage(lang){}
 
-        document.querySelector(".sidebar").classList.remove("active");
-    }
-});
+/* ======================= EMPLOYEE ======================= */
+function addEmployee(){
+  const list = load("employees");
+  list.push({
+    id: empId.value,
+    name: empName.value,
+    payType: empPayType.value,
+    unitPay: Number(empUnitPay.value)
+  });
+  save("employees",list);
+  renderEmployees();
+}
+function renderEmployees(){
+  empBody.innerHTML="";
+  load("employees").forEach((e,i)=>{
+    empBody.innerHTML+=`
+      <tr>
+        <td>${e.id}</td><td>${e.name}</td><td>${e.payType}</td><td>${e.unitPay}</td>
+        <td><button onclick="delEmp(${i})">X</button></td>
+      </tr>`;
+  });
+}
+function delEmp(i){
+  const list=load("employees");
+  list.splice(i,1);
+  save("employees",list);
+  renderEmployees();
+}
 
-// 바깥 클릭 → 메뉴 닫기
-document.addEventListener("click", function(e) {
-    const bar = document.querySelector(".sidebar");
-    const btn = document.querySelector(".mobile-menu-btn");
+/* ======================= BOM ======================= */
+function saveBOM(){
+  const list=load("bom");
+  list.push({
+    product:bomProduct.value,
+    process:bomProcess.value,
+    inputCode:bomInputCode.value,
+    inputQty:Number(bomInputQty.value),
+    unitCost:Number(bomUnitCost.value),
+    outputCode:bomOutputCode.value
+  });
+  save("bom",list);
+  renderBOM();
+}
+function renderBOM(){
+  bomBody.innerHTML="";
+  load("bom").forEach(b=>{
+    bomBody.innerHTML+=`
+      <tr>
+        <td>${b.product}</td><td>${b.process}</td><td>${b.inputCode}</td>
+        <td>${b.inputQty}</td><td>${b.unitCost}</td><td>${b.outputCode}</td>
+      </tr>`;
+  });
+}
 
-    if (!bar.contains(e.target) && !btn.contains(e.target)) {
-        bar.classList.remove("active");
-    }
-});
+/* ======================= STOCK ======================= */
+function adjustStock(code,good,defect){
+  const stock=load("stock");
+  let item=stock.find(s=>s.code===code);
+  if(!item){item={code,good:0,defect:0};stock.push(item);}
+  item.good+=good; item.defect+=defect;
+  save("stock",stock); renderStock();
+}
+function renderStock(){
+  stockBody.innerHTML="";
+  load("stock").forEach(s=>{
+    stockBody.innerHTML+=`
+      <tr><td>${s.code}</td><td>${s.good}</td><td>${s.defect}</td></tr>`;
+  });
+}
 
+/* ======================= PRODUCTION ======================= */
+function saveProduction(){
+  const log=load("productionLog");
+  const row={
+    date:prodDate.value||new Date().toISOString().split("T")[0],
+    product:prodProduct.value,
+    process:prodProcess.value,
+    inputCode:prodInputCode.value,
+    inputQty:Number(prodInputQty.value),
+    outputCode:prodOutputCode.value,
+    goodQty:Number(prodGoodQty.value),
+    defectQty:Number(prodDefectQty.value),
+    worker:prodWorker.value
+  };
+  log.push(row);
+  save("productionLog",log);
+
+  adjustStock(row.inputCode,-row.inputQty,0);
+  adjustStock(row.outputCode,row.goodQty,row.defectQty);
+
+  renderProduction();
+}
+function renderProduction(){
+  prodBody.innerHTML="";
+  load("productionLog").forEach(p=>{
+    prodBody.innerHTML+=`
+      <tr>
+        <td>${p.date}</td><td>${p.product}</td><td>${p.process}</td>
+        <td>${p.inputCode}(${p.inputQty})</td>
+        <td>${p.outputCode}</td><td>${p.goodQty}</td>
+        <td>${p.defectQty}</td><td>${p.worker}</td>
+      </tr>`;
+  });
+}
+
+/* ======================= PAYROLL ======================= */
+let payrollCache=[];
+function calcPayroll(){
+  payrollBody.innerHTML="";
+  payrollCache=[];
+  const month=payrollMonth.value;
+  const emp=load("employees");
+  const log=load("productionLog");
+
+  emp.forEach(e=>{
+    let qty=0;
+    log.forEach(r=>{
+      if(r.worker===e.id && r.date.startsWith(month)) qty+=r.goodQty;
+    });
+    let salary = e.payType==="piece"?qty*e.unitPay:e.unitPay;
+    payrollBody.innerHTML+=`
+      <tr><td>${e.id}</td><td>${e.name}</td><td>${qty}</td><td>${salary}</td></tr>`;
+    payrollCache.push({id:e.id,name:e.name,qty,salary});
+  });
+}
+function downloadPayroll(){
+  let csv="ID,Name,Qty,Salary\n";
+  payrollCache.forEach(r=>{
+    csv+=`${r.id},${r.name},${r.qty},${r.salary}\n`;
+  });
+  const blob=new Blob([csv],{type:"text/csv"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="payroll.csv";
+  a.click();
+}
+
+/* ======================= INIT ======================= */
+renderEmployees();
+renderBOM();
+renderProduction();
+renderStock();
 </script>
+
 </body>
 </html>
