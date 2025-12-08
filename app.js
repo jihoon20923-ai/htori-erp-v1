@@ -190,9 +190,17 @@ const PageTemplates = {
     return `
       <h2>Stock</h2>
       <table class="erp-table">
-        <thead><tr><th>Code</th><th>Name</th><th>Qty</th><th>Edit</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Qty</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
         <tbody id="stockTableBody"></tbody>
-      </table>`;
+      </table>
+    `;
   },
 
   production() {
@@ -204,70 +212,68 @@ const PageTemplates = {
         <button onclick="onProduction()">Register</button>
         <button onclick="downloadProductionCSV()">Excel</button>
       </div>
+
       <table class="erp-table">
-        <thead><tr><th>Date</th><th>Product</th><th>Qty</th><th>Updated</th><th>Edit</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Product</th>
+            <th>Qty</th>
+          </tr>
+        </thead>
         <tbody id="prodTableBody"></tbody>
-      </table>`;
+      </table>
+    `;
   },
 
   suppliers() {
     return `
       <h2>Suppliers</h2>
+
       <input id="newSupplier" placeholder="Supplier Name">
       <button onclick="addSupplier()">Add</button>
+
       <table class="erp-table">
-        <thead><tr><th>Name</th><th>Delete</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
         <tbody id="supplierTableBody"></tbody>
-      </table>`;
-  }
-};   // ✅ ✅ ✅ 이 줄이 없어서 전부 깨지고 있었음
+      </table>
+    `;
+  },
 
-/***********************
- * SETTINGS
- ***********************/
-
-
-
+  settings() {   // ✅ 여기에서 return 해야 Illegal return 에러 안 남
     return `
-      <h2>${t.settingsTitle}</h2>
+      <h2>Settings</h2>
 
       <div class="settings-section">
-        <h3>Backup & Restore</h3>
+        <label>Company Name</label>
+        <input id="settingCompany" placeholder="Company Name">
 
-        <button onclick="backupToFile()" class="btn-primary">
-          Backup Download
-        </button>
+        <label>Manager</label>
+        <input id="settingManager" placeholder="Manager Name">
 
-        <label for="restoreFile" class="btn-secondary" style="cursor:pointer;">
-          Load Backup File
-        </label>
-
-        <input id="restoreFile" type="file"
-               accept="application/json"
-               style="display:none;"
-               onchange="restoreFromFile(event)">
-      </div>
-
-      <div class="settings-section">
-        <h3>Excel Upload</h3>
-
-        <label for="excelFile" class="btn-secondary" style="cursor:pointer;">
-          Excel 파일 선택
-        </label>
-
-        <input id="excelFile" type="file"
-               style="display:none;"
-               onchange="handleExcelUpload(event)">
+        <button onclick="saveSettings()">Save</button>
       </div>
     `;
   }
-};  // ✅ 이 줄 반드시 필요함 (PageTemplates 종료)
+};
 
+/* =========================
+   SETTINGS LOGIC
+========================= */
+function saveSettings() {
+  const company = document.getElementById("settingCompany").value;
+  const manager = document.getElementById("settingManager").value;
 
+  const settings = { company, manager };
+  localStorage.setItem("settings", JSON.stringify(settings));
 
-
-
-
+  alert("Settings Saved");
+}
 
 /* =========================
    RENDER ENGINE
