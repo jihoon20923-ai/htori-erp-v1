@@ -221,7 +221,7 @@ const PageTemplates = {
       </table>`;
   }
 
-  /***********************
+/***********************
  * SETTINGS
  ***********************/
 
@@ -268,12 +268,14 @@ const PageTemplates = {
           Excel 파일 선택
         </label>
 
-           <input id="excelFile" type="file"
-           style="display:none;"
-           onchange="handleExcelUpload(event)">
-  </div>
-  `;
-},   // ✅ 이 줄 반드시 있어야 함
+        <input id="excelFile" type="file"
+               style="display:none;"
+               onchange="handleExcelUpload(event)">
+      </div>
+    `;
+  }
+};  // ✅ 이 줄 반드시 필요함 (PageTemplates 종료)
+
 
 
 
