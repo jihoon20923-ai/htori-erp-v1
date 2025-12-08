@@ -219,7 +219,7 @@ const PageTemplates = {
         <thead><tr><th>Name</th><th>Delete</th></tr></thead>
         <tbody id="supplierTableBody"></tbody>
       </table>`;
-  },
+  }
 
   /***********************
  * SETTINGS
