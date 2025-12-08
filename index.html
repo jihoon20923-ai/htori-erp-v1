@@ -2,9 +2,10 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Factory ERP Final</title>
+  <title>Factory ERP Final A</title>
   <style>
-    body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+    h1 { margin-bottom: 10px; }
     h2, h3 { margin-top: 20px; }
     .form-row { margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
     input, select, button { padding: 6px; }
@@ -13,12 +14,15 @@
     th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
     th { background: #eee; }
     .page { display: none; }
+    .selected-row { background: #d0f0ff !important; }
+    .small-note { font-size: 12px; color: #555; }
   </style>
 </head>
 <body>
 
-<h1>Factory ERP Final</h1>
+<h1>Factory ERP Final A</h1>
 
+<!-- 메인 메뉴 -->
 <div class="form-row">
   <button onclick="showPage('employee')">Employee</button>
   <button onclick="showPage('bom')">BOM</button>
@@ -26,6 +30,8 @@
   <button onclick="showPage('stock')">Stock</button>
   <button onclick="showPage('payroll')">Payroll</button>
   <button onclick="showPage('export')">Export / Order / CBM</button>
+  <button onclick="showPage('customer')">Customer</button>
+  <button onclick="showPage('outsourcing')">Outsourcing</button>
 </div>
 
 <hr>
@@ -133,13 +139,19 @@
 
 <!-- ================= EXPORT / ORDER / CBM ================= -->
 <div id="page-export" class="page">
-  <h2>Order Input</h2>
+  <h2>Order / Export / CBM</h2>
+
+  <!-- 주문 입력 -->
+  <h3>Order Input</h3>
   <div class="form-row">
     <input id="orderNo" placeholder="Order No">
-    <input id="orderBuyer" placeholder="Buyer">
+    <!-- Buyer 선택: Customer 마스터에서 로드 -->
+    <select id="orderBuyer">
+      <option value="">Select Buyer</option>
+    </select>
     <input id="orderProduct" placeholder="Product Code">
     <input id="orderQty" type="number" placeholder="Qty">
-    <input id="orderUnitPrice" type="number" step="0.01" placeholder="Unit Price">
+    <input id="orderUnitPrice" type="number" step="0.0001" placeholder="Unit Price (USD)">
     <button onclick="addOrder()">Add Order</button>
   </div>
 
@@ -157,11 +169,12 @@
 
   <hr>
 
-  <h3>Packing Standard</h3>
+  <!-- 포장 기준 -->
+  <h3>Packing Standard (Code 기준)</h3>
   <div class="form-row">
     <input id="packCode" placeholder="Product Code">
-    <input id="innerQty" type="number" placeholder="Inner / Unit">
-    <input id="cartonQty" type="number" placeholder="Carton / Unit">
+    <input id="innerQty" type="number" placeholder="Inner / Unit (ex: 10)">
+    <input id="cartonQty" type="number" placeholder="Carton / Unit (ex: 100)">
     <button onclick="savePackingStandard()">Save Standard</button>
   </div>
 
@@ -172,15 +185,16 @@
 
   <hr>
 
-  <h3>CBM Calculator</h3>
+  <!-- CBM 계산 -->
+  <h3>CBM Calculator (Carton 기준)</h3>
   <div class="form-row">
     <input id="cbmCode" placeholder="Product Code">
     <input id="unitQty" type="number" placeholder="Finished Qty">
   </div>
   <div class="form-row">
-    <input id="boxL" type="number" placeholder="Length(cm)">
-    <input id="boxW" type="number" placeholder="Width(cm)">
-    <input id="boxH" type="number" placeholder="Height(cm)">
+    <input id="boxL" type="number" placeholder="Length (cm)">
+    <input id="boxW" type="number" placeholder="Width (cm)">
+    <input id="boxH" type="number" placeholder="Height (cm)">
     <button onclick="calcCBMByStandard()">Calculate</button>
   </div>
 
@@ -197,97 +211,292 @@
 
   <hr>
 
-  <h3>Packing List / Invoice</h3>
+  <!-- Packing List & Invoice -->
+  <h3>Packing List / Invoice / Margin</h3>
   <div class="form-row">
-    <button onclick="generatePackingList()">Packing List</button>
-    <button onclick="generateInvoice()">Invoice</button>
+    <button onclick="generatePackingList()">Packing List TXT</button>
+    <button onclick="generateInvoice()">Invoice CSV</button>
+  </div>
+  <div class="small-note">
+    * Invoice 마진 계산은 BOM 원가 합계와 Order 단가 기준으로 계산.
   </div>
 
   <table>
     <thead>
       <tr>
         <th>Product</th><th>Carton</th><th>Inner</th>
-        <th>Unit</th><th>CBM</th><th>Amount(USD)</th><th>Margin</th>
+        <th>Unit</th><th>CBM</th><th>Amount(USD)</th><th>Margin(USD)</th>
       </tr>
     </thead>
     <tbody id="invoiceBody"></tbody>
   </table>
 </div>
 
+<!-- ================= CUSTOMER (거래처 + 은행정보 + 거래내역) ================= -->
+<div id="page-customer" class="page">
+  <h2>Customer (거래처 + Bank + Ledger)</h2>
+
+  <h3>Customer 등록</h3>
+  <div class="form-row">
+    <input id="custCode" placeholder="Buyer Code (ex: US001)">
+    <input id="custName" placeholder="Company Name">
+    <input id="custPerson" placeholder="Contact Person">
+    <input id="custPhone" placeholder="Phone / WhatsApp">
+    <input id="custEmail" placeholder="Email">
+    <input id="custCountry" placeholder="Country">
+  </div>
+
+  <h3>Bank 정보</h3>
+  <div class="form-row">
+    <input id="custBankName" placeholder="Bank Name">
+    <input id="custBankAccountName" placeholder="Account Name">
+    <input id="custBankAccountNo" placeholder="Account Number">
+    <input id="custBankSwift" placeholder="SWIFT Code">
+    <input id="custBankBranch" placeholder="Branch">
+    <input id="custBankCurrency" placeholder="Currency (ex: USD)">
+    <button onclick="addCustomer()">Add / Update Customer</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Code</th><th>Company</th><th>Person</th>
+        <th>Phone</th><th>Country</th><th>Bank</th><th>Sel</th><th>Del</th>
+      </tr>
+    </thead>
+    <tbody id="customerBody"></tbody>
+  </table>
+
+  <h3>선택된 Customer 상세</h3>
+  <div id="customerDetail" class="small-note">No customer selected.</div>
+
+  <h3>Customer 거래(입출금) 입력</h3>
+  <div class="form-row">
+    <input id="custTransDate" type="date">
+    <select id="custTransType">
+      <option value="IN">IN (입금)</option>
+      <option value="OUT">OUT (출금)</option>
+    </select>
+    <input id="custTransAmount" type="number" placeholder="Amount">
+    <input id="custTransCurrency" placeholder="Currency">
+    <input id="custTransRef" placeholder="Ref / Invoice No">
+    <input id="custTransNote" placeholder="Description">
+    <button onclick="addCustomerTransaction()">Add Tx</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th><th>Type</th><th>Amount</th><th>Currency</th><th>Ref</th><th>Note</th><th>Del</th>
+      </tr>
+    </thead>
+    <tbody id="customerTransBody"></tbody>
+  </table>
+</div>
+
+<!-- ================= OUTSOURCING (Vendor + Bank + Ledger) ================= -->
+<div id="page-outsourcing" class="page">
+  <h2>Outsourcing / Vendor</h2>
+
+  <h3>Vendor 등록</h3>
+  <div class="form-row">
+    <input id="vendorName" placeholder="Vendor Name">
+    <input id="vendorPerson" placeholder="Contact Person">
+    <input id="vendorPhone" placeholder="Phone">
+    <input id="vendorItem" placeholder="Main Item (ex: F002)">
+  </div>
+
+  <h3>Bank 정보</h3>
+  <div class="form-row">
+    <input id="vendorBankName" placeholder="Bank Name">
+    <input id="vendorBankAccountName" placeholder="Account Name">
+    <input id="vendorBankAccountNo" placeholder="Account Number">
+    <input id="vendorBankSwift" placeholder="SWIFT">
+    <input id="vendorBankBranch" placeholder="Branch">
+    <input id="vendorBankCurrency" placeholder="Currency">
+    <button onclick="addVendor()">Add / Update Vendor</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Vendor</th><th>Person</th><th>Phone</th><th>Item</th><th>Bank</th><th>Sel</th><th>Del</th>
+      </tr>
+    </thead>
+    <tbody id="vendorBody"></tbody>
+  </table>
+
+  <h3>선택된 Vendor 상세</h3>
+  <div id="vendorDetail" class="small-note">No vendor selected.</div>
+
+  <h3>Vendor 거래(지급/정산) 입력</h3>
+  <div class="form-row">
+    <input id="vendorTransDate" type="date">
+    <select id="vendorTransType">
+      <option value="OUT">OUT (지급)</option>
+      <option value="IN">IN (환불/조정)</option>
+    </select>
+    <input id="vendorTransAmount" type="number" placeholder="Amount">
+    <input id="vendorTransCurrency" placeholder="Currency">
+    <input id="vendorTransRef" placeholder="Ref / PO No">
+    <input id="vendorTransNote" placeholder="Description">
+    <button onclick="addVendorTransaction()">Add Tx</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th><th>Type</th><th>Amount</th><th>Currency</th><th>Ref</th><th>Note</th><th>Del</th>
+      </tr>
+    </thead>
+    <tbody id="vendorTransBody"></tbody>
+  </table>
+</div>
+
 <script>
-function load(k){return JSON.parse(localStorage.getItem(k)||"[]")}
-function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+/* ================= 공통 ================= */
+function load(key){ return JSON.parse(localStorage.getItem(key) || "[]"); }
+function save(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
 
-function showPage(p){
-  document.querySelectorAll(".page").forEach(x=>x.style.display="none");
-  document.getElementById("page-"+p).style.display="block";
+function showPage(name){
+  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+  document.getElementById("page-"+name).style.display="block";
 }
 
-function autoFillName(codeId, nameId){
-  const code=document.getElementById(codeId).value.trim();
-  const nameInput=document.getElementById(nameId);
-  const stock=load("stock");
-  const found=stock.find(s=>s.code===code);
-  if(found){nameInput.value=found.name; nameInput.readOnly=true;}
-  else {nameInput.value=""; nameInput.readOnly=false;}
-}
-
-/* EMPLOYEE */
+/* ============== EMPLOYEE ============== */
 function addEmployee(){
-  const list=load("employees");
-  list.push({id:empId.value,name:empName.value,payType:empPayType.value,unitPay:Number(empUnitPay.value)});
-  save("employees",list); renderEmployees();
+  const id = empId.value.trim();
+  const name = empName.value.trim();
+  const payType = empPayType.value;
+  const unitPay = Number(empUnitPay.value);
+  if(!id || !name || !unitPay){ alert("Employee 입력 누락"); return; }
+  const list = load("employees");
+  list.push({id,name,payType,unitPay});
+  save("employees",list);
+  empId.value=""; empName.value=""; empUnitPay.value="";
+  renderEmployees();
 }
 function renderEmployees(){
   empBody.innerHTML="";
   load("employees").forEach((e,i)=>{
-    empBody.innerHTML+=`<tr><td>${e.id}</td><td>${e.name}</td><td>${e.payType}</td><td>${e.unitPay}</td>
-    <td><button onclick="delEmp(${i})">X</button></td></tr>`;
+    empBody.innerHTML+=`
+      <tr>
+        <td>${e.id}</td><td>${e.name}</td><td>${e.payType}</td><td>${e.unitPay}</td>
+        <td><button onclick="delEmp(${i})">X</button></td>
+      </tr>`;
   });
 }
-function delEmp(i){const l=load("employees"); l.splice(i,1); save("employees",l); renderEmployees();}
+function delEmp(i){
+  const list = load("employees");
+  list.splice(i,1);
+  save("employees",list);
+  renderEmployees();
+}
 
-/* BOM */
+/* ============== BOM ============== */
 function saveBOM(){
-  const l=load("bom");
-  l.push({
-    product:bomProduct.value,process:bomProcess.value,
-    inputCode:bomInputCode.value,inputQty:Number(bomInputQty.value),
-    unitCost:Number(bomUnitCost.value),outputCode:bomOutputCode.value
+  if(!bomProduct.value || !bomInputCode.value || !bomOutputCode.value){
+    alert("BOM 입력 누락");
+    return;
+  }
+  const list = load("bom");
+  list.push({
+    product:bomProduct.value.trim(),
+    process:bomProcess.value.trim(),
+    inputCode:bomInputCode.value.trim(),
+    inputQty:Number(bomInputQty.value),
+    unitCost:Number(bomUnitCost.value),
+    outputCode:bomOutputCode.value.trim()
   });
-  save("bom",l); renderBOM();
+  save("bom",list);
+  renderBOM();
 }
 function renderBOM(){
   bomBody.innerHTML="";
-  load("bom").forEach(b=>{
-    bomBody.innerHTML+=`<tr><td>${b.product}</td><td>${b.process}</td><td>${b.inputCode}</td>
-    <td>${b.inputQty}</td><td>${b.unitCost}</td><td>${b.outputCode}</td><td></td></tr>`;
+  load("bom").forEach((b,i)=>{
+    bomBody.innerHTML += `
+      <tr>
+        <td>${b.product}</td><td>${b.process}</td><td>${b.inputCode}</td>
+        <td>${b.inputQty}</td><td>${b.unitCost}</td><td>${b.outputCode}</td>
+        <td><button onclick="editBOM(${i})">Edit</button></td>
+      </tr>`;
   });
 }
+function editBOM(i){
+  const b = load("bom")[i];
+  bomProduct.value = b.product;
+  bomProcess.value = b.process;
+  bomInputCode.value = b.inputCode;
+  bomInputQty.value = b.inputQty;
+  bomUnitCost.value = b.unitCost;
+  bomOutputCode.value = b.outputCode;
+  const list = load("bom");
+  list.splice(i,1);
+  save("bom",list);
+  renderBOM();
+}
 
-/* PRODUCTION */
+/* ============== STOCK & PRODUCTION ============== */
+function autoFillName(codeId,nameId){
+  const code = document.getElementById(codeId).value.trim();
+  const nameInput = document.getElementById(nameId);
+  if(!code){
+    nameInput.value="";
+    nameInput.readOnly=false;
+    return;
+  }
+  const stock = load("stock");
+  const found = stock.find(s=>s.code===code);
+  if(found && found.name){
+    nameInput.value = found.name;
+    nameInput.readOnly = true;
+  }else{
+    nameInput.value="";
+    nameInput.readOnly = false;
+  }
+}
+
 function adjustStock(code,name,good,defect){
-  const stock=load("stock");
-  let item=stock.find(s=>s.code===code);
-  if(!item){item={code,name:name||"",good:0,defect:0}; stock.push(item);}
-  item.good+=good; item.defect+=defect;
-  save("stock",stock); renderStock();
+  if(!code) return;
+  const stock = load("stock");
+  let item = stock.find(s=>s.code===code);
+  if(!item){
+    item = {code,name:name||"",good:0,defect:0};
+    stock.push(item);
+  }
+  item.good += good;
+  item.defect += defect;
+  if(!item.name && name) item.name = name;
+  save("stock",stock);
+  renderStock();
 }
 function renderStock(){
   stockBody.innerHTML="";
   load("stock").forEach(s=>{
-    stockBody.innerHTML+=`<tr><td>${s.code}</td><td>${s.name||""}</td><td>${s.good}</td><td>${s.defect}</td></tr>`;
+    stockBody.innerHTML+=`
+      <tr><td>${s.code}</td><td>${s.name||""}</td><td>${s.good}</td><td>${s.defect}</td></tr>`;
   });
 }
+
 function saveProduction(){
-  const row={
-    date:prodDate.value,product:prodProduct.value,process:prodProcess.value,
-    inputCode:prodInputCode.value,inputQty:Number(prodInputQty.value),inputName:prodInputName.value,
-    outputCode:prodOutputCode.value,outputName:prodOutputName.value,
-    goodQty:Number(prodGoodQty.value),defectQty:Number(prodDefectQty.value),
-    worker:prodWorker.value,note:prodNote.value
+  const date = prodDate.value || new Date().toISOString().split("T")[0];
+  const row = {
+    date,
+    product:prodProduct.value.trim(),
+    process:prodProcess.value.trim(),
+    inputCode:prodInputCode.value.trim(),
+    inputName:prodInputName.value.trim(),
+    inputQty:Number(prodInputQty.value),
+    outputCode:prodOutputCode.value.trim(),
+    outputName:prodOutputName.value.trim(),
+    goodQty:Number(prodGoodQty.value),
+    defectQty:Number(prodDefectQty.value),
+    worker:prodWorker.value.trim(),
+    note:prodNote.value.trim()
   };
-  const log=load("productionLog"); log.push(row); save("productionLog",log);
+  const log = load("productionLog");
+  log.push(row);
+  save("productionLog",log);
   adjustStock(row.inputCode,row.inputName,-row.inputQty,0);
   adjustStock(row.outputCode,row.outputName,row.goodQty,row.defectQty);
   renderProduction();
@@ -295,164 +504,578 @@ function saveProduction(){
 function renderProduction(){
   prodBody.innerHTML="";
   load("productionLog").forEach(p=>{
-    prodBody.innerHTML+=`<tr><td>${p.date}</td><td>${p.product}</td><td>${p.process}</td>
-    <td>${p.inputCode}</td><td>${p.outputCode}</td><td>${p.goodQty}</td>
-    <td>${p.defectQty}</td><td>${p.worker}</td><td>${p.note}</td></tr>`;
+    prodBody.innerHTML+=`
+      <tr>
+        <td>${p.date}</td><td>${p.product}</td><td>${p.process}</td>
+        <td>${p.inputCode}</td><td>${p.outputCode}</td>
+        <td>${p.goodQty}</td><td>${p.defectQty}</td>
+        <td>${p.worker}</td><td>${p.note}</td>
+      </tr>`;
   });
 }
 
-/* PAYROLL */
+/* ============== PAYROLL ============== */
 function calcPayroll(){
   payrollBody.innerHTML="";
-  const emp=load("employees"), log=load("productionLog"), month=payrollMonth.value;
+  const month = payrollMonth.value;
+  if(!month){ alert("Month 선택"); return; }
+  const emp = load("employees");
+  const log = load("productionLog");
   emp.forEach(e=>{
-    let qty=0; log.forEach(r=>{if(r.worker===e.id&&r.date.startsWith(month)) qty+=r.goodQty});
-    const salary=e.payType==="piece"?qty*e.unitPay:e.unitPay;
-    payrollBody.innerHTML+=`<tr><td>${e.id}</td><td>${e.name}</td><td>${qty}</td><td>${salary}</td></tr>`;
+    let qty = 0;
+    log.forEach(r=>{
+      if(r.worker===e.id && r.date && r.date.startsWith(month)){
+        qty += r.goodQty;
+      }
+    });
+    const salary = e.payType==="piece" ? qty*e.unitPay : e.unitPay;
+    payrollBody.innerHTML += `
+      <tr><td>${e.id}</td><td>${e.name}</td><td>${qty}</td><td>${salary}</td></tr>`;
   });
 }
 function downloadPayroll(){
-  let csv="ID,Name,Qty,Salary\n";
+  let csv = "ID,Name,Qty,Salary\n";
   document.querySelectorAll("#payrollBody tr").forEach(tr=>{
-    const row=[...tr.children].map(td=>td.innerText).join(",");
-    csv+=row+"\n";
+    const row = Array.from(tr.children).map(td=>td.innerText).join(",");
+    csv += row + "\n";
   });
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  a.download="payroll.csv"; a.click();
+  const blob = new Blob([csv],{type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "payroll.csv";
+  a.click();
 }
 
-/* ORDER */
+/* ============== ORDER ============== */
 function addOrder(){
-  const list=load("orders");
-  list.push({
-    no:orderNo.value,buyer:orderBuyer.value,product:orderProduct.value,
-    qty:Number(orderQty.value),price:Number(orderUnitPrice.value),
-    total:Number(orderQty.value)*Number(orderUnitPrice.value)
-  });
-  save("orders",list); renderOrders();
+  const no = orderNo.value.trim();
+  const buyer = orderBuyer.value.trim();
+  const product = orderProduct.value.trim();
+  const qty = Number(orderQty.value);
+  const price = Number(orderUnitPrice.value);
+  if(!no||!buyer||!product||!qty||!price){ alert("Order 입력 누락"); return; }
+  const list = load("orders");
+  list.push({no,buyer,product,qty,price,total:qty*price});
+  save("orders",list);
+  orderNo.value=""; orderProduct.value=""; orderQty.value=""; orderUnitPrice.value="";
+  renderOrders();
 }
 function renderOrders(){
   orderBody.innerHTML="";
   load("orders").forEach((o,i)=>{
-    orderBody.innerHTML+=`<tr>
-      <td>${o.no}</td><td>${o.buyer}</td><td>${o.product}</td>
-      <td>${o.qty}</td><td>${o.price}</td><td>${o.total}</td>
-      <td><button onclick="deleteOrder(${i})">Del</button></td>
-    </tr>`;
+    orderBody.innerHTML+=`
+      <tr>
+        <td>${o.no}</td><td>${o.buyer}</td><td>${o.product}</td>
+        <td>${o.qty}</td><td>${o.price}</td><td>${o.total.toFixed(2)}</td>
+        <td><button onclick="deleteOrder(${i})">Del</button></td>
+      </tr>`;
   });
 }
 function deleteOrder(i){
-  const l=load("orders"); l.splice(i,1); save("orders",l); renderOrders();
+  const list = load("orders");
+  list.splice(i,1);
+  save("orders",list);
+  renderOrders();
 }
 function sendOrderToCBM(){
-  const l=load("orders"); if(!l.length)return;
-  const last=l[l.length-1];
-  cbmCode.value=last.product; unitQty.value=last.qty;
+  const list = load("orders");
+  if(!list.length){ alert("Order 없음"); return; }
+  const last = list[list.length-1];
+  cbmCode.value = last.product;
+  unitQty.value = last.qty;
 }
 
-/* PACKING STANDARD */
+/* ============== PACKING STANDARD ============== */
 function savePackingStandard(){
-  const list=load("packingStandard");
-  list.push({code:packCode.value,inner:Number(innerQty.value),carton:Number(cartonQty.value)});
-  save("packingStandard",list); renderPackingStandard();
+  const code = packCode.value.trim();
+  const inner = Number(innerQty.value);
+  const carton = Number(cartonQty.value);
+  if(!code||!inner||!carton){ alert("Packing 기준 누락"); return; }
+  const list = load("packingStandard");
+  const exist = list.find(p=>p.code===code);
+  if(exist){
+    exist.inner = inner;
+    exist.carton = carton;
+  }else{
+    list.push({code,inner,carton});
+  }
+  save("packingStandard",list);
+  packCode.value=""; innerQty.value=""; cartonQty.value="";
+  renderPackingStandard();
 }
 function renderPackingStandard(){
   packingBody.innerHTML="";
-  load("packingStandard").forEach(p=>{
-    packingBody.innerHTML+=`<tr><td>${p.code}</td><td>${p.inner}</td><td>${p.carton}</td><td></td></tr>`;
+  load("packingStandard").forEach((p,i)=>{
+    packingBody.innerHTML+=`
+      <tr>
+        <td>${p.code}</td><td>${p.inner}</td><td>${p.carton}</td>
+        <td><button onclick="editPackingStandard(${i})">Edit</button></td>
+      </tr>`;
   });
 }
+function editPackingStandard(i){
+  const list = load("packingStandard");
+  const p = list[i];
+  packCode.value = p.code;
+  innerQty.value = p.inner;
+  cartonQty.value = p.carton;
+  list.splice(i,1);
+  save("packingStandard",list);
+  renderPackingStandard();
+}
 
-/* CBM */
-let editingCBMIndex=null;
+/* ============== CBM LOG ============== */
+let editingCBMIndex = null;
 function calcCBMByStandard(){
-  const std=load("packingStandard").find(p=>p.code===cbmCode.value);
-  if(!std)return alert("No Standard");
-  const cartonQty=Math.ceil(Number(unitQty.value)/std.carton);
-  const innerQtyCal=Math.ceil(Number(unitQty.value)/std.inner);
-  const cbmPer=(boxL.value*boxW.value*boxH.value)/1000000;
-  const total=cartonQty*cbmPer;
-  const item={
-    code:cbmCode.value,unitQtyVal:Number(unitQty.value),
-    innerBoxQty:innerQtyCal,cartonBoxQty:cartonQty,
-    cbmPerCarton:cbmPer,totalCBM:total,
-    fit20:Math.floor(33/cbmPer),fit40:Math.floor(68/cbmPer),
-    L:boxL.value,W:boxW.value,H:boxH.value
-  };
-  const list=load("cbmLog");
-  if(editingCBMIndex!==null){list[editingCBMIndex]=item; editingCBMIndex=null;}
-  else list.push(item);
-  save("cbmLog",list); renderCBMLog();
+  const code = cbmCode.value.trim();
+  const qty = Number(unitQty.value);
+  const L = Number(boxL.value);
+  const W = Number(boxW.value);
+  const H = Number(boxH.value);
+  if(!code||!qty||!L||!W||!H){ alert("CBM 입력 누락"); return; }
+
+  const std = load("packingStandard").find(p=>p.code===code);
+  if(!std){ alert("Packing 기준 없음"); return; }
+
+  const cartonBoxQty = Math.ceil(qty/std.carton);
+  const innerBoxQty = Math.ceil(qty/std.inner);
+  const cbmPerCarton = (L*W*H)/1000000;
+  const totalCBM = cbmPerCarton*cartonBoxQty;
+  const fit20 = Math.floor(33/cbmPerCarton);
+  const fit40 = Math.floor(68/cbmPerCarton);
+
+  const item = {code,unitQtyVal:qty,innerBoxQty,cartonBoxQty,cbmPerCarton,totalCBM,fit20,fit40,L,W,H};
+  const list = load("cbmLog");
+  if(editingCBMIndex!==null){
+    list[editingCBMIndex] = item;
+    editingCBMIndex = null;
+  }else{
+    list.push(item);
+  }
+  save("cbmLog",list);
+  renderCBMLog();
 }
 function renderCBMLog(){
   cbmBody.innerHTML="";
   load("cbmLog").forEach((c,i)=>{
-    cbmBody.innerHTML+=`<tr>
-      <td>${c.code}</td><td>${c.unitQtyVal}</td><td>${c.innerBoxQty}</td><td>${c.cartonBoxQty}</td>
-      <td>${c.cbmPerCarton.toFixed(4)}</td><td>${c.totalCBM.toFixed(2)}</td>
-      <td>${c.fit20}</td><td>${c.fit40}</td>
-      <td><button onclick="editCBM(${i})">Edit</button></td>
-      <td><button onclick="deleteCBM(${i})">Del</button></td>
-    </tr>`;
+    cbmBody.innerHTML+=`
+      <tr>
+        <td>${c.code}</td><td>${c.unitQtyVal}</td><td>${c.innerBoxQty}</td><td>${c.cartonBoxQty}</td>
+        <td>${c.cbmPerCarton.toFixed(4)}</td><td>${c.totalCBM.toFixed(2)}</td>
+        <td>${c.fit20}</td><td>${c.fit40}</td>
+        <td><button onclick="editCBM(${i})">Edit</button></td>
+        <td><button onclick="deleteCBM(${i})">Del</button></td>
+      </tr>`;
   });
 }
 function editCBM(i){
-  const c=load("cbmLog")[i];
-  cbmCode.value=c.code; unitQty.value=c.unitQtyVal;
-  boxL.value=c.L; boxW.value=c.W; boxH.value=c.H;
-  editingCBMIndex=i;
+  const c = load("cbmLog")[i];
+  cbmCode.value = c.code;
+  unitQty.value = c.unitQtyVal;
+  boxL.value = c.L;
+  boxW.value = c.W;
+  boxH.value = c.H;
+  editingCBMIndex = i;
 }
 function deleteCBM(i){
-  const l=load("cbmLog"); l.splice(i,1); save("cbmLog",l); renderCBMLog();
+  const list = load("cbmLog");
+  list.splice(i,1);
+  save("cbmLog",list);
+  renderCBMLog();
 }
 
-/* PACKING LIST & INVOICE */
+/* ============== PACKING LIST & INVOICE ============== */
 function generatePackingList(){
-  const orders=load("orders"), cbm=load("cbmLog");
-  let txt="PACKING LIST\n\nOrder | Product | Carton | Inner | Qty | CBM\n";
+  const orders = load("orders");
+  const cbm = load("cbmLog");
+  if(!orders.length){ alert("Order 없음"); return; }
+  let text = "PACKING LIST\n\n";
+  text += "Order | Product | Carton | Inner | Qty | Total CBM\n";
+  text += "--------------------------------------------------\n";
   orders.forEach(o=>{
-    const c=cbm.find(x=>x.code===o.product);
-    if(c) txt+=`${o.no} | ${o.product} | ${c.cartonBoxQty} | ${c.innerBoxQty} | ${o.qty} | ${c.totalCBM.toFixed(2)}\n`;
+    const c = cbm.find(x=>x.code===o.product);
+    if(!c) return;
+    text += `${o.no} | ${o.product} | ${c.cartonBoxQty} | ${c.innerBoxQty} | ${o.qty} | ${c.totalCBM.toFixed(2)}\n`;
   });
-  downloadText("packing_list.txt",txt);
-}
-function generateInvoice(){
-  const orders=load("orders"), cbm=load("cbmLog"), bom=load("bom");
-  invoiceBody.innerHTML="";
-  orders.forEach(o=>{
-    const c=cbm.find(x=>x.code===o.product);
-    if(!c)return;
-    const amount=o.qty*o.price;
-    let cost=0; bom.forEach(b=>{if(b.outputCode===o.product) cost+=b.inputQty*b.unitCost});
-    const margin=amount-cost;
-    invoiceBody.innerHTML+=`<tr>
-      <td>${o.product}</td><td>${c.cartonBoxQty}</td><td>${c.innerBoxQty}</td>
-      <td>${o.qty}</td><td>${c.totalCBM.toFixed(2)}</td>
-      <td>${amount.toFixed(2)}</td><td>${margin.toFixed(2)}</td>
-    </tr>`;
-  });
-  downloadInvoiceCSV();
-}
-function downloadInvoiceCSV(){
-  let csv="Product,Carton,Inner,Unit,CBM,Amount,Margin\n";
-  document.querySelectorAll("#invoiceBody tr").forEach(tr=>{
-    csv+=[...tr.children].map(td=>td.innerText).join(",")+"\n";
-  });
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  a.download="invoice.csv"; a.click();
-}
-function downloadText(name,text){
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([text],{type:"text/plain"}));
-  a.download=name; a.click();
+  const blob = new Blob([text],{type:"text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "packing_list.txt";
+  a.click();
 }
 
-/* INIT */
-showPage("employee");
-renderEmployees(); renderBOM(); renderProduction(); renderStock();
-renderOrders(); renderPackingStandard(); renderCBMLog();
+function generateInvoice(){
+  invoiceBody.innerHTML="";
+  const orders = load("orders");
+  const cbm = load("cbmLog");
+  const bom = load("bom");
+  if(!orders.length){ alert("Order 없음"); return; }
+
+  let csv = "Product,Carton,Inner,Unit,CBM,Amount,Margin\n";
+
+  orders.forEach(o=>{
+    const c = cbm.find(x=>x.code===o.product);
+    if(!c) return;
+    const amount = o.qty * o.price;
+    let cost = 0;
+    bom.forEach(b=>{
+      if(b.outputCode===o.product){
+        cost += b.inputQty * b.unitCost;
+      }
+    });
+    const margin = amount - cost;
+
+    invoiceBody.innerHTML+=`
+      <tr>
+        <td>${o.product}</td><td>${c.cartonBoxQty}</td><td>${c.innerBoxQty}</td>
+        <td>${o.qty}</td><td>${c.totalCBM.toFixed(2)}</td>
+        <td>${amount.toFixed(2)}</td><td>${margin.toFixed(2)}</td>
+      </tr>`;
+
+    csv += `${o.product},${c.cartonBoxQty},${c.innerBoxQty},${o.qty},${c.totalCBM.toFixed(2)},${amount.toFixed(2)},${margin.toFixed(2)}\n`;
+  });
+
+  const blob = new Blob([csv],{type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "invoice.csv";
+  a.click();
+}
+
+/* ============== CUSTOMER + BANK + LEDGER ============== */
+let selectedCustomerIndex = null;
+
+function addCustomer(){
+  const code = custCode.value.trim();
+  const name = custName.value.trim();
+  if(!code || !name){ alert("Buyer Code / Company 필수"); return; }
+  const list = load("customers");
+  let c = list.find(x=>x.code===code);
+  if(!c){
+    c = {code};
+    list.push(c);
+  }
+  c.name = name;
+  c.person = custPerson.value.trim();
+  c.phone = custPhone.value.trim();
+  c.email = custEmail.value.trim();
+  c.country = custCountry.value.trim();
+  c.bankName = custBankName.value.trim();
+  c.bankAccountName = custBankAccountName.value.trim();
+  c.bankAccountNo = custBankAccountNo.value.trim();
+  c.bankSwift = custBankSwift.value.trim();
+  c.bankBranch = custBankBranch.value.trim();
+  c.bankCurrency = custBankCurrency.value.trim();
+  save("customers",list);
+  renderCustomers();
+  loadBuyerSelect();
+}
+
+function renderCustomers(){
+  customerBody.innerHTML="";
+  const list = load("customers");
+  list.forEach((c,i)=>{
+    customerBody.innerHTML+=`
+      <tr class="${selectedCustomerIndex===i?'selected-row':''}">
+        <td>${c.code}</td><td>${c.name||""}</td><td>${c.person||""}</td>
+        <td>${c.phone||""}</td><td>${c.country||""}</td>
+        <td>${c.bankName||""}</td>
+        <td><button onclick="selectCustomer(${i})">Sel</button></td>
+        <td><button onclick="deleteCustomer(${i})">Del</button></td>
+      </tr>`;
+  });
+  if(selectedCustomerIndex===null && list.length>0){
+    selectCustomer(0);
+  }else if(list.length===0){
+    selectedCustomerIndex=null;
+    customerDetail.innerText="No customer selected.";
+    customerTransBody.innerHTML="";
+  }
+}
+
+function selectCustomer(i){
+  selectedCustomerIndex = i;
+  renderCustomers();
+  renderCustomerDetail();
+  renderCustomerTransactions();
+}
+
+function deleteCustomer(i){
+  const list = load("customers");
+  const removed = list.splice(i,1)[0];
+  save("customers",list);
+
+  // 해당 거래처의 트랜잭션도 같이 제거
+  let tx = load("transactions");
+  tx = tx.filter(t=>!(t.partnerType==='customer' && t.partnerCode===removed.code));
+  save("transactions",tx);
+
+  selectedCustomerIndex = null;
+  renderCustomers();
+  renderCustomerTransactions();
+}
+
+function renderCustomerDetail(){
+  const list = load("customers");
+  if(selectedCustomerIndex===null || !list[selectedCustomerIndex]){
+    customerDetail.innerText="No customer selected.";
+    return;
+  }
+  const c = list[selectedCustomerIndex];
+  const tx = load("transactions").filter(t=>t.partnerType==='customer' && t.partnerCode===c.code);
+  let inSum=0,outSum=0;
+  tx.forEach(t=>{
+    if(t.txType==='IN') inSum+=t.amount;
+    else outSum+=t.amount;
+  });
+  const bal = inSum - outSum;
+  customerDetail.innerHTML = `
+    <b>${c.name}</b> (${c.code})<br>
+    Contact: ${c.person||"-"} / ${c.phone||"-"} / ${c.email||"-"}<br>
+    Country: ${c.country||"-"}<br>
+    Bank: ${c.bankName||"-"} / ${c.bankBranch||"-"}<br>
+    Acc: ${c.bankAccountName||"-"} - ${c.bankAccountNo||"-"} / SWIFT: ${c.bankSwift||"-"} / Cur: ${c.bankCurrency||"-"}<br>
+    <b>Total IN:</b> ${inSum.toFixed(2)} / <b>Total OUT:</b> ${outSum.toFixed(2)} / <b>Balance:</b> ${bal.toFixed(2)}
+  `;
+  // 기본 통화 입력에 채워주기
+  custTransCurrency.value = c.bankCurrency || "";
+}
+
+function addCustomerTransaction(){
+  if(selectedCustomerIndex===null){
+    alert("먼저 Customer 선택");
+    return;
+  }
+  const listC = load("customers");
+  const c = listC[selectedCustomerIndex];
+  const date = custTransDate.value || new Date().toISOString().split("T")[0];
+  const txType = custTransType.value;
+  const amount = Number(custTransAmount.value);
+  const currency = custTransCurrency.value || c.bankCurrency || "";
+  const ref = custTransRef.value.trim();
+  const note = custTransNote.value.trim();
+  if(!amount){ alert("Amount 필요"); return; }
+
+  const tx = load("transactions");
+  tx.push({
+    partnerType:'customer',
+    partnerCode:c.code,
+    date,txType,amount,currency,ref,note
+  });
+  save("transactions",tx);
+
+  custTransAmount.value=""; custTransRef.value=""; custTransNote.value="";
+  renderCustomerTransactions();
+  renderCustomerDetail();
+}
+
+function renderCustomerTransactions(){
+  customerTransBody.innerHTML="";
+  if(selectedCustomerIndex===null) return;
+  const listC = load("customers");
+  const c = listC[selectedCustomerIndex];
+  const tx = load("transactions").filter(t=>t.partnerType==='customer' && t.partnerCode===c.code);
+  tx.forEach((t,i)=>{
+    customerTransBody.innerHTML+=`
+      <tr>
+        <td>${t.date}</td><td>${t.txType}</td><td>${t.amount.toFixed(2)}</td>
+        <td>${t.currency}</td><td>${t.ref||""}</td><td>${t.note||""}</td>
+        <td><button onclick="deleteCustomerTx(${i})">Del</button></td>
+      </tr>`;
+  });
+}
+function deleteCustomerTx(idx){
+  // idx는 선택된 customer의 필터 인덱스가 아니라 전체 transactions에서의 것이 아님
+  // 처리 간단하게: 다시 전체에서 rebuild
+  if(selectedCustomerIndex===null) return;
+  const listC = load("customers");
+  const c = listC[selectedCustomerIndex];
+  let tx = load("transactions");
+  // customer 기준으로만 순서 매기면서 특정 index 제거
+  let count=-1;
+  tx = tx.filter(t=>{
+    if(t.partnerType==='customer' && t.partnerCode===c.code){
+      count++;
+      if(count===idx) return false;
+    }
+    return true;
+  });
+  save("transactions",tx);
+  renderCustomerTransactions();
+  renderCustomerDetail();
+}
+
+/* ============== VENDOR + BANK + LEDGER ============== */
+let selectedVendorIndex = null;
+
+function addVendor(){
+  const name = vendorName.value.trim();
+  if(!name){ alert("Vendor Name 필수"); return; }
+  const list = load("vendors");
+  let v = list.find(x=>x.name===name);
+  if(!v){
+    v = {name};
+    list.push(v);
+  }
+  v.person = vendorPerson.value.trim();
+  v.phone = vendorPhone.value.trim();
+  v.item = vendorItem.value.trim();
+  v.bankName = vendorBankName.value.trim();
+  v.bankAccountName = vendorBankAccountName.value.trim();
+  v.bankAccountNo = vendorBankAccountNo.value.trim();
+  v.bankSwift = vendorBankSwift.value.trim();
+  v.bankBranch = vendorBankBranch.value.trim();
+  v.bankCurrency = vendorBankCurrency.value.trim();
+  save("vendors",list);
+  renderVendors();
+}
+
+function renderVendors(){
+  vendorBody.innerHTML="";
+  const list = load("vendors");
+  list.forEach((v,i)=>{
+    vendorBody.innerHTML+=`
+      <tr class="${selectedVendorIndex===i?'selected-row':''}">
+        <td>${v.name}</td><td>${v.person||""}</td><td>${v.phone||""}</td>
+        <td>${v.item||""}</td><td>${v.bankName||""}</td>
+        <td><button onclick="selectVendor(${i})">Sel</button></td>
+        <td><button onclick="deleteVendor(${i})">Del</button></td>
+      </tr>`;
+  });
+  if(selectedVendorIndex===null && list.length>0){
+    selectVendor(0);
+  }else if(list.length===0){
+    selectedVendorIndex=null;
+    vendorDetail.innerText="No vendor selected.";
+    vendorTransBody.innerHTML="";
+  }
+}
+
+function selectVendor(i){
+  selectedVendorIndex = i;
+  renderVendors();
+  renderVendorDetail();
+  renderVendorTransactions();
+}
+
+function deleteVendor(i){
+  const list = load("vendors");
+  const removed = list.splice(i,1)[0];
+  save("vendors",list);
+  let tx = load("transactions");
+  tx = tx.filter(t=>!(t.partnerType==='vendor' && t.partnerCode===removed.name));
+  save("transactions",tx);
+  selectedVendorIndex=null;
+  renderVendors();
+  renderVendorTransactions();
+}
+
+function renderVendorDetail(){
+  const list = load("vendors");
+  if(selectedVendorIndex===null || !list[selectedVendorIndex]){
+    vendorDetail.innerText="No vendor selected.";
+    return;
+  }
+  const v = list[selectedVendorIndex];
+  const tx = load("transactions").filter(t=>t.partnerType==='vendor' && t.partnerCode===v.name);
+  let inSum=0,outSum=0;
+  tx.forEach(t=>{
+    if(t.txType==='IN') inSum+=t.amount;
+    else outSum+=t.amount;
+  });
+  const bal = inSum - outSum;
+  vendorDetail.innerHTML = `
+    <b>${v.name}</b><br>
+    Contact: ${v.person||"-"} / ${v.phone||"-"} / Item: ${v.item||"-"}<br>
+    Bank: ${v.bankName||"-"} / ${v.bankBranch||"-"}<br>
+    Acc: ${v.bankAccountName||"-"} - ${v.bankAccountNo||"-"} / SWIFT: ${v.bankSwift||"-"} / Cur: ${v.bankCurrency||"-"}<br>
+    <b>Total IN:</b> ${inSum.toFixed(2)} / <b>Total OUT:</b> ${outSum.toFixed(2)} / <b>Balance:</b> ${bal.toFixed(2)}
+  `;
+  vendorTransCurrency.value = v.bankCurrency || "";
+}
+
+function addVendorTransaction(){
+  if(selectedVendorIndex===null){ alert("먼저 Vendor 선택"); return; }
+  const list = load("vendors");
+  const v = list[selectedVendorIndex];
+  const date = vendorTransDate.value || new Date().toISOString().split("T")[0];
+  const txType = vendorTransType.value;
+  const amount = Number(vendorTransAmount.value);
+  const currency = vendorTransCurrency.value || v.bankCurrency || "";
+  const ref = vendorTransRef.value.trim();
+  const note = vendorTransNote.value.trim();
+  if(!amount){ alert("Amount 필요"); return; }
+
+  const tx = load("transactions");
+  tx.push({
+    partnerType:'vendor',
+    partnerCode:v.name,
+    date,txType,amount,currency,ref,note
+  });
+  save("transactions",tx);
+
+  vendorTransAmount.value=""; vendorTransRef.value=""; vendorTransNote.value="";
+  renderVendorTransactions();
+  renderVendorDetail();
+}
+
+function renderVendorTransactions(){
+  vendorTransBody.innerHTML="";
+  if(selectedVendorIndex===null) return;
+  const list = load("vendors");
+  const v = list[selectedVendorIndex];
+  const tx = load("transactions").filter(t=>t.partnerType==='vendor' && t.partnerCode===v.name);
+  tx.forEach((t,i)=>{
+    vendorTransBody.innerHTML+=`
+      <tr>
+        <td>${t.date}</td><td>${t.txType}</td><td>${t.amount.toFixed(2)}</td>
+        <td>${t.currency}</td><td>${t.ref||""}</td><td>${t.note||""}</td>
+        <td><button onclick="deleteVendorTx(${i})">Del</button></td>
+      </tr>`;
+  });
+}
+function deleteVendorTx(idx){
+  if(selectedVendorIndex===null) return;
+  const list = load("vendors");
+  const v = list[selectedVendorIndex];
+  let tx = load("transactions");
+  let count=-1;
+  tx = tx.filter(t=>{
+    if(t.partnerType==='vendor' && t.partnerCode===v.name){
+      count++;
+      if(count===idx) return false;
+    }
+    return true;
+  });
+  save("transactions",tx);
+  renderVendorTransactions();
+  renderVendorDetail();
+}
+
+/* ============== Buyer Select (Order 연동) ============== */
+function loadBuyerSelect(){
+  const sel = document.getElementById("orderBuyer");
+  sel.innerHTML = `<option value="">Select Buyer</option>`;
+  load("customers").forEach(c=>{
+    sel.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+  });
+}
+
+/* ============== INIT ============== */
+function init(){
+  showPage("employee");
+  renderEmployees();
+  renderBOM();
+  renderProduction();
+  renderStock();
+  renderOrders();
+  renderPackingStandard();
+  renderCBMLog();
+  renderCustomers();
+  renderVendors();
+  loadBuyerSelect();
+}
+init();
 </script>
 
 </body>
