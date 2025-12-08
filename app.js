@@ -361,6 +361,7 @@ PageTemplates.production = function (lang) {
   `;
 };
 
+
 function getProduction() {
   return JSON.parse(localStorage.getItem("production") || "[]");
 }
