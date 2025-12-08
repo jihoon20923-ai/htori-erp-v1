@@ -225,47 +225,57 @@ const PageTemplates = {
  * SETTINGS
  ***********************/
 
-  dashboard(lang) { ... },
+const PageTemplates = {
+  dashboard(lang) {
+    return `<h2>Dashboard</h2>`;
+  },
 
-  stock(lang) { ... },
+  stock(lang) {
+    return `<h2>Stock</h2>`;
+  },
 
-  suppliers(lang) { ... },
+  suppliers(lang) {
+    return `<h2>Suppliers</h2>`;
+  },
 
   settings(lang) {
-  const t = i18n[lang].pages;
-  return `
-    <h2>${t.settingsTitle}</h2>
+    const t = i18n[lang].pages;
 
-    <div class="settings-section">
-      <h3>Backup & Restore</h3>
+    return `
+      <h2>${t.settingsTitle}</h2>
 
-      <button onclick="backupToFile()" class="btn-primary">
-        Backup Download
-      </button>
+      <div class="settings-section">
+        <h3>Backup & Restore</h3>
 
-      <label for="restoreFile" class="btn-secondary" style="cursor:pointer;">
-        Load Backup File
-      </label>
+        <button onclick="backupToFile()" class="btn-primary">
+          Backup Download
+        </button>
 
-      <input id="restoreFile" type="file"
-             accept="application/json"
-             style="display:none;"
-             onchange="restoreFromFile(event)">
-    </div>
+        <label for="restoreFile" class="btn-secondary" style="cursor:pointer;">
+          Load Backup File
+        </label>
 
-    <div class="settings-section">
-      <h3>Excel Upload</h3>
+        <input id="restoreFile" type="file"
+               accept="application/json"
+               style="display:none;"
+               onchange="restoreFromFile(event)">
+      </div>
 
-      <label for="excelFile" class="btn-secondary" style="cursor:pointer;">
-        Excel 파일 선택
-      </label>
+      <div class="settings-section">
+        <h3>Excel Upload</h3>
 
-      <input id="excelFile" type="file"
-             style="display:none;"
-             onchange="handleExcelUpload(event)">
-    </div>
-  `;
-}
+        <label for="excelFile" class="btn-secondary" style="cursor:pointer;">
+          Excel 파일 선택
+        </label>
+
+        <input id="excelFile" type="file"
+               style="display:none;"
+               onchange="handleExcelUpload(event)">
+      </div>
+    `;
+  }
+};
+
 
 
 
