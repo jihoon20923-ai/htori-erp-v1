@@ -1,154 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>HTORI Factory ERP</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    :root{
-      --bg:#0f172a;
-      --card:#111827;
-      --accent:#3b82f6;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-    }
-    *{box-sizing:border-box;}
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      background:linear-gradient(180deg,#0f172a,#020617);
-      color:var(--text);
-    }
-    header{
-      padding:14px 20px;
-      background:#020617;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      border-bottom:1px solid #1f2933;
-    }
-    header h1{
-      margin:0;
-      font-size:20px;
-      letter-spacing:1px;
-    }
-    .lang-box select{
-      background:#020617;color:#fff;border:1px solid #333;padding:6px;
-    }
-    .container{
-      display:flex;
-      min-height:100vh;
-    }
-    aside{
-      width:220px;
-      background:#020617;
-      border-right:1px solid #1f2933;
-      padding:15px;
-    }
-    aside button{
-      width:100%;
-      background:none;
-      border:1px solid #1f2933;
-      color:var(--text);
-      padding:10px;
-      margin-bottom:8px;
-      cursor:pointer;
-    }
-    aside button:hover{
-      background:#1f2933;
-    }
-    main{
-      flex:1;
-      padding:20px;
-    }
-    .page{display:none;}
-    .dashboard{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-      gap:15px;
-    }
-    .card{
-      background:var(--card);
-      border-radius:12px;
-      padding:16px;
-      box-shadow:0 0 0 1px #1f2933;
-    }
-    .card h3{
-      margin:0 0 10px 0;
-      font-size:14px;
-      color:var(--muted);
-    }
-    .card p{
-      font-size:22px;
-      margin:0;
-    }
-    input,select,button{
-      padding:8px;
-      border-radius:6px;
-      border:1px solid #333;
-      background:#020617;
-      color:#fff;
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:10px;
-    }
-    th,td{
-      border:1px solid #333;
-      padding:6px;
-      text-align:center;
-      font-size:13px;
-    }
-    th{background:#111827;}
-    .form-row{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-    }
-    .selected-row{background:#1f2933;}
-  </style>
+<meta charset="UTF-8">
+<title>HTORI ERP - Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+--bg:#0f172a;--card:#111827;--accent:#3b82f6;--text:#e5e7eb;--muted:#9ca3af;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:Arial;background:linear-gradient(180deg,#0f172a,#020617);color:var(--text);}
+input,select,button{padding:8px;border-radius:6px;border:1px solid #333;background:#020617;color:#fff;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th,td{border:1px solid #333;padding:6px;font-size:13px;text-align:center;}
+th{background:#111827;}
+.form-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+button{cursor:pointer;}
+.page{display:none;}
+.selected-row{background:#1f2933}
+
+/* LOGIN */
+#loginBox{
+height:100vh;display:flex;align-items:center;justify-content:center;
+}
+.login-card{
+background:#020617;padding:30px;border-radius:12px;box-shadow:0 0 0 1px #1f2933;
+width:320px;
+}
+.login-card h2{text-align:center;margin-bottom:15px}
+
+/* LAYOUT */
+header{padding:14px 20px;background:#020617;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1f2933;}
+.container{display:flex;min-height:100vh;}
+aside{width:220px;background:#020617;border-right:1px solid #1f2933;padding:15px;}
+aside button{width:100%;margin-bottom:6px;}
+main{flex:1;padding:20px;}
+</style>
 </head>
 
 <body>
 
-<header>
-  <h1>HTORI FACTORY ERP</h1>
-  <div class="lang-box">
-    <select id="langSelect" onchange="setLang(this.value)">
-      <option value="en">EN</option>
-      <option value="ko">KO</option>
-    </select>
+<!-- ✅ LOGIN PAGE -->
+<div id="loginBox">
+  <div class="login-card">
+    <h2>HTORI ERP LOGIN</h2>
+    <div class="form-row"><input id="loginId" placeholder="User ID"></div>
+    <div class="form-row"><input id="loginPw" type="password" placeholder="Password"></div>
+    <button onclick="login()">LOGIN</button>
   </div>
+</div>
+
+<!-- ✅ ERP SYSTEM -->
+<div id="erpSystem" style="display:none">
+
+<header>
+  <h3>HTORI FACTORY ERP</h3>
+  <button onclick="logout()">LOGOUT</button>
 </header>
 
 <div class="container">
 
-  <aside>
-    <button onclick="showPage('dashboard')">Dashboard</button>
-    <button onclick="showPage('customer')">Customer & Vendor</button>
-    <button onclick="showPage('order')">Order</button>
-    <button onclick="showPage('cbm')">CBM</button>
-    <button onclick="showPage('invoice')">Invoice</button>
-  </aside>
+<aside id="menuBox"></aside>
 
-  <main>
+<main>
 
-<!-- ================= DASHBOARD ================= -->
+<!-- DASHBOARD -->
 <div id="page-dashboard" class="page">
-  <div class="dashboard">
-    <div class="card"><h3>Total Customers</h3><p id="dashCus">0</p></div>
-    <div class="card"><h3>Total Orders</h3><p id="dashOrder">0</p></div>
-    <div class="card"><h3>Total CBM</h3><p id="dashCBM">0</p></div>
-    <div class="card"><h3>Total Sales</h3><p id="dashSales">$0</p></div>
-  </div>
+  <h2>Dashboard</h2>
+  <p>Welcome to HTORI ERP</p>
 </div>
 
-<!-- ================= CUSTOMER + VENDOR ================= -->
+<!-- CUSTOMER -->
 <div id="page-customer" class="page">
-  <h2>Customer / Vendor Master</h2>
-
+  <h2>Customer / Vendor</h2>
   <div class="form-row">
     <input id="cCode" placeholder="Code">
     <input id="cName" placeholder="Company">
@@ -157,43 +81,24 @@
       <option value="vendor">Vendor</option>
       <option value="both">Both</option>
     </select>
-    <input id="cBank" placeholder="Bank">
-    <input id="cAccount" placeholder="Account">
     <button onclick="addCustomer()">Save</button>
   </div>
 
   <table>
-    <thead><tr><th>Code</th><th>Company</th><th>Role</th><th>Bank</th><th>Select</th></tr></thead>
+    <thead><tr><th>Code</th><th>Name</th><th>Role</th></tr></thead>
     <tbody id="cusBody"></tbody>
   </table>
-
-  <h3>Ledger</h3>
-  <div class="form-row">
-    <input id="txDate" type="date">
-    <select id="txType"><option>IN</option><option>OUT</option></select>
-    <input id="txAmount" type="number" placeholder="Amount">
-    <input id="txNote" placeholder="Note">
-    <button onclick="addTx()">Add</button>
-  </div>
-
-  <table>
-    <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Note</th></tr></thead>
-    <tbody id="txBody"></tbody>
-  </table>
-
-  <p id="cusBalance"></p>
 </div>
 
-<!-- ================= ORDER ================= -->
+<!-- ORDER -->
 <div id="page-order" class="page">
   <h2>Order</h2>
-
   <div class="form-row">
     <input id="oNo" placeholder="Order No">
-    <select id="oBuyer"></select>
+    <input id="oBuyer" placeholder="Buyer">
     <input id="oProduct" placeholder="Product">
     <input id="oQty" type="number" placeholder="Qty">
-    <input id="oPrice" type="number" placeholder="Unit Price">
+    <input id="oPrice" type="number" placeholder="Price">
     <button onclick="addOrder()">Add</button>
   </div>
 
@@ -203,10 +108,9 @@
   </table>
 </div>
 
-<!-- ================= CBM ================= -->
+<!-- CBM -->
 <div id="page-cbm" class="page">
-  <h2>CBM Calculator</h2>
-
+  <h2>CBM</h2>
   <div class="form-row">
     <input id="cbCode" placeholder="Product">
     <input id="cbQty" type="number" placeholder="Qty">
@@ -215,148 +119,153 @@
     <input id="cbH" type="number" placeholder="H">
     <button onclick="calcCBM()">Calc</button>
   </div>
-
   <table>
     <thead><tr><th>Product</th><th>Qty</th><th>CBM</th></tr></thead>
     <tbody id="cbmBody"></tbody>
   </table>
 </div>
 
-<!-- ================= INVOICE ================= -->
+<!-- INVOICE -->
 <div id="page-invoice" class="page">
   <h2>Invoice</h2>
-  <button onclick="makeInvoice()">Generate CSV</button>
-
+  <button onclick="makeInvoice()">Download CSV</button>
   <table>
     <thead><tr><th>Product</th><th>Qty</th><th>Amount</th></tr></thead>
     <tbody id="invBody"></tbody>
   </table>
 </div>
 
-  </main>
+<!-- ✅ USER PERMISSION (MASTER ONLY) -->
+<div id="page-users" class="page">
+  <h2>User Permission</h2>
+
+  <div class="form-row">
+    <input id="uId" placeholder="User ID">
+    <input id="uPw" placeholder="Password">
+    <select id="uRole">
+      <option value="master">Master</option>
+      <option value="sales">Sales</option>
+      <option value="production">Production</option>
+      <option value="finance">Finance</option>
+      <option value="staff">Staff</option>
+    </select>
+    <button onclick="addUser()">Add User</button>
+  </div>
+
+  <table>
+    <thead><tr><th>ID</th><th>Role</th><th>Del</th></tr></thead>
+    <tbody id="userBody"></tbody>
+  </table>
+</div>
+
+</main>
+</div>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
-let selectedCustomer=null;
+const $=id=>document.getElementById(id);
 
-function load(k){return JSON.parse(localStorage.getItem(k)||"[]")}
-function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+/* ✅ 기본 마스터 계정 자동 생성 */
+if(!localStorage.getItem("users")){
+  localStorage.setItem("users",JSON.stringify([
+    {id:"admin",pw:"1234",role:"master"}
+  ]));
+}
+
+/* ✅ LOGIN */
+let currentUser=null;
+function login(){
+  const id=loginId.value,pw=loginPw.value;
+  const users=JSON.parse(localStorage.getItem("users"));
+  const found=users.find(u=>u.id===id&&u.pw===pw);
+  if(!found){alert("Login Failed");return;}
+  currentUser=found;
+  loginBox.style.display="none";
+  erpSystem.style.display="block";
+  buildMenu();
+  showPage("dashboard");
+}
+function logout(){
+  currentUser=null;
+  erpSystem.style.display="none";
+  loginBox.style.display="flex";
+}
+
+/* ✅ MENU PERMISSION */
+function buildMenu(){
+  menuBox.innerHTML="";
+  const map={
+    master:["dashboard","customer","order","cbm","invoice","users"],
+    sales:["dashboard","order","invoice"],
+    production:["dashboard","cbm"],
+    finance:["dashboard","customer","invoice"],
+    staff:["dashboard"]
+  };
+  map[currentUser.role].forEach(p=>{
+    const btn=document.createElement("button");
+    btn.innerText=p.toUpperCase();
+    btn.onclick=()=>showPage(p);
+    menuBox.appendChild(btn);
+  });
+}
 
 function showPage(p){
   document.querySelectorAll(".page").forEach(x=>x.style.display="none");
   $("page-"+p).style.display="block";
 }
 
-/* DASHBOARD */
-function refreshDash(){
-  $("dashCus").innerText = load("customers").length;
-  $("dashOrder").innerText = load("orders").length;
-  const cbm = load("cbm").reduce((a,b)=>a+b.cbm,0);
-  $("dashCBM").innerText = cbm.toFixed(2);
-  const sales = load("orders").reduce((a,b)=>a+b.total,0);
-  $("dashSales").innerText = "$"+sales.toFixed(2);
+/* ✅ USER PERMISSION SYSTEM */
+function addUser(){
+  const list=JSON.parse(localStorage.getItem("users"));
+  list.push({id:uId.value,pw:uPw.value,role:uRole.value});
+  localStorage.setItem("users",JSON.stringify(list));
+  renderUsers();
 }
+function renderUsers(){
+  userBody.innerHTML="";
+  JSON.parse(localStorage.getItem("users")).forEach((u,i)=>{
+    userBody.innerHTML+=`<tr><td>${u.id}</td><td>${u.role}</td>
+    <td><button onclick="delUser(${i})">X</button></td></tr>`;
+  });
+}
+function delUser(i){
+  const list=JSON.parse(localStorage.getItem("users"));
+  list.splice(i,1);
+  localStorage.setItem("users",JSON.stringify(list));
+  renderUsers();
+}
+
+/* ✅ SIMPLE DATA SYSTEM */
+function load(k){return JSON.parse(localStorage.getItem(k)||"[]")}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
 
 /* CUSTOMER */
 function addCustomer(){
-  const list = load("customers");
-  list.push({
-    code:cCode.value,name:cName.value,role:cRole.value,
-    bank:cBank.value,account:cAccount.value
-  });
+  const list=load("customers");
+  list.push({code:cCode.value,name:cName.value,role:cRole.value});
   save("customers",list);
-  renderCustomer();
-  loadBuyer();
-}
-
-function renderCustomer(){
   cusBody.innerHTML="";
-  load("customers").forEach((c,i)=>{
-    cusBody.innerHTML+=`<tr>
-      <td>${c.code}</td><td>${c.name}</td><td>${c.role}</td><td>${c.bank}</td>
-      <td><button onclick="selectCustomer(${i})">Select</button></td>
-    </tr>`;
-  });
-}
-
-function selectCustomer(i){
-  selectedCustomer = load("customers")[i];
-  renderTx();
-}
-
-function addTx(){
-  if(!selectedCustomer)return alert("Select customer first");
-  const tx = load("tx");
-  tx.push({
-    code:selectedCustomer.code,
-    date:txDate.value,
-    type:txType.value,
-    amount:Number(txAmount.value),
-    note:txNote.value
-  });
-  save("tx",tx);
-  renderTx();
-}
-
-function renderTx(){
-  txBody.innerHTML="";
-  const tx = load("tx").filter(t=>t.code===selectedCustomer.code);
-  let bal=0;
-  tx.forEach(t=>{
-    if(t.type==="IN")bal+=t.amount;
-    else bal-=t.amount;
-    txBody.innerHTML+=`<tr><td>${t.date}</td><td>${t.type}</td><td>${t.amount}</td><td>${t.note}</td></tr>`;
-  });
-  cusBalance.innerText = "Balance: "+bal;
+  list.forEach(c=>cusBody.innerHTML+=`<tr><td>${c.code}</td><td>${c.name}</td><td>${c.role}</td></tr>`);
 }
 
 /* ORDER */
-function loadBuyer(){
-  oBuyer.innerHTML="";
-  load("customers").filter(c=>c.role==="buyer"||c.role==="both")
-  .forEach(c=>{
-    oBuyer.innerHTML+=`<option>${c.name}</option>`;
-  });
-}
-
 function addOrder(){
-  const list = load("orders");
-  const total = oQty.value * oPrice.value;
-  list.push({
-    no:oNo.value,buyer:oBuyer.value,
-    product:oProduct.value,qty:Number(oQty.value),
-    price:Number(oPrice.value),total
-  });
+  const list=load("orders");
+  const total=oQty.value*oPrice.value;
+  list.push({no:oNo.value,buyer:oBuyer.value,product:oProduct.value,qty:oQty.value,total});
   save("orders",list);
-  renderOrder();
-  refreshDash();
-}
-
-function renderOrder(){
   orderBody.innerHTML="";
-  load("orders").forEach(o=>{
-    orderBody.innerHTML+=`<tr>
-      <td>${o.no}</td><td>${o.buyer}</td><td>${o.product}</td>
-      <td>${o.qty}</td><td>${o.total}</td>
-    </tr>`;
-  });
+  list.forEach(o=>orderBody.innerHTML+=`<tr><td>${o.no}</td><td>${o.buyer}</td><td>${o.product}</td><td>${o.qty}</td><td>${o.total}</td></tr>`);
 }
 
 /* CBM */
 function calcCBM(){
-  const list = load("cbm");
-  const cbmVal = (cbL.value*cbW.value*cbH.value/1000000);
-  list.push({product:cbCode.value,qty:Number(cbQty.value),cbm:cbmVal});
+  const list=load("cbm");
+  const val=(cbL.value*cbW.value*cbH.value)/1000000;
+  list.push({product:cbCode.value,qty:cbQty.value,cbm:val});
   save("cbm",list);
-  renderCBM();refreshDash();
-}
-
-function renderCBM(){
   cbmBody.innerHTML="";
-  load("cbm").forEach(c=>{
-    cbmBody.innerHTML+=`<tr><td>${c.product}</td><td>${c.qty}</td><td>${c.cbm.toFixed(3)}</td></tr>`;
-  });
+  list.forEach(c=>cbmBody.innerHTML+=`<tr><td>${c.product}</td><td>${c.qty}</td><td>${c.cbm.toFixed(3)}</td></tr>`);
 }
 
 /* INVOICE */
@@ -368,24 +277,11 @@ function makeInvoice(){
     csv+=`${o.product},${o.qty},${o.total}\n`;
   });
   const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([csv]));
-  a.download="invoice.csv";a.click();
+  a.href=URL.createObjectURL(new Blob([csv]));a.download="invoice.csv";a.click();
 }
 
-/* LANGUAGE */
-const i18n={
-  ko:{Dashboard:"대시보드",Order:"주문"},
-  en:{Dashboard:"Dashboard",Order:"Order"}
-};
-function setLang(l){}
-
 /* INIT */
-showPage("dashboard");
-renderCustomer();
-renderOrder();
-renderCBM();
-loadBuyer();
-refreshDash();
+renderUsers();
 </script>
 
 </body>
