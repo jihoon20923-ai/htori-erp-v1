@@ -36,6 +36,9 @@ aside{width:220px;background:#020617;border-right:1px solid #1f2933;padding:15px
 aside button{width:100%;margin-bottom:6px;}
 main{flex:1;padding:20px;}
 </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
 </head>
 
 <body>
@@ -161,6 +164,22 @@ main{flex:1;padding:20px;}
 </main>
 </div>
 </div>
+// ✅ Firebase 실시간 ERP 연결 (웹 CDN 버전)
+var firebaseConfig = {
+  apiKey: "AIzaSyDwiTlPtoXraEtA7TzTctdH6DJS6gdSEGQ",
+  authDomain: "htori-erp-3c22b.firebaseapp.com",
+  databaseURL: "https://htori-erp-3c22b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "htori-erp-3c22b",
+  storageBucket: "htori-erp-3c22b.firebasestorage.app",
+  messagingSenderId: "975336397666",
+  appId: "1:975336397666:web:ae45a471e51bf71e9dea3b"
+};
+
+// ✅ Firebase 초기화
+firebase.initializeApp(firebaseConfig);
+
+// ✅ 실시간 DB 객체
+var db = firebase.database();
 
 <script>
 const $=id=>document.getElementById(id);
@@ -236,8 +255,16 @@ function delUser(i){
 }
 
 /* ✅ SIMPLE DATA SYSTEM */
-function load(k){return JSON.parse(localStorage.getItem(k)||"[]")}
-function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function saveData(key, value){
+  db.ref(key).set(value);
+}
+
+function listenData(key, callback){
+  db.ref(key).on("value", function(snapshot){
+    callback(snapshot.val() || []);
+  });
+}
+
 
 /* CUSTOMER */
 function addCustomer(){
