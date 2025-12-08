@@ -14,17 +14,22 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 /***********************
- ✅ DATA INITIAL RESET
+ ✅ 최초 1회만 admin 생성
 ***********************/
-db.ref().set({
-  employees: [
-    { id:"admin", pw:"1234", name:"Master", role:"master" }
-  ],
-  stock: [],
-  orders: [],
-  shipments: [],
-  stock_log: []
+db.ref("employees").once("value").then(snap=>{
+  const list = snap.val();
+  if(!list){
+    db.ref("employees").push({
+      id:"admin",
+      pw:"1234",
+      name:"Master",
+      role:"master"
+    });
+  }
 });
+
+
+
 
 /***********************
  LOGIN
