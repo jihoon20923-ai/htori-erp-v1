@@ -35,7 +35,7 @@ function saveSuppliers(v) { set("suppliers", v); }
 
 function addSupplier() {
   const name = document.getElementById("newSupplier").value.trim();
-  if (!name) return alert("Supplier name required");
+  if (!name) return alert("Supplier name required");<h2>Production</h2>
   const list = getSuppliers();
   if (list.some(s => s.name === name)) return alert("Already exists");
   list.push({ name });
