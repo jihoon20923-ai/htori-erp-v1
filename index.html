@@ -5,11 +5,10 @@
   <title>HTORI Realtime ERP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <!-- ✅ Firebase SDK -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-  <!-- ✅ CSS -->
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -17,21 +16,22 @@
 <!-- ✅ LOGIN -->
 <div id="loginBox" class="login-box">
   <h2>HTORI ERP LOGIN</h2>
-
   <input id="loginId" placeholder="ID"/>
   <input id="loginPw" type="password" placeholder="Password"/>
-
   <button onclick="login()">LOGIN</button>
 </div>
 
-<!-- ✅ ERP MAIN -->
+<!-- ✅ ERP -->
 <div id="erp" class="hidden">
 
   <!-- ✅ HEADER -->
   <header class="header">
+    <!-- ✅ 모바일에서만 나타남 -->
     <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+
     <div class="logo">HTORI ERP</div>
 
+    <!-- ✅ 언어 선택 (오른쪽 고정) -->
     <div class="lang-buttons">
       <button onclick="setLanguage('KR')">KR</button>
       <button onclick="setLanguage('EN')">EN</button>
@@ -43,12 +43,10 @@
   <aside id="sidebar" class="sidebar"></aside>
 
   <!-- ✅ CONTENT -->
-  <main id="content"></main>
+  <main id="content" class="content"></main>
 
 </div>
 
-<!-- ✅ JS -->
-<script src="./app.js"></script>
-
+<script src="app.js"></script>
 </body>
 </html>
