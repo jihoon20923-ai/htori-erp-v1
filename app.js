@@ -32,17 +32,17 @@ db.ref("employees").once("value").then(snap => {
 ***********************/
 let currentUser = null;
 
-function login(){
+function login() {
   const id = document.getElementById("loginId").value.trim();
   const pw = document.getElementById("loginPw").value.trim();
 
-  db.ref("employees").once("value").then(s=>{
+  db.ref("employees").once("value").then(s => {
     const list = s.val() || {};
-    const found = Object.values(list).find(x=>x.id===id && x.pw===pw);
-    if(!found) return alert("LOGIN FAIL");
+    const found = Object.values(list).find(x => x.id === id && x.pw === pw);
+
+    if (!found) return alert("LOGIN FAIL");
 
     currentUser = found;
-
     document.getElementById("loginBox").classList.add("hidden");
     document.getElementById("erp").classList.remove("hidden");
 
@@ -76,7 +76,7 @@ function renderMenu(){
   if (!currentUser) return;
 
   const sidebar = document.getElementById("sidebar");
-  sidebar.innerHTML="";
+  sidebar.innerHTML = "";
 
   const roleMap = {
     master:["dashboard","employee","stock","order","shipment"],
