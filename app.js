@@ -431,5 +431,35 @@ function downloadProductionCSV() {
 
   downloadCSV("production.csv", headers, rows);
 }
+// ============================
+// ✅ 전역(Global) 바인딩 (버튼 작동 핵심)
+// ============================
+
+window.setLanguage = setLanguage;
+window.loadPage = loadPage;
+
+window.backupToFile = backupToFile;
+window.restoreFromFile = restoreFromFile;
+
+window.onPurchase = onPurchase;
+window.onOutgoing = onOutgoing;
 window.onProduction = onProduction;
+window.onOutsourcing = onOutsourcing;
+
+window.saveBOMItem = saveBOMItem;
+
+window.editStockQty = editStockQty;
+window.editPurchase = editPurchase;
+window.editProduction = editProduction;
+
+window.downloadPurchaseCSV = downloadPurchaseCSV;
+window.downloadOutgoingCSV = downloadOutgoingCSV;
 window.downloadProductionCSV = downloadProductionCSV;
+
+window.addSupplier = addSupplier;
+window.deleteSupplier = deleteSupplier;
+
+window.handleExcelUpload = handleExcelUpload;
+
+window.toggleSidebar = toggleSidebar;
+window.closeSidebar = closeSidebar;
