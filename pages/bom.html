@@ -1,25 +1,48 @@
-<h2>BOM</h2>
-<p>Bill of Materials.</p>
+<h2>BOM Management (Process BOM)</h2>
 
-<div class="form-row">
-  <input id="bomProduct" placeholder="Product">
-  <input id="bomMatCode" placeholder="Material Code">
-  <input id="bomMatName" placeholder="Material Name">
-  <input id="bomQty" type="number" placeholder="Qty per 1 product">
+<div class="bom-form">
+  <input id="bomProduct" placeholder="Product Code (ex: CP1)">
+  <input id="bomProcess" type="number" placeholder="Process No (1~10)">
+  <input id="bomOutputCode" placeholder="Output Code (ex: P101)">
+  <input id="bomOutputName" placeholder="Output Name (ex: Semi 1)">
 
-  <button class="btn-primary" onclick="saveBOMItem()">BOM 저장</button>
+  <h4>Input Materials</h4>
+  <table class="erp-table">
+    <thead>
+      <tr>
+        <th>Input Code</th>
+        <th>Input Name</th>
+        <th>Qty</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="bomInputBody"></tbody>
+  </table>
+
+  <button onclick="addBomInput()">+ Add Material</button>
+
+  <div style="margin-top:10px">
+    <input id="bomLoss" type="number" placeholder="Std Loss">
+    <input id="bomDefect" type="number" placeholder="Std Defect">
+  </div>
+
+  <button onclick="saveBOM()">Save BOM</button>
 </div>
 
-<table class="erp-table" style="margin-top:20px;">
+<hr>
+
+<h3>BOM List</h3>
+<table class="erp-table">
   <thead>
     <tr>
       <th>Product</th>
-      <th>MatCode</th>
-      <th>MatName</th>
+      <th>Process</th>
+      <th>Input Code</th>
       <th>Qty</th>
-      <th>Updated</th>
+      <th>Output Code</th>
+      <th>Loss</th>
+      <th>Defect</th>
     </tr>
   </thead>
-  <tbody id="bomTableBody"></tbody>
+  <tbody id="bomListBody"></tbody>
 </table>
-
