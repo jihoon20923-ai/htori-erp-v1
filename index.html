@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <title>HTORI Realtime ERP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <!-- Firebase -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -24,14 +24,9 @@
 <!-- ✅ ERP -->
 <div id="erp" class="hidden">
 
-  <!-- ✅ HEADER -->
   <header class="header">
-    <!-- ✅ 모바일에서만 나타남 -->
     <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
-
     <div class="logo">HTORI ERP</div>
-
-    <!-- ✅ 언어 선택 (오른쪽 고정) -->
     <div class="lang-buttons">
       <button onclick="setLanguage('KR')">KR</button>
       <button onclick="setLanguage('EN')">EN</button>
@@ -39,14 +34,11 @@
     </div>
   </header>
 
-  <!-- ✅ SIDEBAR -->
   <aside id="sidebar" class="sidebar"></aside>
 
-  <!-- ✅ CONTENT -->
-  <main id="content" class="content"></main>
-
+  <main id="content"></main>
 </div>
 
-<script src="app.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
