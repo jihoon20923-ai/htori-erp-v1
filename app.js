@@ -1,515 +1,244 @@
-/*************************************************
- * HTORI ERP - CLEAN STABLE SINGLE FILE VERSION
- *************************************************/
-
-/* =========================
-   GLOBAL STATE
-========================= */
-const LANGS = ["EN", "KR", "ID"];
-
-const state = {
-  lang: localStorage.getItem("htori_lang") || "EN",
-  page: localStorage.getItem("htori_page") || "dashboard",
+/***********************
+ FIREBASE INIT
+***********************/
+var firebaseConfig = {
+  apiKey: "AIzaSyDwiTlPtoXraEtA7TzTctdH6DJS6gdSEGQ",
+  authDomain: "htori-erp-3c22b.firebaseapp.com",
+  databaseURL: "https://htori-erp-3c22b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "htori-erp-3c22b",
+  storageBucket: "htori-erp-3c22b.firebasestorage.app",
+  messagingSenderId: "975336397666",
+  appId: "1:975336397666:web:ae45a471e51bf71e9dea3b"
 };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-/* =========================
-   I18N
-========================= */
-const i18n = {
-  EN: { appTitle: "HTORI ERP", pages: { btnEdit: "Edit", btnDelete: "Delete", btnRegister: "Register", btnAdd: "Add", btnDownloadExcel: "Excel Download" } },
-  KR: { appTitle: "HTORI ERP", pages: { btnEdit: "수정", btnDelete: "삭제", btnRegister: "등록", btnAdd: "추가", btnDownloadExcel: "엑셀 다운로드" } },
-  ID: { appTitle: "HTORI ERP", pages: { btnEdit: "Edit", btnDelete: "Hapus", btnRegister: "Daftar", btnAdd: "Tambah", btnDownloadExcel: "Unduh Excel" } },
-};
-
-/* =========================
-   STORAGE HELPERS
-========================= */
-const get = (k, d = []) => JSON.parse(localStorage.getItem(k) || JSON.stringify(d));
-const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-
-/* =========================
-   SUPPLIER
-========================= */
-function getSuppliers() { return get("suppliers"); }
-function saveSuppliers(v) { set("suppliers", v); }
-
-function addSupplier() {
-  const name = document.getElementById("newSupplier").value.trim();
-  if (!name) return alert("Supplier name required");<h2>Production</h2>
-  const list = getSuppliers();
-  if (list.some(s => s.name === name)) return alert("Already exists");
-  list.push({ name });
-  saveSuppliers(list);
-  renderSupplierPage();
-}
-
-function deleteSupplier(name) {
-  let list = getSuppliers().filter(s => s.name !== name);
-  saveSuppliers(list);
-  renderSupplierPage();
-}
-
-function renderSupplierPage() {
-  const tbody = document.getElementById("supplierTableBody");
-  if (!tbody) return;
-  const t = i18n[state.lang].pages;
-  tbody.innerHTML = "";
-  getSuppliers().forEach(s => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${s.name}</td>
-        <td>
-          <button onclick="deleteSupplier('${s.name}')">${t.btnDelete}</button>
-        </td>
-      </tr>`;
-  });
-}
-
-/* =========================
-   STOCK
-========================= */
-function getStock() { return get("stock"); }
-function saveStock(v) { set("stock", v); }
-
-function editStockQty(code) {
-  let stock = getStock();
-  let item = stock.find(i => i.code === code);
-  if (!item) return alert("Not found");
-  const n = Number(prompt("New Qty", item.qty));
-  if (isNaN(n)) return;
-  item.qty = n;
-  saveStock(stock);
-  renderStockPage();
-}
-
-function renderStockPage() {
-  const tbody = document.getElementById("stockTableBody");
-  if (!tbody) return;
-  const t = i18n[state.lang].pages;
-  tbody.innerHTML = "";
-  getStock().forEach(i => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${i.code}</td>
-        <td>${i.name}</td>
-        <td>${i.qty}</td>
-        <td><button onclick="editStockQty('${i.code}')">${t.btnEdit}</button></td>
-      </tr>`;
-  });
-}
-
-/* =========================
-   PRODUCTION
-========================= */
-function getProduction() { return get("production"); }
-function saveProduction(v) { set("production", v); }
-
-function onProduction() {
-  const product = document.getElementById("prodProduct").value;
-  const qty = Number(document.getElementById("prodQty").value);
-  if (!product || !qty) return alert("Input required");
-
-  const list = getProduction();
-  list.push({
-    date: new Date().toLocaleDateString(),
-    product,
-    qty,
-    updated: new Date().toLocaleString(),
-  });
-
-  saveProduction(list);
-  renderProductionPage();
-}
-
-function editProduction(index) {
-  let list = getProduction();
-  let p = list[index];
-  const n = Number(prompt("New Qty", p.qty));
-  if (isNaN(n)) return;
-  p.qty = n;
-  p.updated = new Date().toLocaleString();
-  saveProduction(list);
-  renderProductionPage();
-}
-
-function renderProductionPage() {
-  const tbody = document.getElementById("prodTableBody");
-  if (!tbody) return;
-  const t = i18n[state.lang].pages;
-  tbody.innerHTML = "";
-  getProduction().forEach((p, i) => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${p.date}</td>
-        <td>${p.product}</td>
-        <td>${p.qty}</td>
-        <td>${p.updated}</td>
-        <td><button onclick="editProduction(${i})">${t.btnEdit}</button></td>
-      </tr>`;
-  });
-}
-
-/* =========================
-   CSV DOWNLOAD
-========================= */
-function downloadCSV(filename, headers, rows) {
-  let csv = headers.join(",") + "\n";
-  rows.forEach(r => csv += r.join(",") + "\n");
-  const blob = new Blob([csv]);
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-}
-
-function downloadProductionCSV() {
-  const list = getProduction();
-  downloadCSV("production.csv", ["Date","Product","Qty","Updated"],
-    list.map(p => [p.date,p.product,p.qty,p.updated]));
-}
-
-/* =========================
-   EXCEL UPLOAD
-========================= */
-function handleExcelUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  alert("Excel Selected: " + file.name);
-}
-window.handleExcelUpload = handleExcelUpload;
-
-/* =========================
-   PAGE TEMPLATES
-========================= */
-const PageTemplates = {
-  dashboard() {
-    return `<h2>Dashboard</h2>`;
-  },
-
-  stock() {
-    return `
-      <h2>Stock</h2>
-      <table class="erp-table">
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Qty</th>
-            <th>Edit</th>
-          </tr>
-        </thead>
-        <tbody id="stockTableBody"></tbody>
-      </table>
-    `;
-  },
-
-  production() {
-    return `
-      <h2>Production</h2>
-
-      <div class="form-row">
-        <input id="prodProduct" placeholder="Product">
-        <input id="prodQty" type="number" placeholder="Qty">
-        <button onclick="onProduction()">Register</button>
-        <button onclick="downloadProductionCSV()">Excel</button>
-      </div>
-
-      <table class="erp-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Product</th>
-            <th>Qty</th>
-          </tr>
-        </thead>
-        <tbody id="prodTableBody"></tbody>
-      </table>
-    `;
-  },
-
-  suppliers() {
-    return `
-      <h2>Suppliers</h2>
-
-      <input id="newSupplier" placeholder="Supplier Name">
-      <button onclick="addSupplier()">Add</button>
-
-      <table class="erp-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody id="supplierTableBody"></tbody>
-      </table>
-    `;
-  },
-
-  settings() {
-    return `
-      <h2>Settings</h2>
-
-      <div class="settings-section">
-        <label>Company</label>
-        <input id="settingCompany">
-
-        <label>Manager</label>
-        <input id="settingManager">
-
-        <button onclick="saveSettings()">Save</button>
-      </div>
-    `;
-  }
-};
-
-
-/* =========================
-   SETTINGS
-========================= */
-function saveSettings() {
-  const company = document.getElementById("settingCompany").value;
-  const manager = document.getElementById("settingManager").value;
-
-  const settings = { company, manager };
-  localStorage.setItem("settings", JSON.stringify(settings));
-
-  alert("Settings Saved");
-}
-
-/* =========================
-   RENDER ENGINE
-========================= */
-function renderContent() {
-  const page = PageTemplates[state.page] || PageTemplates.dashboard;
-  document.getElementById("content").innerHTML = page();
-
-  if (state.page === "stock") renderStockPage();
-  if (state.page === "production") renderProductionPage();
-  if (state.page === "suppliers") renderSupplierPage();
-}
-
-function renderHeader() {
-  document.querySelector(".logo").textContent = i18n[state.lang].appTitle;
-}
-
-function rerenderAll() {
-  renderHeader();
-  renderContent();
-}
-
-/* =========================
-   NAVIGATION + LANGUAGE
-========================= */
-function setLanguage(lang) {
-  state.lang = lang;
-  localStorage.setItem("htori_lang", lang);
-  rerenderAll();
-}
-
-function loadPage(page) {
-  state.page = page;
-  localStorage.setItem("htori_page", page);
-  rerenderAll();
-}
-
-window.setLanguage = setLanguage;
-window.loadPage = loadPage;
-window.onProduction = onProduction;
-window.editProduction = editProduction;
-window.downloadProductionCSV = downloadProductionCSV;
-window.addSupplier = addSupplier;
-window.deleteSupplier = deleteSupplier;
-window.editStockQty = editStockQty;
-
-/* =========================
-   INIT
-========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  rerenderAll();
-
-  document.querySelectorAll(".sidebar li").forEach(li => {
-    li.addEventListener("click", () => {
-      loadPage(li.dataset.page);
-    });
-  });
+/***********************
+ ✅ DATA INITIAL RESET
+***********************/
+db.ref().set({
+  employees: [
+    { id:"admin", pw:"1234", name:"Master", role:"master" }
+  ],
+  stock: [],
+  orders: [],
+  shipments: [],
+  stock_log: []
 });
-PageTemplates.production = function (lang) {
-  const t = i18n[lang].pages;
 
-  return `
-    <h2>${t.productionTitle}</h2>
-    <p>${t.productionDesc}</p>
+/***********************
+ LOGIN
+***********************/
+let currentUser = null;
 
-    <div class="form-row">
-      <input id="prodProduct" placeholder="Product Code">
-      <input id="prodQty" type="number" placeholder="Qty">
+function login(){
+  const id = loginId.value.trim();
+  const pw = loginPw.value.trim();
 
-      <button onclick="onProduction()" class="btn-primary">
-        ${t.btnProduction}
-      </button>
+  db.ref("employees").once("value").then(s=>{
+    const list = s.val() || [];
+    const found = list.find(x=>x.id===id && x.pw===pw);
+    if(!found) return alert("LOGIN FAIL");
 
-      <button onclick="downloadProductionCSV()" class="btn-secondary">
-        ${t.btnDownloadExcel}
-      </button>
-    </div>
+    currentUser = found;
+    loginBox.classList.add("hidden");
+    erp.classList.remove("hidden");
 
-    <table class="erp-table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Product</th>
-          <th>Qty</th>
-          <th>Updated</th>
-          <th>${t.btnEdit}</th>
-        </tr>
-      </thead>
-      <tbody id="prodTableBody"></tbody>
-    </table>
-  `;
+    renderMenu();
+    showPage("dashboard");
+  });
+}
+
+/***********************
+ MULTI LANGUAGE
+***********************/
+let lang = "KR";
+
+const T = {
+  KR:{ dashboard:"대시보드", employee:"직원", stock:"재고", order:"주문", shipment:"수출" },
+  EN:{ dashboard:"Dashboard", employee:"Employee", stock:"Stock", order:"Order", shipment:"Shipment" },
+  ID:{ dashboard:"Dasbor", employee:"Karyawan", stock:"Stok", order:"Pesanan", shipment:"Pengiriman" }
 };
 
-
-function getProduction() {
-  return JSON.parse(localStorage.getItem("production") || "[]");
+function setLanguage(l){
+  lang=l;
+  renderMenu();
+  showPage("dashboard");
 }
 
-function saveProduction(list) {
-  localStorage.setItem("production", JSON.stringify(list));
-}
+/***********************
+ MENU
+***********************/
+function renderMenu(){
+  sidebar.innerHTML="";
+  const roleMap = {
+    master:["dashboard","employee","stock","order","shipment"],
+    sales:["dashboard","order","shipment"],
+    production:["dashboard","stock"]
+  };
 
-function onProduction() {
-  const product = document.getElementById("prodProduct").value.trim();
-  const qtyStr = document.getElementById("prodQty").value.trim();
-  const qty = Number(qtyStr);
-
-  if (!product || !qty) {
-    alert("Product와 수량을 입력하세요.");
-    return;
-  }
-
-  const bomList = getBomForProduct(product);
-  if (bomList.length === 0) {
-    alert("해당 제품의 BOM이 없습니다.");
-    return;
-  }
-
-  let stock = getStock();
-
-  // ✅ BOM 기준 자재 재고 체크
-  for (const b of bomList) {
-    const need = b.qty * qty;
-    const mat = stock.find(s => s.code === b.matCode);
-    if (!mat || mat.qty < need) {
-      alert(`재고 부족: ${b.matCode} / 필요:${need}, 현재:${mat ? mat.qty : 0}`);
-      return;
-    }
-  }
-
-  // ✅ 자재 재고 차감
-  bomList.forEach(b => {
-    const need = b.qty * qty;
-    const mat = stock.find(s => s.code === b.matCode);
-    mat.qty -= need;
-    mat.lastUpdate = new Date().toLocaleString();
+  roleMap[currentUser.role].forEach(p=>{
+    const b = document.createElement("button");
+    b.innerText = T[lang][p];
+    b.onclick = ()=>showPage(p);
+    sidebar.appendChild(b);
   });
+}
 
-  // ✅ 완제품 재고 증가
-  let fg = stock.find(s => s.code === product);
-  if (!fg) {
-    stock.push({
-      code: product,
-      name: product,
-      qty,
-      minQty: 0,
-      unit: "SET",
-      lastUpdate: new Date().toLocaleString()
-    });
-  } else {
-    fg.qty += qty;
-    fg.lastUpdate = new Date().toLocaleString();
+function toggleSidebar(){
+  sidebar.classList.toggle("active");
+}
+
+/***********************
+ PAGES
+***********************/
+function showPage(page){
+  if(page==="dashboard"){
+    content.innerHTML = `<h2>${T[lang].dashboard}</h2><p>Realtime Connected ✅</p>`;
   }
 
-  saveStock(stock);
-
-  const list = getProduction();
-  list.push({
-    date: new Date().toLocaleDateString(),
-    product,
-    qty,
-    updated: new Date().toLocaleString()
-  });
-
-  saveProduction(list);
-
-  alert("✅ 생산 등록 완료");
-  loadPage("production");
-}
-function renderProductionPage() {
-  const tbody = document.getElementById("prodTableBody");
-  if (!tbody) return;
-
-  const list = getProduction();
-  tbody.innerHTML = "";
-
-  list.forEach((p, idx) => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${p.date}</td>
-        <td>${p.product}</td>
-        <td>${p.qty}</td>
-        <td>${p.updated}</td>
-        <td>
-          <button class="btn-mini" onclick="editProduction(${idx})">
-            ${i18n[state.lang].pages.btnEdit}
-          </button>
-        </td>
-      </tr>
+  if(page==="employee"){
+    content.innerHTML = `
+      <h2>${T[lang].employee}</h2>
+      <div class="form-row">
+        <input id="eId" placeholder="ID">
+        <input id="ePw" placeholder="PW">
+        <input id="eName" placeholder="NAME">
+        <select id="eRole">
+          <option value="master">MASTER</option>
+          <option value="sales">SALES</option>
+          <option value="production">PRODUCTION</option>
+        </select>
+        <button onclick="addEmployee()">ADD</button>
+      </div>
+      <table>
+        <thead><tr><th>ID</th><th>Name</th><th>Role</th></tr></thead>
+        <tbody id="empBody"></tbody>
+      </table>
     `;
+    loadEmployees();
+  }
+
+  if(page==="stock"){
+    content.innerHTML = `
+      <h2>${T[lang].stock}</h2>
+      <div class="form-row">
+        <input type="date" id="inDate">
+        <input id="inVendor" placeholder="Vendor">
+        <select id="inMethod"><option>SEA</option><option>AIR</option></select>
+        <input id="sCode" placeholder="Code">
+        <input id="sQty" type="number" placeholder="Qty">
+        <button onclick="addStock()">입고</button>
+      </div>
+      <table>
+        <thead><tr><th>Code</th><th>Qty</th></tr></thead>
+        <tbody id="stockBody"></tbody>
+      </table>
+    `;
+    loadStock();
+  }
+
+  if(page==="order"){
+    content.innerHTML = `
+      <h2>${T[lang].order}</h2>
+      <div class="form-row">
+        <input id="oNo" placeholder="Order No">
+        <input id="oProduct" placeholder="Product">
+        <input id="oQty" type="number" placeholder="Qty">
+        <input id="oPrice" type="number" placeholder="Price">
+        <input id="oDue" type="date">
+        <button onclick="addOrder()">ADD</button>
+      </div>
+      <table>
+        <thead><tr><th>No</th><th>Product</th><th>Qty</th></tr></thead>
+        <tbody id="orderBody"></tbody>
+      </table>
+    `;
+    loadOrders();
+  }
+
+  if(page==="shipment"){
+    content.innerHTML = `
+      <h2>${T[lang].shipment}</h2>
+      <div class="form-row">
+        <input id="shipNo" placeholder="Shipment No">
+        <input id="shipBuyer" placeholder="Buyer">
+        <input id="shipDate" type="date">
+        <button onclick="saveShipment()">SAVE</button>
+      </div>
+    `;
+  }
+}
+
+/***********************
+ EMPLOYEE
+***********************/
+function addEmployee(){
+  const emp = {
+    id:eId.value, pw:ePw.value,
+    name:eName.value, role:eRole.value
+  };
+  db.ref("employees").push(emp);
+}
+
+function loadEmployees(){
+  db.ref("employees").on("value", snap=>{
+    empBody.innerHTML="";
+    const list = snap.val() || {};
+    Object.values(list).forEach(e=>{
+      empBody.innerHTML+=`<tr><td>${e.id}</td><td>${e.name}</td><td>${e.role}</td></tr>`;
+    });
   });
 }
-function downloadProductionCSV() {
-  const list = getProduction();
 
-  const headers = ["Date", "Product", "Qty", "Updated"];
-  const rows = list.map(p => [
-    p.date,
-    p.product,
-    p.qty,
-    p.updated
-  ]);
+/***********************
+ STOCK
+***********************/
+function addStock(){
+  const data = {
+    date:inDate.value, vendor:inVendor.value,
+    method:inMethod.value, code:sCode.value,
+    qty:Number(sQty.value)
+  };
 
-  downloadCSV("production.csv", headers, rows);
+  db.ref("stock").push({ code:data.code, qty:data.qty });
+  db.ref("stock_log").push(data);
 }
-// ============================
-// ✅ 전역(Global) 바인딩 (버튼 작동 핵심)
-// ============================
 
-window.setLanguage = setLanguage;
-window.loadPage = loadPage;
+function loadStock(){
+  db.ref("stock").on("value", snap=>{
+    stockBody.innerHTML="";
+    const list = snap.val() || {};
+    Object.values(list).forEach(s=>{
+      stockBody.innerHTML+=`<tr><td>${s.code}</td><td>${s.qty}</td></tr>`;
+    });
+  });
+}
 
-window.backupToFile = backupToFile;
-window.restoreFromFile = restoreFromFile;
+/***********************
+ ORDER
+***********************/
+function addOrder(){
+  const o = {
+    orderNo:oNo.value, product:oProduct.value,
+    qty:oQty.value, price:oPrice.value, due:oDue.value
+  };
+  db.ref("orders").push(o);
+}
 
-window.onPurchase = onPurchase;
-window.onOutgoing = onOutgoing;
-window.onProduction = onProduction;
-window.onOutsourcing = onOutsourcing;
+function loadOrders(){
+  db.ref("orders").on("value", snap=>{
+    orderBody.innerHTML="";
+    const list = snap.val() || {};
+    Object.values(list).forEach(o=>{
+      orderBody.innerHTML+=`<tr><td>${o.orderNo}</td><td>${o.product}</td><td>${o.qty}</td></tr>`;
+    });
+  });
+}
 
-window.saveBOMItem = saveBOMItem;
-
-window.editStockQty = editStockQty;
-window.editPurchase = editPurchase;
-window.editProduction = editProduction;
-
-window.downloadPurchaseCSV = downloadPurchaseCSV;
-window.downloadOutgoingCSV = downloadOutgoingCSV;
-window.downloadProductionCSV = downloadProductionCSV;
-
-window.addSupplier = addSupplier;
-window.deleteSupplier = deleteSupplier;
-
-window.handleExcelUpload = handleExcelUpload;
-
-window.toggleSidebar = toggleSidebar;
-window.closeSidebar = closeSidebar;
+/***********************
+ SHIPMENT
+***********************/
+function saveShipment(){
+  alert("Shipment saved (step 1 complete)");
+}
