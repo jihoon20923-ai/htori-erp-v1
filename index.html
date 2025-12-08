@@ -133,11 +133,11 @@
 <div id="page-export" class="page">
   <h2>Export / CBM</h2>
 
-  <h3>📦 Packing Standard (Code 기준)</h3>
+  <h3>Packing Standard (Code 기준)</h3>
   <div class="form-row">
     <input id="packCode" placeholder="Product Code (ex: CP01)">
-    <input id="innerQty" type="number" placeholder="Inner / Unit (ex: 10)">
-    <input id="cartonQty" type="number" placeholder="Carton / Unit (ex: 100)">
+    <input id="innerQty" type="number" placeholder="Inner / Unit">
+    <input id="cartonQty" type="number" placeholder="Carton / Unit">
     <button onclick="savePackingStandard()">Save Standard</button>
   </div>
 
@@ -150,7 +150,7 @@
 
   <hr>
 
-  <h3>🚢 CBM Calculator (Carton 기준)</h3>
+  <h3>CBM Calculator (Carton 기준)</h3>
 
   <div class="form-row">
     <input id="cbmCode" placeholder="Product Code (ex: CP01)">
@@ -175,30 +175,30 @@
         <th>Total CBM</th>
         <th>20FT Carton</th>
         <th>40HQ Carton</th>
+        <th>Edit</th>
+        <th>Del</th>
       </tr>
     </thead>
     <tbody id="cbmBody"></tbody>
   </table>
-
 </div>
 
 <script>
-function load(key){ return JSON.parse(localStorage.getItem(key)||"[]");}
-function save(key,val){ localStorage.setItem(key,JSON.stringify(val));}
+function load(key){ return JSON.parse(localStorage.getItem(key)||"[]"); }
+function save(key,val){ localStorage.setItem(key,JSON.stringify(val)); }
 
-/* ✅ PAGE */
+/* PAGE */
 function showPage(page){
   document.querySelectorAll(".page").forEach(p=>p.style.display="none");
   document.getElementById("page-"+page).style.display="block";
 }
 
-/* ✅ CODE → NAME AUTO */
+/* CODE → NAME AUTO */
 function autoFillName(codeId, nameId){
   const code=document.getElementById(codeId).value.trim();
   const nameInput=document.getElementById(nameId);
   const stock=load("stock");
   const found=stock.find(s=>s.code===code);
-
   if(found && found.name){
     nameInput.value=found.name;
     nameInput.readOnly=true;
@@ -208,7 +208,7 @@ function autoFillName(codeId, nameId){
   }
 }
 
-/* ✅ EMPLOYEE */
+/* EMPLOYEE */
 function addEmployee(){
   if(!empId.value||!empName.value||!empUnitPay.value)return alert("Input Missing");
   const list=load("employees");
@@ -221,17 +221,13 @@ function renderEmployees(){
   empBody.innerHTML="";
   load("employees").forEach((e,i)=>{
     empBody.innerHTML+=`
-      <tr>
-        <td>${e.id}</td><td>${e.name}</td><td>${e.payType}</td><td>${e.unitPay}</td>
-        <td><button onclick="delEmp(${i})">X</button></td>
-      </tr>`;
+      <tr><td>${e.id}</td><td>${e.name}</td><td>${e.payType}</td><td>${e.unitPay}</td>
+      <td><button onclick="delEmp(${i})">X</button></td></tr>`;
   });
 }
-function delEmp(i){
-  const l=load("employees"); l.splice(i,1); save("employees",l); renderEmployees();
-}
+function delEmp(i){ const l=load("employees"); l.splice(i,1); save("employees",l); renderEmployees(); }
 
-/* ✅ BOM */
+/* BOM */
 function saveBOM(){
   const l=load("bom");
   l.push({
@@ -266,30 +262,24 @@ function editBOM(i){
   const l=load("bom"); l.splice(i,1); save("bom",l); renderBOM();
 }
 
-/* ✅ STOCK */
+/* STOCK */
 function adjustStock(code,name,good,defect){
   const stock=load("stock");
   let item=stock.find(s=>s.code===code);
-  if(!item){
-    item={code,name:name||"",good:0,defect:0};
-    stock.push(item);
-  }
+  if(!item){ item={code,name:name||"",good:0,defect:0}; stock.push(item); }
   item.good+=good; item.defect+=defect;
   if(!item.name && name) item.name=name;
-  save("stock",stock);
-  renderStock();
+  save("stock",stock); renderStock();
 }
 function renderStock(){
   stockBody.innerHTML="";
   load("stock").forEach(s=>{
     stockBody.innerHTML+=`
-      <tr>
-        <td>${s.code}</td><td>${s.name||""}</td><td>${s.good}</td><td>${s.defect}</td>
-      </tr>`;
+      <tr><td>${s.code}</td><td>${s.name||""}</td><td>${s.good}</td><td>${s.defect}</td></tr>`;
   });
 }
 
-/* ✅ PRODUCTION */
+/* PRODUCTION */
 function saveProduction(){
   const row={
     date:prodDate.value||new Date().toISOString().split("T")[0],
@@ -305,7 +295,6 @@ function saveProduction(){
     worker:prodWorker.value,
     note:prodNote.value
   };
-
   const log=load("productionLog");
   log.push(row); save("productionLog",log);
 
@@ -341,34 +330,26 @@ function editProduction(i){
   prodDefectQty.value=p.defectQty;
   prodWorker.value=p.worker;
   prodNote.value=p.note;
-
   const l=load("productionLog"); l.splice(i,1); save("productionLog",l); renderProduction();
 }
 
-/* ✅ PAYROLL */
+/* PAYROLL */
 let payrollCache=[];
 function calcPayroll(){
-  payrollBody.innerHTML="";
-  payrollCache=[];
+  payrollBody.innerHTML=""; payrollCache=[];
   const month=payrollMonth.value;
   const emp=load("employees"), log=load("productionLog");
-
   emp.forEach(e=>{
     let qty=0;
-    log.forEach(r=>{
-      if(r.worker===e.id && r.date.startsWith(month)) qty+=r.goodQty;
-    });
+    log.forEach(r=>{ if(r.worker===e.id && r.date.startsWith(month)) qty+=r.goodQty; });
     const salary=e.payType==="piece"?qty*e.unitPay:e.unitPay;
-    payrollBody.innerHTML+=`
-      <tr><td>${e.id}</td><td>${e.name}</td><td>${qty}</td><td>${salary}</td></tr>`;
+    payrollBody.innerHTML+=`<tr><td>${e.id}</td><td>${e.name}</td><td>${qty}</td><td>${salary}</td></tr>`;
     payrollCache.push({id:e.id,name:e.name,qty,salary});
   });
 }
 function downloadPayroll(){
   let csv="ID,Name,Qty,Salary\n";
-  payrollCache.forEach(r=>{
-    csv+=`${r.id},${r.name},${r.qty},${r.salary}\n`;
-  });
+  payrollCache.forEach(r=>{ csv+=`${r.id},${r.name},${r.qty},${r.salary}\n`; });
   const blob=new Blob([csv],{type:"text/csv"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
@@ -376,111 +357,110 @@ function downloadPayroll(){
   a.click();
 }
 
-/* ✅ PACKING STANDARD */
-function savePackingStandard() {
+/* PACKING STANDARD */
+function savePackingStandard(){
   const code = packCode.value.trim();
   const inner = Number(innerQty.value);
   const carton = Number(cartonQty.value);
-
-  if (!code || !inner || !carton) {
-    alert("기준 정보 누락");
-    return;
-  }
+  if (!code || !inner || !carton) return alert("기준 정보 누락");
 
   const list = load("packingStandard");
   const exist = list.find(p => p.code === code);
-
-  if (exist) {
-    exist.inner = inner;
-    exist.carton = carton;
-  } else {
-    list.push({ code, inner, carton });
-  }
+  if (exist){ exist.inner = inner; exist.carton = carton; }
+  else { list.push({ code, inner, carton }); }
 
   save("packingStandard", list);
-  packCode.value = ""; innerQty.value = ""; cartonQty.value = "";
+  packCode.value=""; innerQty.value=""; cartonQty.value="";
   renderPackingStandard();
 }
-
-function renderPackingStandard() {
-  packingBody.innerHTML = "";
-  load("packingStandard").forEach((p, i) => {
-    packingBody.innerHTML += `
+function renderPackingStandard(){
+  packingBody.innerHTML="";
+  load("packingStandard").forEach((p,i)=>{
+    packingBody.innerHTML+=`
       <tr>
-        <td>${p.code}</td>
-        <td>${p.inner}</td>
-        <td>${p.carton}</td>
+        <td>${p.code}</td><td>${p.inner}</td><td>${p.carton}</td>
         <td><button onclick="editPackingStandard(${i})">Edit</button></td>
-      </tr>
-    `;
+      </tr>`;
   });
 }
-
-function editPackingStandard(i) {
-  const p = load("packingStandard")[i];
-  packCode.value = p.code;
-  innerQty.value = p.inner;
-  cartonQty.value = p.carton;
-  const list = load("packingStandard");
-  list.splice(i, 1);
-  save("packingStandard", list);
+function editPackingStandard(i){
+  const p=load("packingStandard")[i];
+  packCode.value=p.code; innerQty.value=p.inner; cartonQty.value=p.carton;
+  const l=load("packingStandard"); l.splice(i,1); save("packingStandard",l);
   renderPackingStandard();
 }
 
-/* ✅ CBM BY STANDARD */
-function calcCBMByStandard() {
+/* ✅ CBM WITH SAVE / EDIT / DELETE */
+function calcCBMByStandard(){
   const code = cbmCode.value.trim();
   const unitQtyVal = Number(unitQty.value);
   const L = Number(boxL.value);
   const W = Number(boxW.value);
   const H = Number(boxH.value);
-
-  if (!code || !unitQtyVal || !L || !W || !H) {
-    alert("필수 값 누락");
-    return;
-  }
+  if (!code || !unitQtyVal || !L || !W || !H) return alert("필수 값 누락");
 
   const standards = load("packingStandard");
   const std = standards.find(p => p.code === code);
-
-  if (!std) {
-    alert("해당 코드의 포장 기준이 없습니다.");
-    return;
-  }
+  if (!std) return alert("해당 코드의 포장 기준이 없습니다.");
 
   const innerBoxQty = Math.ceil(unitQtyVal / std.inner);
   const cartonBoxQty = Math.ceil(unitQtyVal / std.carton);
-
   const cbmPerCarton = (L * W * H) / 1000000;
   const totalCBM = cbmPerCarton * cartonBoxQty;
-
-  const FT20 = 33;
-  const FT40HQ = 68;
-
+  const FT20 = 33, FT40HQ = 68;
   const fit20 = Math.floor(FT20 / cbmPerCarton);
   const fit40 = Math.floor(FT40HQ / cbmPerCarton);
 
-  cbmBody.innerHTML = `
-    <tr>
-      <td>${code}</td>
-      <td>${unitQtyVal.toLocaleString()}</td>
-      <td>${innerBoxQty.toLocaleString()}</td>
-      <td>${cartonBoxQty.toLocaleString()}</td>
-      <td>${cbmPerCarton.toFixed(4)}</td>
-      <td>${totalCBM.toFixed(2)}</td>
-      <td>${fit20.toLocaleString()}</td>
-      <td>${fit40.toLocaleString()}</td>
-    </tr>
-  `;
+  const list = load("cbmLog");
+  list.push({code,unitQtyVal,innerBoxQty,cartonBoxQty,cbmPerCarton,totalCBM,fit20,fit40,L,W,H});
+  save("cbmLog", list);
+  renderCBMLog();
 }
 
-/* ✅ INIT */
+function renderCBMLog(){
+  cbmBody.innerHTML="";
+  load("cbmLog").forEach((c,i)=>{
+    cbmBody.innerHTML+=`
+      <tr>
+        <td>${c.code}</td>
+        <td>${c.unitQtyVal.toLocaleString()}</td>
+        <td>${c.innerBoxQty.toLocaleString()}</td>
+        <td>${c.cartonBoxQty.toLocaleString()}</td>
+        <td>${c.cbmPerCarton.toFixed(4)}</td>
+        <td>${c.totalCBM.toFixed(2)}</td>
+        <td>${c.fit20}</td>
+        <td>${c.fit40}</td>
+        <td><button onclick="editCBM(${i})">Edit</button></td>
+        <td><button onclick="deleteCBM(${i})">Del</button></td>
+      </tr>`;
+  });
+}
+
+function editCBM(i){
+  const c=load("cbmLog")[i];
+  cbmCode.value=c.code;
+  unitQty.value=c.unitQtyVal;
+  boxL.value=c.L;
+  boxW.value=c.W;
+  boxH.value=c.H;
+  const l=load("cbmLog"); l.splice(i,1); save("cbmLog",l);
+  renderCBMLog();
+}
+
+function deleteCBM(i){
+  if(!confirm("삭제할까요?"))return;
+  const l=load("cbmLog"); l.splice(i,1); save("cbmLog",l);
+  renderCBMLog();
+}
+
+/* INIT */
 showPage("employee");
 renderEmployees();
 renderBOM();
 renderProduction();
 renderStock();
 renderPackingStandard();
+renderCBMLog();
 </script>
 
 </body>
