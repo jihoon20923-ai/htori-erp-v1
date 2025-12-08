@@ -206,6 +206,7 @@ const PageTemplates = {
   production() {
     return `
       <h2>Production</h2>
+
       <div class="form-row">
         <input id="prodProduct" placeholder="Product">
         <input id="prodQty" type="number" placeholder="Qty">
@@ -245,16 +246,16 @@ const PageTemplates = {
     `;
   },
 
-  settings() {   // ✅ 여기에서 return 해야 Illegal return 에러 안 남
+  settings() {
     return `
       <h2>Settings</h2>
 
       <div class="settings-section">
-        <label>Company Name</label>
-        <input id="settingCompany" placeholder="Company Name">
+        <label>Company</label>
+        <input id="settingCompany">
 
         <label>Manager</label>
-        <input id="settingManager" placeholder="Manager Name">
+        <input id="settingManager">
 
         <button onclick="saveSettings()">Save</button>
       </div>
@@ -262,8 +263,9 @@ const PageTemplates = {
   }
 };
 
+
 /* =========================
-   SETTINGS LOGIC
+   SETTINGS
 ========================= */
 function saveSettings() {
   const company = document.getElementById("settingCompany").value;
