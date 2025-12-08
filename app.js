@@ -14,36 +14,48 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 /***********************
- ✅ 최초 1회만 admin 생성
+ ✅ 최초 1회 admin 생성
 ***********************/
-db.ref("employees").once("value").then(snap=>{
-  const list = snap.val();
-  if(!list){
+db.ref("employees").once("value").then(snap => {
+  if (!snap.exists()) {
     db.ref("employees").push({
-      id:"admin",
-      pw:"1234",
-      name:"Master",
-      role:"master"
+      id: "admin",
+      pw: "1234",
+      name: "Master",
+      role: "master"
     });
   }
 });
 
+/***********************
+ GLOBAL
+***********************/
+let currentUser = null;
+let lang = "KR";
 
-
+const T = {
+  KR: { dashboard: "대시보드", employee: "직원", stock: "재고", order: "주문", shipment: "수출" },
+  EN: { dashboard: "Dashboard", employee: "Employee", stock: "Stock", order: "Order", shipment: "Shipment" },
+  ID: { dashboard: "Dasbor", employee: "Karyawan", stock: "Stok", order: "Pesanan", shipment: "Pengiriman" }
+};
 
 /***********************
  LOGIN
 ***********************/
-let currentUser = null;
-
-function login(){
+function login() {
   const id = loginId.value.trim();
   const pw = loginPw.value.trim();
 
-  db.ref("employees").once("value").then(s=>{
-    const list = s.val() || [];
-    const found = list.find(x=>x.id===id && x.pw===pw);
-    if(!found) return alert("LOGIN FAIL");
+  db.ref("employees").once("value").then(s => {
+    const list = s.val() || {};
+    const found = Object.values(list).find(
+      x => x.id === id && x.pw === pw
+    );
+
+    if (!found) {
+      alert("LOGIN FAIL");
+      return;
+    }
 
     currentUser = found;
     loginBox.classList.add("hidden");
@@ -55,18 +67,10 @@ function login(){
 }
 
 /***********************
- MULTI LANGUAGE
+ LANGUAGE
 ***********************/
-let lang = "KR";
-
-const T = {
-  KR:{ dashboard:"대시보드", employee:"직원", stock:"재고", order:"주문", shipment:"수출" },
-  EN:{ dashboard:"Dashboard", employee:"Employee", stock:"Stock", order:"Order", shipment:"Shipment" },
-  ID:{ dashboard:"Dasbor", employee:"Karyawan", stock:"Stok", order:"Pesanan", shipment:"Pengiriman" }
-};
-
-function setLanguage(l){
-  lang=l;
+function setLanguage(l) {
+  lang = l;
   renderMenu();
   showPage("dashboard");
 }
@@ -74,35 +78,36 @@ function setLanguage(l){
 /***********************
  MENU
 ***********************/
-function renderMenu(){
-  sidebar.innerHTML="";
+function renderMenu() {
+  sidebar.innerHTML = "";
+
   const roleMap = {
-    master:["dashboard","employee","stock","order","shipment"],
-    sales:["dashboard","order","shipment"],
-    production:["dashboard","stock"]
+    master: ["dashboard", "employee", "stock", "order", "shipment"],
+    sales: ["dashboard", "order", "shipment"],
+    production: ["dashboard", "stock"]
   };
 
-  roleMap[currentUser.role].forEach(p=>{
+  roleMap[currentUser.role].forEach(p => {
     const b = document.createElement("button");
     b.innerText = T[lang][p];
-    b.onclick = ()=>showPage(p);
+    b.onclick = () => showPage(p);
     sidebar.appendChild(b);
   });
 }
 
-function toggleSidebar(){
+function toggleSidebar() {
   sidebar.classList.toggle("active");
 }
 
 /***********************
  PAGES
 ***********************/
-function showPage(page){
-  if(page==="dashboard"){
+function showPage(page) {
+  if (page === "dashboard") {
     content.innerHTML = `<h2>${T[lang].dashboard}</h2><p>Realtime Connected ✅</p>`;
   }
 
-  if(page==="employee"){
+  if (page === "employee") {
     content.innerHTML = `
       <h2>${T[lang].employee}</h2>
       <div class="form-row">
@@ -124,13 +129,16 @@ function showPage(page){
     loadEmployees();
   }
 
-  if(page==="stock"){
+  if (page === "stock") {
     content.innerHTML = `
       <h2>${T[lang].stock}</h2>
       <div class="form-row">
         <input type="date" id="inDate">
         <input id="inVendor" placeholder="Vendor">
-        <select id="inMethod"><option>SEA</option><option>AIR</option></select>
+        <select id="inMethod">
+          <option value="SEA">SEA</option>
+          <option value="AIR">AIR</option>
+        </select>
         <input id="sCode" placeholder="Code">
         <input id="sQty" type="number" placeholder="Qty">
         <button onclick="addStock()">입고</button>
@@ -143,7 +151,7 @@ function showPage(page){
     loadStock();
   }
 
-  if(page==="order"){
+  if (page === "order") {
     content.innerHTML = `
       <h2>${T[lang].order}</h2>
       <div class="form-row">
@@ -162,7 +170,7 @@ function showPage(page){
     loadOrders();
   }
 
-  if(page==="shipment"){
+  if (page === "shipment") {
     content.innerHTML = `
       <h2>${T[lang].shipment}</h2>
       <div class="form-row">
@@ -178,20 +186,22 @@ function showPage(page){
 /***********************
  EMPLOYEE
 ***********************/
-function addEmployee(){
+function addEmployee() {
   const emp = {
-    id:eId.value, pw:ePw.value,
-    name:eName.value, role:eRole.value
+    id: eId.value,
+    pw: ePw.value,
+    name: eName.value,
+    role: eRole.value
   };
   db.ref("employees").push(emp);
 }
 
-function loadEmployees(){
-  db.ref("employees").on("value", snap=>{
-    empBody.innerHTML="";
+function loadEmployees() {
+  db.ref("employees").on("value", snap => {
+    empBody.innerHTML = "";
     const list = snap.val() || {};
-    Object.values(list).forEach(e=>{
-      empBody.innerHTML+=`<tr><td>${e.id}</td><td>${e.name}</td><td>${e.role}</td></tr>`;
+    Object.values(list).forEach(e => {
+      empBody.innerHTML += `<tr><td>${e.id}</td><td>${e.name}</td><td>${e.role}</td></tr>`;
     });
   });
 }
@@ -199,23 +209,25 @@ function loadEmployees(){
 /***********************
  STOCK
 ***********************/
-function addStock(){
+function addStock() {
   const data = {
-    date:inDate.value, vendor:inVendor.value,
-    method:inMethod.value, code:sCode.value,
-    qty:Number(sQty.value)
+    date: inDate.value,
+    vendor: inVendor.value,
+    method: inMethod.value,
+    code: sCode.value,
+    qty: Number(sQty.value)
   };
 
-  db.ref("stock").push({ code:data.code, qty:data.qty });
+  db.ref("stock").push({ code: data.code, qty: data.qty });
   db.ref("stock_log").push(data);
 }
 
-function loadStock(){
-  db.ref("stock").on("value", snap=>{
-    stockBody.innerHTML="";
+function loadStock() {
+  db.ref("stock").on("value", snap => {
+    stockBody.innerHTML = "";
     const list = snap.val() || {};
-    Object.values(list).forEach(s=>{
-      stockBody.innerHTML+=`<tr><td>${s.code}</td><td>${s.qty}</td></tr>`;
+    Object.values(list).forEach(s => {
+      stockBody.innerHTML += `<tr><td>${s.code}</td><td>${s.qty}</td></tr>`;
     });
   });
 }
@@ -223,20 +235,23 @@ function loadStock(){
 /***********************
  ORDER
 ***********************/
-function addOrder(){
+function addOrder() {
   const o = {
-    orderNo:oNo.value, product:oProduct.value,
-    qty:oQty.value, price:oPrice.value, due:oDue.value
+    orderNo: oNo.value,
+    product: oProduct.value,
+    qty: oQty.value,
+    price: oPrice.value,
+    due: oDue.value
   };
   db.ref("orders").push(o);
 }
 
-function loadOrders(){
-  db.ref("orders").on("value", snap=>{
-    orderBody.innerHTML="";
+function loadOrders() {
+  db.ref("orders").on("value", snap => {
+    orderBody.innerHTML = "";
     const list = snap.val() || {};
-    Object.values(list).forEach(o=>{
-      orderBody.innerHTML+=`<tr><td>${o.orderNo}</td><td>${o.product}</td><td>${o.qty}</td></tr>`;
+    Object.values(list).forEach(o => {
+      orderBody.innerHTML += `<tr><td>${o.orderNo}</td><td>${o.product}</td><td>${o.qty}</td></tr>`;
     });
   });
 }
@@ -244,6 +259,6 @@ function loadOrders(){
 /***********************
  SHIPMENT
 ***********************/
-function saveShipment(){
+function saveShipment() {
   alert("Shipment saved (step 1 complete)");
 }
