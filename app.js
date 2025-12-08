@@ -14,37 +14,54 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 /***********************
- ✅ 최초 1회만 admin 생성
+ ✅ 최초 admin 자동 생성
 ***********************/
-db.ref("employees").once("value").then(snap => {
-  if (!snap.exists()) {
+db.ref("employees").once("value").then(snap=>{
+  if(!snap.exists()){
     db.ref("employees").push({
-      id: "admin",
-      pw: "1234",
-      name: "Master",
-      role: "master"
+      id:"admin", pw:"1234", name:"Master", role:"master"
     });
   }
 });
 
 /***********************
- LOGIN
+ ✅ 기본 언어 = EN
+***********************/
+let lang = "EN";
+
+/***********************
+ ✅ 자동 로그인
 ***********************/
 let currentUser = null;
 
-function login() {
-  const id = document.getElementById("loginId").value.trim();
-  const pw = document.getElementById("loginPw").value.trim();
+window.onload = function(){
+  const saved = localStorage.getItem("htori_user");
+  if(saved){
+    currentUser = JSON.parse(saved);
+    loginBox.classList.add("hidden");
+    erp.classList.remove("hidden");
+    renderMenu();
+    showPage("dashboard");
+  }
+};
 
-  db.ref("employees").once("value").then(s => {
+/***********************
+ LOGIN
+***********************/
+function login(){
+  const id = loginId.value.trim();
+  const pw = loginPw.value.trim();
+
+  db.ref("employees").once("value").then(s=>{
     const list = s.val() || {};
-    const found = Object.values(list).find(x => x.id === id && x.pw === pw);
-
-    if (!found) return alert("LOGIN FAIL");
+    const found = Object.values(list).find(x=>x.id===id && x.pw===pw);
+    if(!found) return alert("LOGIN FAIL");
 
     currentUser = found;
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("erp").classList.remove("hidden");
+    localStorage.setItem("htori_user", JSON.stringify(found));
+
+    loginBox.classList.add("hidden");
+    erp.classList.remove("hidden");
 
     renderMenu();
     showPage("dashboard");
@@ -54,8 +71,6 @@ function login() {
 /***********************
  MULTI LANGUAGE
 ***********************/
-let lang = "KR";
-
 const T = {
   KR:{ dashboard:"대시보드", employee:"직원", stock:"재고", order:"주문", shipment:"수출" },
   EN:{ dashboard:"Dashboard", employee:"Employee", stock:"Stock", order:"Order", shipment:"Shipment" },
@@ -64,7 +79,6 @@ const T = {
 
 function setLanguage(l){
   lang = l;
-  if (!currentUser) return;
   renderMenu();
   showPage("dashboard");
 }
@@ -73,50 +87,48 @@ function setLanguage(l){
  MENU
 ***********************/
 function renderMenu(){
-  if (!currentUser) return;
-
-  const sidebar = document.getElementById("sidebar");
-  sidebar.innerHTML = "";
-
-  const roleMap = {
-    master:["dashboard","employee","stock","order","shipment"],
-    sales:["dashboard","order","shipment"],
-    production:["dashboard","stock"]
-  };
+  sidebar.innerHTML="";
+  const roleMap={ master:["dashboard","employee","stock","order","shipment"] };
 
   roleMap[currentUser.role].forEach(p=>{
-    const b = document.createElement("button");
+    const b=document.createElement("button");
     b.innerText = T[lang][p];
-    b.onclick = ()=>showPage(p);
+    b.onclick=()=>showPage(p);
     sidebar.appendChild(b);
   });
 }
 
 function toggleSidebar(){
-  document.getElementById("sidebar").classList.toggle("active");
+  sidebar.classList.toggle("active");
 }
 
 /***********************
- PAGES
+ ✅ PAGES - ALL EXCEL STYLE
 ***********************/
 function showPage(page){
-  const content = document.getElementById("content");
 
+  /* ✅ DASHBOARD */
   if(page==="dashboard"){
-    content.innerHTML = `<h2>${T[lang].dashboard}</h2><p>Realtime Connected ✅</p>`;
+    content.innerHTML=`
+      <h2>${T[lang].dashboard}</h2>
+      <table>
+        <tr><th>Status</th><th>System</th></tr>
+        <tr><td>Realtime</td><td>Connected ✅</td></tr>
+      </table>
+    `;
   }
 
+  /* ✅ EMPLOYEE */
   if(page==="employee"){
-    content.innerHTML = `
+    content.innerHTML=`
       <h2>${T[lang].employee}</h2>
       <div class="form-row">
         <input id="eId" placeholder="ID">
         <input id="ePw" placeholder="PW">
-        <input id="eName" placeholder="NAME">
+        <input id="eName" placeholder="Name">
         <select id="eRole">
           <option value="master">MASTER</option>
           <option value="sales">SALES</option>
-          <option value="production">PRODUCTION</option>
         </select>
         <button onclick="addEmployee()">ADD</button>
       </div>
@@ -128,16 +140,14 @@ function showPage(page){
     loadEmployees();
   }
 
+  /* ✅ STOCK (엑셀형) */
   if(page==="stock"){
-    content.innerHTML = `
+    content.innerHTML=`
       <h2>${T[lang].stock}</h2>
       <div class="form-row">
-        <input type="date" id="inDate">
-        <input id="inVendor" placeholder="Vendor">
-        <select id="inMethod"><option>SEA</option><option>AIR</option></select>
         <input id="sCode" placeholder="Code">
         <input id="sQty" type="number" placeholder="Qty">
-        <button onclick="addStock()">입고</button>
+        <button onclick="addStock()">ADD</button>
       </div>
       <table>
         <thead><tr><th>Code</th><th>Qty</th></tr></thead>
@@ -147,15 +157,14 @@ function showPage(page){
     loadStock();
   }
 
+  /* ✅ ORDER (엑셀형) */
   if(page==="order"){
-    content.innerHTML = `
+    content.innerHTML=`
       <h2>${T[lang].order}</h2>
       <div class="form-row">
         <input id="oNo" placeholder="Order No">
         <input id="oProduct" placeholder="Product">
         <input id="oQty" type="number" placeholder="Qty">
-        <input id="oPrice" type="number" placeholder="Price">
-        <input id="oDue" type="date">
         <button onclick="addOrder()">ADD</button>
       </div>
       <table>
@@ -166,16 +175,21 @@ function showPage(page){
     loadOrders();
   }
 
+  /* ✅ SHIPMENT (엑셀형) */
   if(page==="shipment"){
-    content.innerHTML = `
+    content.innerHTML=`
       <h2>${T[lang].shipment}</h2>
       <div class="form-row">
         <input id="shipNo" placeholder="Shipment No">
         <input id="shipBuyer" placeholder="Buyer">
-        <input id="shipDate" type="date">
         <button onclick="saveShipment()">SAVE</button>
       </div>
+      <table>
+        <thead><tr><th>No</th><th>Buyer</th></tr></thead>
+        <tbody id="shipBody"></tbody>
+      </table>
     `;
+    loadShipments();
   }
 }
 
@@ -183,21 +197,16 @@ function showPage(page){
  EMPLOYEE
 ***********************/
 function addEmployee(){
-  const emp = {
-    id:eId.value,
-    pw:ePw.value,
-    name:eName.value,
-    role:eRole.value
-  };
-  db.ref("employees").push(emp);
+  db.ref("employees").push({
+    id:eId.value, pw:ePw.value,
+    name:eName.value, role:eRole.value
+  });
 }
 
 function loadEmployees(){
-  db.ref("employees").on("value", snap=>{
-    const empBody = document.getElementById("empBody");
+  db.ref("employees").on("value",snap=>{
     empBody.innerHTML="";
-    const list = snap.val() || {};
-    Object.values(list).forEach(e=>{
+    Object.values(snap.val()||{}).forEach(e=>{
       empBody.innerHTML+=`<tr><td>${e.id}</td><td>${e.name}</td><td>${e.role}</td></tr>`;
     });
   });
@@ -207,24 +216,13 @@ function loadEmployees(){
  STOCK
 ***********************/
 function addStock(){
-  const data = {
-    date:inDate.value,
-    vendor:inVendor.value,
-    method:inMethod.value,
-    code:sCode.value,
-    qty:Number(sQty.value)
-  };
-
-  db.ref("stock").push({ code:data.code, qty:data.qty });
-  db.ref("stock_log").push(data);
+  db.ref("stock").push({ code:sCode.value, qty:Number(sQty.value) });
 }
 
 function loadStock(){
-  db.ref("stock").on("value", snap=>{
-    const stockBody = document.getElementById("stockBody");
+  db.ref("stock").on("value",snap=>{
     stockBody.innerHTML="";
-    const list = snap.val() || {};
-    Object.values(list).forEach(s=>{
+    Object.values(snap.val()||{}).forEach(s=>{
       stockBody.innerHTML+=`<tr><td>${s.code}</td><td>${s.qty}</td></tr>`;
     });
   });
@@ -234,22 +232,17 @@ function loadStock(){
  ORDER
 ***********************/
 function addOrder(){
-  const o = {
+  db.ref("orders").push({
     orderNo:oNo.value,
     product:oProduct.value,
-    qty:oQty.value,
-    price:oPrice.value,
-    due:oDue.value
-  };
-  db.ref("orders").push(o);
+    qty:oQty.value
+  });
 }
 
 function loadOrders(){
-  db.ref("orders").on("value", snap=>{
-    const orderBody = document.getElementById("orderBody");
+  db.ref("orders").on("value",snap=>{
     orderBody.innerHTML="";
-    const list = snap.val() || {};
-    Object.values(list).forEach(o=>{
+    Object.values(snap.val()||{}).forEach(o=>{
       orderBody.innerHTML+=`<tr><td>${o.orderNo}</td><td>${o.product}</td><td>${o.qty}</td></tr>`;
     });
   });
@@ -259,5 +252,17 @@ function loadOrders(){
  SHIPMENT
 ***********************/
 function saveShipment(){
-  alert("Shipment saved (step 1 complete)");
+  db.ref("shipments").push({
+    shipNo:shipNo.value,
+    buyer:shipBuyer.value
+  });
+}
+
+function loadShipments(){
+  db.ref("shipments").on("value",snap=>{
+    shipBody.innerHTML="";
+    Object.values(snap.val()||{}).forEach(s=>{
+      shipBody.innerHTML+=`<tr><td>${s.shipNo}</td><td>${s.buyer}</td></tr>`;
+    });
+  });
 }
