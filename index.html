@@ -25,12 +25,12 @@
   <button onclick="showPage('production')">Production</button>
   <button onclick="showPage('stock')">Stock</button>
   <button onclick="showPage('payroll')">Payroll</button>
-  <button onclick="showPage('export')">Export / CBM</button>
+  <button onclick="showPage('export')">Export / Order / CBM</button>
 </div>
 
 <hr>
 
-<!-- EMPLOYEE -->
+<!-- ================= EMPLOYEE ================= -->
 <div id="page-employee" class="page">
   <h2>Employee</h2>
   <div class="form-row">
@@ -49,7 +49,7 @@
   </table>
 </div>
 
-<!-- BOM -->
+<!-- ================= BOM ================= -->
 <div id="page-bom" class="page">
   <h2>BOM</h2>
   <div class="form-row">
@@ -63,13 +63,16 @@
   </div>
   <table>
     <thead>
-      <tr><th>Product</th><th>Process</th><th>Input</th><th>Qty</th><th>Cost</th><th>Output</th><th>Edit</th></tr>
+      <tr>
+        <th>Product</th><th>Process</th><th>Input</th>
+        <th>Qty</th><th>Cost</th><th>Output</th><th>Edit</th>
+      </tr>
     </thead>
     <tbody id="bomBody"></tbody>
   </table>
 </div>
 
-<!-- PRODUCTION -->
+<!-- ================= PRODUCTION ================= -->
 <div id="page-production" class="page">
   <h2>Production</h2>
   <div class="form-row">
@@ -98,14 +101,14 @@
       <tr>
         <th>Date</th><th>Product</th><th>Process</th>
         <th>Input</th><th>Output</th><th>Good</th>
-        <th>Defect</th><th>Worker</th><th>Note</th><th>Edit</th>
+        <th>Defect</th><th>Worker</th><th>Note</th>
       </tr>
     </thead>
     <tbody id="prodBody"></tbody>
   </table>
 </div>
 
-<!-- STOCK -->
+<!-- ================= STOCK ================= -->
 <div id="page-stock" class="page">
   <h2>Stock</h2>
   <table>
@@ -114,7 +117,7 @@
   </table>
 </div>
 
-<!-- PAYROLL -->
+<!-- ================= PAYROLL ================= -->
 <div id="page-payroll" class="page">
   <h2>Payroll</h2>
   <div class="form-row">
@@ -128,9 +131,31 @@
   </table>
 </div>
 
-<!-- EXPORT / CBM -->
+<!-- ================= EXPORT / ORDER / CBM ================= -->
 <div id="page-export" class="page">
-  <h2>Export / CBM</h2>
+  <h2>Order Input</h2>
+  <div class="form-row">
+    <input id="orderNo" placeholder="Order No">
+    <input id="orderBuyer" placeholder="Buyer">
+    <input id="orderProduct" placeholder="Product Code">
+    <input id="orderQty" type="number" placeholder="Qty">
+    <input id="orderUnitPrice" type="number" step="0.01" placeholder="Unit Price">
+    <button onclick="addOrder()">Add Order</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Order</th><th>Buyer</th><th>Product</th>
+        <th>Qty</th><th>Price</th><th>Total</th><th>Del</th>
+      </tr>
+    </thead>
+    <tbody id="orderBody"></tbody>
+  </table>
+
+  <button onclick="sendOrderToCBM()">➡ Order → CBM</button>
+
+  <hr>
 
   <h3>Packing Standard</h3>
   <div class="form-row">
@@ -153,9 +178,9 @@
     <input id="unitQty" type="number" placeholder="Finished Qty">
   </div>
   <div class="form-row">
-    <input id="boxL" type="number" placeholder="Length (cm)">
-    <input id="boxW" type="number" placeholder="Width (cm)">
-    <input id="boxH" type="number" placeholder="Height (cm)">
+    <input id="boxL" type="number" placeholder="Length(cm)">
+    <input id="boxW" type="number" placeholder="Width(cm)">
+    <input id="boxH" type="number" placeholder="Height(cm)">
     <button onclick="calcCBMByStandard()">Calculate</button>
   </div>
 
@@ -169,17 +194,33 @@
     </thead>
     <tbody id="cbmBody"></tbody>
   </table>
+
+  <hr>
+
+  <h3>Packing List / Invoice</h3>
+  <div class="form-row">
+    <button onclick="generatePackingList()">Packing List</button>
+    <button onclick="generateInvoice()">Invoice</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th><th>Carton</th><th>Inner</th>
+        <th>Unit</th><th>CBM</th><th>Amount(USD)</th><th>Margin</th>
+      </tr>
+    </thead>
+    <tbody id="invoiceBody"></tbody>
+  </table>
 </div>
 
 <script>
-function load(key){ return JSON.parse(localStorage.getItem(key)||"[]"); }
-function save(key,val){ localStorage.setItem(key,JSON.stringify(val)); }
+function load(k){return JSON.parse(localStorage.getItem(k)||"[]")}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
 
-let editingCBMIndex = null;
-
-function showPage(page){
-  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
-  document.getElementById("page-"+page).style.display="block";
+function showPage(p){
+  document.querySelectorAll(".page").forEach(x=>x.style.display="none");
+  document.getElementById("page-"+p).style.display="block";
 }
 
 function autoFillName(codeId, nameId){
@@ -187,107 +228,231 @@ function autoFillName(codeId, nameId){
   const nameInput=document.getElementById(nameId);
   const stock=load("stock");
   const found=stock.find(s=>s.code===code);
-  if(found && found.name){ nameInput.value=found.name; nameInput.readOnly=true; }
-  else { nameInput.value=""; nameInput.readOnly=false; }
+  if(found){nameInput.value=found.name; nameInput.readOnly=true;}
+  else {nameInput.value=""; nameInput.readOnly=false;}
 }
 
-/* EMPLOYEE / BOM / PRODUCTION / STOCK / PAYROLL */
-/* ---- 기존 로직 유지 ---- */
-
-function savePackingStandard(){
-  const code=packCode.value.trim();
-  const inner=Number(innerQty.value);
-  const carton=Number(cartonQty.value);
-  if(!code||!inner||!carton)return;
-
-  const list=load("packingStandard");
-  const exist=list.find(p=>p.code===code);
-  if(exist){ exist.inner=inner; exist.carton=carton; }
-  else list.push({code,inner,carton});
-  save("packingStandard",list);
-  renderPackingStandard();
+/* EMPLOYEE */
+function addEmployee(){
+  const list=load("employees");
+  list.push({id:empId.value,name:empName.value,payType:empPayType.value,unitPay:Number(empUnitPay.value)});
+  save("employees",list); renderEmployees();
 }
+function renderEmployees(){
+  empBody.innerHTML="";
+  load("employees").forEach((e,i)=>{
+    empBody.innerHTML+=`<tr><td>${e.id}</td><td>${e.name}</td><td>${e.payType}</td><td>${e.unitPay}</td>
+    <td><button onclick="delEmp(${i})">X</button></td></tr>`;
+  });
+}
+function delEmp(i){const l=load("employees"); l.splice(i,1); save("employees",l); renderEmployees();}
 
-function renderPackingStandard(){
-  packingBody.innerHTML="";
-  load("packingStandard").forEach((p,i)=>{
-    packingBody.innerHTML+=`<tr><td>${p.code}</td><td>${p.inner}</td><td>${p.carton}</td>
-    <td><button onclick="editPackingStandard(${i})">Edit</button></td></tr>`;
+/* BOM */
+function saveBOM(){
+  const l=load("bom");
+  l.push({
+    product:bomProduct.value,process:bomProcess.value,
+    inputCode:bomInputCode.value,inputQty:Number(bomInputQty.value),
+    unitCost:Number(bomUnitCost.value),outputCode:bomOutputCode.value
+  });
+  save("bom",l); renderBOM();
+}
+function renderBOM(){
+  bomBody.innerHTML="";
+  load("bom").forEach(b=>{
+    bomBody.innerHTML+=`<tr><td>${b.product}</td><td>${b.process}</td><td>${b.inputCode}</td>
+    <td>${b.inputQty}</td><td>${b.unitCost}</td><td>${b.outputCode}</td><td></td></tr>`;
   });
 }
 
-function editPackingStandard(i){
-  const p=load("packingStandard")[i];
-  packCode.value=p.code; innerQty.value=p.inner; cartonQty.value=p.carton;
+/* PRODUCTION */
+function adjustStock(code,name,good,defect){
+  const stock=load("stock");
+  let item=stock.find(s=>s.code===code);
+  if(!item){item={code,name:name||"",good:0,defect:0}; stock.push(item);}
+  item.good+=good; item.defect+=defect;
+  save("stock",stock); renderStock();
+}
+function renderStock(){
+  stockBody.innerHTML="";
+  load("stock").forEach(s=>{
+    stockBody.innerHTML+=`<tr><td>${s.code}</td><td>${s.name||""}</td><td>${s.good}</td><td>${s.defect}</td></tr>`;
+  });
+}
+function saveProduction(){
+  const row={
+    date:prodDate.value,product:prodProduct.value,process:prodProcess.value,
+    inputCode:prodInputCode.value,inputQty:Number(prodInputQty.value),inputName:prodInputName.value,
+    outputCode:prodOutputCode.value,outputName:prodOutputName.value,
+    goodQty:Number(prodGoodQty.value),defectQty:Number(prodDefectQty.value),
+    worker:prodWorker.value,note:prodNote.value
+  };
+  const log=load("productionLog"); log.push(row); save("productionLog",log);
+  adjustStock(row.inputCode,row.inputName,-row.inputQty,0);
+  adjustStock(row.outputCode,row.outputName,row.goodQty,row.defectQty);
+  renderProduction();
+}
+function renderProduction(){
+  prodBody.innerHTML="";
+  load("productionLog").forEach(p=>{
+    prodBody.innerHTML+=`<tr><td>${p.date}</td><td>${p.product}</td><td>${p.process}</td>
+    <td>${p.inputCode}</td><td>${p.outputCode}</td><td>${p.goodQty}</td>
+    <td>${p.defectQty}</td><td>${p.worker}</td><td>${p.note}</td></tr>`;
+  });
 }
 
+/* PAYROLL */
+function calcPayroll(){
+  payrollBody.innerHTML="";
+  const emp=load("employees"), log=load("productionLog"), month=payrollMonth.value;
+  emp.forEach(e=>{
+    let qty=0; log.forEach(r=>{if(r.worker===e.id&&r.date.startsWith(month)) qty+=r.goodQty});
+    const salary=e.payType==="piece"?qty*e.unitPay:e.unitPay;
+    payrollBody.innerHTML+=`<tr><td>${e.id}</td><td>${e.name}</td><td>${qty}</td><td>${salary}</td></tr>`;
+  });
+}
+function downloadPayroll(){
+  let csv="ID,Name,Qty,Salary\n";
+  document.querySelectorAll("#payrollBody tr").forEach(tr=>{
+    const row=[...tr.children].map(td=>td.innerText).join(",");
+    csv+=row+"\n";
+  });
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download="payroll.csv"; a.click();
+}
+
+/* ORDER */
+function addOrder(){
+  const list=load("orders");
+  list.push({
+    no:orderNo.value,buyer:orderBuyer.value,product:orderProduct.value,
+    qty:Number(orderQty.value),price:Number(orderUnitPrice.value),
+    total:Number(orderQty.value)*Number(orderUnitPrice.value)
+  });
+  save("orders",list); renderOrders();
+}
+function renderOrders(){
+  orderBody.innerHTML="";
+  load("orders").forEach((o,i)=>{
+    orderBody.innerHTML+=`<tr>
+      <td>${o.no}</td><td>${o.buyer}</td><td>${o.product}</td>
+      <td>${o.qty}</td><td>${o.price}</td><td>${o.total}</td>
+      <td><button onclick="deleteOrder(${i})">Del</button></td>
+    </tr>`;
+  });
+}
+function deleteOrder(i){
+  const l=load("orders"); l.splice(i,1); save("orders",l); renderOrders();
+}
+function sendOrderToCBM(){
+  const l=load("orders"); if(!l.length)return;
+  const last=l[l.length-1];
+  cbmCode.value=last.product; unitQty.value=last.qty;
+}
+
+/* PACKING STANDARD */
+function savePackingStandard(){
+  const list=load("packingStandard");
+  list.push({code:packCode.value,inner:Number(innerQty.value),carton:Number(cartonQty.value)});
+  save("packingStandard",list); renderPackingStandard();
+}
+function renderPackingStandard(){
+  packingBody.innerHTML="";
+  load("packingStandard").forEach(p=>{
+    packingBody.innerHTML+=`<tr><td>${p.code}</td><td>${p.inner}</td><td>${p.carton}</td><td></td></tr>`;
+  });
+}
+
+/* CBM */
+let editingCBMIndex=null;
 function calcCBMByStandard(){
-  const code=cbmCode.value.trim();
-  const unitQtyVal=Number(unitQty.value);
-  const L=Number(boxL.value),W=Number(boxW.value),H=Number(boxH.value);
-  if(!code||!unitQtyVal||!L||!W||!H)return;
-
-  const std=load("packingStandard").find(p=>p.code===code);
-  if(!std)return alert("No Packing Standard");
-
-  const innerBoxQty=Math.ceil(unitQtyVal/std.inner);
-  const cartonBoxQty=Math.ceil(unitQtyVal/std.carton);
-  const cbmPerCarton=(L*W*H)/1000000;
-  const totalCBM=cbmPerCarton*cartonBoxQty;
-
-  const FT20=33,FT40HQ=68;
-  const fit20=Math.floor(FT20/cbmPerCarton);
-  const fit40=Math.floor(FT40HQ/cbmPerCarton);
-
+  const std=load("packingStandard").find(p=>p.code===cbmCode.value);
+  if(!std)return alert("No Standard");
+  const cartonQty=Math.ceil(Number(unitQty.value)/std.carton);
+  const innerQtyCal=Math.ceil(Number(unitQty.value)/std.inner);
+  const cbmPer=(boxL.value*boxW.value*boxH.value)/1000000;
+  const total=cartonQty*cbmPer;
+  const item={
+    code:cbmCode.value,unitQtyVal:Number(unitQty.value),
+    innerBoxQty:innerQtyCal,cartonBoxQty:cartonQty,
+    cbmPerCarton:cbmPer,totalCBM:total,
+    fit20:Math.floor(33/cbmPer),fit40:Math.floor(68/cbmPer),
+    L:boxL.value,W:boxW.value,H:boxH.value
+  };
   const list=load("cbmLog");
-  const newItem={code,unitQtyVal,innerBoxQty,cartonBoxQty,cbmPerCarton,totalCBM,fit20,fit40,L,W,H};
-
-  if(editingCBMIndex!==null){
-    list[editingCBMIndex]=newItem;
-    editingCBMIndex=null;
-  }else{
-    list.push(newItem);
-  }
-
-  save("cbmLog",list);
-  renderCBMLog();
+  if(editingCBMIndex!==null){list[editingCBMIndex]=item; editingCBMIndex=null;}
+  else list.push(item);
+  save("cbmLog",list); renderCBMLog();
 }
-
 function renderCBMLog(){
   cbmBody.innerHTML="";
   load("cbmLog").forEach((c,i)=>{
-    cbmBody.innerHTML+=`
-      <tr>
-        <td>${c.code}</td><td>${c.unitQtyVal}</td><td>${c.innerBoxQty}</td>
-        <td>${c.cartonBoxQty}</td><td>${c.cbmPerCarton.toFixed(4)}</td>
-        <td>${c.totalCBM.toFixed(2)}</td><td>${c.fit20}</td><td>${c.fit40}</td>
-        <td><button onclick="editCBM(${i})">Edit</button></td>
-        <td><button onclick="deleteCBM(${i})">Del</button></td>
-      </tr>`;
+    cbmBody.innerHTML+=`<tr>
+      <td>${c.code}</td><td>${c.unitQtyVal}</td><td>${c.innerBoxQty}</td><td>${c.cartonBoxQty}</td>
+      <td>${c.cbmPerCarton.toFixed(4)}</td><td>${c.totalCBM.toFixed(2)}</td>
+      <td>${c.fit20}</td><td>${c.fit40}</td>
+      <td><button onclick="editCBM(${i})">Edit</button></td>
+      <td><button onclick="deleteCBM(${i})">Del</button></td>
+    </tr>`;
   });
 }
-
 function editCBM(i){
   const c=load("cbmLog")[i];
-  cbmCode.value=c.code;
-  unitQty.value=c.unitQtyVal;
-  boxL.value=c.L;
-  boxW.value=c.W;
-  boxH.value=c.H;
+  cbmCode.value=c.code; unitQty.value=c.unitQtyVal;
+  boxL.value=c.L; boxW.value=c.W; boxH.value=c.H;
   editingCBMIndex=i;
 }
-
 function deleteCBM(i){
-  if(!confirm("Delete?"))return;
-  const l=load("cbmLog");
-  l.splice(i,1);
-  save("cbmLog",l);
-  renderCBMLog();
+  const l=load("cbmLog"); l.splice(i,1); save("cbmLog",l); renderCBMLog();
 }
 
+/* PACKING LIST & INVOICE */
+function generatePackingList(){
+  const orders=load("orders"), cbm=load("cbmLog");
+  let txt="PACKING LIST\n\nOrder | Product | Carton | Inner | Qty | CBM\n";
+  orders.forEach(o=>{
+    const c=cbm.find(x=>x.code===o.product);
+    if(c) txt+=`${o.no} | ${o.product} | ${c.cartonBoxQty} | ${c.innerBoxQty} | ${o.qty} | ${c.totalCBM.toFixed(2)}\n`;
+  });
+  downloadText("packing_list.txt",txt);
+}
+function generateInvoice(){
+  const orders=load("orders"), cbm=load("cbmLog"), bom=load("bom");
+  invoiceBody.innerHTML="";
+  orders.forEach(o=>{
+    const c=cbm.find(x=>x.code===o.product);
+    if(!c)return;
+    const amount=o.qty*o.price;
+    let cost=0; bom.forEach(b=>{if(b.outputCode===o.product) cost+=b.inputQty*b.unitCost});
+    const margin=amount-cost;
+    invoiceBody.innerHTML+=`<tr>
+      <td>${o.product}</td><td>${c.cartonBoxQty}</td><td>${c.innerBoxQty}</td>
+      <td>${o.qty}</td><td>${c.totalCBM.toFixed(2)}</td>
+      <td>${amount.toFixed(2)}</td><td>${margin.toFixed(2)}</td>
+    </tr>`;
+  });
+  downloadInvoiceCSV();
+}
+function downloadInvoiceCSV(){
+  let csv="Product,Carton,Inner,Unit,CBM,Amount,Margin\n";
+  document.querySelectorAll("#invoiceBody tr").forEach(tr=>{
+    csv+=[...tr.children].map(td=>td.innerText).join(",")+"\n";
+  });
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download="invoice.csv"; a.click();
+}
+function downloadText(name,text){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([text],{type:"text/plain"}));
+  a.download=name; a.click();
+}
+
+/* INIT */
 showPage("employee");
-renderPackingStandard();
-renderCBMLog();
+renderEmployees(); renderBOM(); renderProduction(); renderStock();
+renderOrders(); renderPackingStandard(); renderCBMLog();
 </script>
 
 </body>
