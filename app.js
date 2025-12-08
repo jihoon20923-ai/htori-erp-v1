@@ -326,8 +326,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-production(lang) {
+PageTemplates.production = function (lang) {
   const t = i18n[lang].pages;
+
   return `
     <h2>${t.productionTitle}</h2>
     <p>${t.productionDesc}</p>
@@ -352,13 +353,14 @@ production(lang) {
           <th>Product</th>
           <th>Qty</th>
           <th>Updated</th>
-          <th>Edit</th>
+          <th>${t.btnEdit}</th>
         </tr>
       </thead>
       <tbody id="prodTableBody"></tbody>
     </table>
   `;
-}
+};
+
 function getProduction() {
   return JSON.parse(localStorage.getItem("production") || "[]");
 }
