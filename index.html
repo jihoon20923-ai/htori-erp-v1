@@ -2,41 +2,233 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>HTORI Realtime ERP</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HTORI ERP - Employee Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Firebase -->
+  <!-- Firebase SDK v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- ✅ LOGIN -->
+<!-- ✅ LOGIN BOX -->
 <div id="loginBox" class="login-box">
-  <h2>HTORI ERP LOGIN</h2>
-  <input id="loginId" placeholder="ID">
-  <input id="loginPw" type="password" placeholder="Password">
-  <button onclick="login()">LOGIN</button>
+  <h2 id="loginTitle">HTORI ERP LOGIN</h2>
+  <input id="loginId" placeholder="ID" />
+  <input id="loginPw" type="password" placeholder="Password" />
+  <button onclick="login()"><span id="loginBtnText">LOGIN</span></button>
 </div>
 
-<!-- ✅ ERP -->
-<div id="erp" class="hidden">
+<!-- ✅ MAIN APP -->
+<div id="app" class="hidden">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo" id="appTitle">HTORI ERP - EMPLOYEE</div>
+    <div class="lang-buttons">
+      <button onclick="setLanguage('EN')">EN</button>
+      <button onclick="setLanguage('KR')">KR</button>
+      <button onclick="setLanguage('ID')">ID</button>
+    </div>
+  </header>
 
-<header class="header">
-  <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
-  <div class="logo">HTORI ERP</div>
-  <div class="lang-buttons">
-    <button onclick="setLanguage('EN')">EN</button>
-    <button onclick="setLanguage('KR')">KR</button>
-    <button onclick="setLanguage('ID')">ID</button>
+  <!-- CONTENT -->
+  <main class="content">
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <label for="searchInput" id="searchLabel">Search</label>
+        <input id="searchInput" oninput="onSearchChange()" placeholder="ID / Name" />
+      </div>
+      <div class="toolbar-right">
+        <button class="btn-primary" onclick="openEmployeeModal()">
+          <span id="addEmployeeBtnText">Add Employee</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- EMPLOYEE TABLE -->
+    <section class="card">
+      <h2 id="employeeListTitle">Employee List</h2>
+      <div class="table-wrapper">
+        <table class="erp-table">
+          <thead>
+            <tr>
+              <th id="thEmpId">ID</th>
+              <th id="thName">Name</th>
+              <th id="thProcess">Process</th>
+              <th id="thJob">Job</th>
+              <th id="thEmployment">Employment</th>
+              <th id="thSalaryType">Salary Type</th>
+              <th id="thStatus">Status</th>
+              <th id="thEdit">Edit</th>
+              <th id="thTerminate">Terminate</th>
+            </tr>
+          </thead>
+          <tbody id="employeeTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ✅ EMPLOYEE MODAL -->
+<div id="employeeModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="employeeModalTitle">Employee</h3>
+      <button class="modal-close" onclick="closeEmployeeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- BASIC INFO -->
+      <div class="modal-section">
+        <h4 id="basicInfoTitle">Basic Info</h4>
+        <div class="form-row">
+          <div class="form-field">
+            <label id="lblEmpId">Employee ID</label>
+            <input id="empIdInput" />
+          </div>
+          <div class="form-field">
+            <label id="lblName">Name</label>
+            <input id="empNameInput" />
+          </div>
+          <div class="form-field">
+            <label id="lblNationality">Nationality</label>
+            <select id="empNationalityInput">
+              <option value="ID">ID</option>
+              <option value="KR">KR</option>
+              <option value="US">US</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label id="lblProcess">Process</label>
+            <select id="empProcessInput">
+              <option value="">-</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label id="lblJob">Job</label>
+            <select id="empJobInput">
+              <option value="operator">Operator</option>
+              <option value="qc">QC</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+              <option value="office">Office</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label id="lblStatus">Status</label>
+            <select id="empStatusInput">
+              <option value="active">Active</option>
+              <option value="leave">Leave</option>
+              <option value="terminated">Terminated</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMPLOYMENT TYPE -->
+      <div class="modal-section">
+        <h4 id="employmentTitle">Employment Type</h4>
+        <div class="form-row">
+          <div class="form-field">
+            <label id="lblEmploymentType">PKWTT / PKWT</label>
+            <select id="empEmploymentTypeInput" onchange="onEmploymentTypeChange()">
+              <option value="PKWTT">PKWTT</option>
+              <option value="PKWT">PKWT</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label id="lblJoinDate">Join Date</label>
+            <input id="empJoinDateInput" type="date" />
+          </div>
+          <div class="form-field pkwt-only">
+            <label id="lblContractStart">Contract Start</label>
+            <input id="empContractStartInput" type="date" />
+          </div>
+          <div class="form-field pkwt-only">
+            <label id="lblContractEnd">Contract End</label>
+            <input id="empContractEndInput" type="date" />
+          </div>
+        </div>
+      </div>
+
+      <!-- SALARY -->
+      <div class="modal-section">
+        <h4 id="salaryTitle">Salary</h4>
+        <div class="form-row">
+          <div class="form-field">
+            <label id="lblSalaryType">Salary Type</label>
+            <select id="empSalaryTypeInput" onchange="onSalaryTypeChange()">
+              <option value="monthly">Monthly</option>
+              <option value="hourly">Hourly</option>
+              <option value="piece">Per Piece</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label id="lblCurrency">Currency</label>
+            <select id="empCurrencyInput">
+              <option value="IDR">IDR</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field salary-monthly">
+            <label id="lblBaseSalary">Monthly Salary</label>
+            <input id="empBaseSalaryInput" type="number" min="0" />
+          </div>
+          <div class="form-field salary-hourly">
+            <label id="lblHourlyWage">Hourly Wage</label>
+            <input id="empHourlyWageInput" type="number" min="0" />
+          </div>
+          <div class="form-field salary-piece">
+            <label id="lblPieceRate">Piece Rate (per unit)</label>
+            <input id="empPieceRateInput" type="number" min="0" />
+          </div>
+        </div>
+      </div>
+
+      <!-- BANK -->
+      <div class="modal-section">
+        <h4 id="bankTitle">Bank Info</h4>
+        <div class="form-row">
+          <div class="form-field">
+            <label id="lblBankName">Bank Name</label>
+            <input id="empBankNameInput" />
+          </div>
+          <div class="form-field">
+            <label id="lblBankAccount">Account No.</label>
+            <input id="empBankAccountInput" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeEmployeeModal()" id="btnCancelText">Cancel</button>
+      <button class="btn-primary" onclick="saveEmployee()" id="btnSaveText">Save</button>
+    </div>
   </div>
-</header>
-
-<aside id="sidebar" class="sidebar"></aside>
-<main id="content"></main>
-
 </div>
 
 <script src="app.js"></script>
