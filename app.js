@@ -175,3 +175,137 @@ function uploadExcel(){
   };
   reader.readAsBinaryString(file);
 }
+/**************************************************
+  TRANSLATION + PERMISSION PATCH (integrated)
+  - uses LANG (lang.js) and currentUser, lang global variables
+**************************************************/
+
+// translate all elements with data-i18n or known IDs in employees template
+function translateAll(){
+  // translate menu if exists
+  try {
+    // menuList buttons (re-render with translations)
+    if(typeof renderMenu === "function"){
+      renderMenu(); // renderMenu should use t('menu.xxx') if available
+    }
+  } catch(e){ /* ignore */ }
+
+  // translate employees template elements if on that page
+  const empTitle = document.querySelector("#content h1") || document.getElementById("empFormTitle");
+  if(empTitle) {
+    // if current page is employees, set specific labels
+    if(document.getElementById("empFormTitle")){
+      document.getElementById("empFormTitle").textContent = t("employees.form.title_add");
+      // set button text if present
+      if(document.getElementById("empSaveBtn")) document.getElementById("empSaveBtn").textContent = t("employees.form.save");
+      if(document.getElementById("empCancelBtn")) document.getElementById("empCancelBtn").textContent = t("employees.form.cancel");
+
+      // set table headers if exist
+      const head = document.querySelector("#empTable thead tr");
+      if(head){
+        // find th elements and set by order
+        const ths = head.querySelectorAll("th");
+        if(ths.length >= 7){
+          ths[0].textContent = t("employees.table.empId");
+          ths[1].textContent = t("employees.table.name");
+          ths[2].textContent = t("employees.table.role");
+          ths[3].textContent = t("employees.table.bank");
+          ths[4].textContent = t("employees.table.account");
+          ths[5].textContent = t("employees.table.tax");
+          ths[6].textContent = t("employees.table.actions");
+        }
+      }
+    }
+
+    // try translate other static labels with data-i18n
+    document.querySelectorAll("[data-i18n]").forEach(el=>{
+      const key = el.getAttribute("data-i18n");
+      el.textContent = t(key);
+    });
+  }
+}
+
+// patch renderMenu to use t(...) — if you already have renderMenu, replace internal texts accordingly.
+// Example safe fallback: if your renderMenu uses direct text, override it:
+if(typeof renderMenu === "function"){
+  const _oldRenderMenu = renderMenu;
+  renderMenu = function(){
+    // call old to build structure if it exists, then localize
+    try { _oldRenderMenu(); } catch(e){ /* ignore */ }
+
+    // now translate menu buttons (if they were created with keys in data-menu)
+    document.querySelectorAll("#menuList .menu-item").forEach(btn=>{
+      const key = btn.dataset && btn.dataset.menuKey;
+      if(key) btn.textContent = t("menu."+key);
+      else {
+        // try to map by innerText if matches English keys - best-effort
+        const txt = btn.textContent.trim().toLowerCase();
+        // quick map fallback (common)
+        const map = {
+          "dashboard":"dashboard","order":"order","mrp":"mrp","receiving":"receiving","stock":"stock",
+          "production":"production","outsourcing":"outsource","shipment":"shipment","cost":"cost",
+          "employees":"employees","settings":"settings"
+        };
+        Object.keys(map).forEach(k=>{
+          if(txt === k) btn.textContent = t("menu."+map[k]);
+        });
+      }
+    });
+  };
+}
+
+// helper: hide delete buttons for non-master
+function applyEmployeePermissions(){
+  // called after employee list render
+  const canDelete = currentUser && currentUser.role === "master";
+  document.querySelectorAll("#empTableBody button").forEach(btn=>{
+    if(btn.textContent && btn.textContent.toLowerCase().includes("delete")){
+      btn.style.display = canDelete ? "inline-block" : "none";
+    }
+  });
+}
+
+// integrate permissions directly into loadEmployeeList (if present in your app.js)
+// If you use the loadEmployeeList() provided earlier, it already renders delete button via code.
+// To be safe, monkey-patch db ref listener handler if exists:
+if(typeof loadEmployeeList === "function"){
+  const _oldLoadEmployeeList = loadEmployeeList;
+  loadEmployeeList = function(){
+    _oldLoadEmployeeList(); // call original which repopulates table
+    // after a tiny delay allow DOM update then apply perms & translation
+    setTimeout(()=>{
+      applyEmployeePermissions();
+      translateAll();
+    }, 200);
+  };
+}
+
+// ensure language changes call translateAll
+// if you already have setLanguage or language button handlers, patch them
+if(typeof setLanguage === "function"){
+  const _oldSetLanguage = setLanguage;
+  setLanguage = function(l){
+    _oldSetLanguage(l);
+    // ensure global var updated
+    window.lang = l;
+    localStorage.setItem("lang", l);
+    setTimeout(()=>translateAll(), 50);
+  };
+} else {
+  // fallback: if language buttons exist, bind them to call translateAll
+  document.querySelectorAll(".lang-btn").forEach(btn=>{
+    btn.addEventListener("click", (ev)=>{
+      const L = btn.dataset.lang;
+      window.lang = L;
+      localStorage.setItem("lang", L);
+      translateAll();
+    });
+  });
+}
+
+// initial translate on load
+document.addEventListener("DOMContentLoaded", ()=>{
+  window.lang = window.lang || localStorage.getItem("lang") || "EN";
+  translateAll();
+});
+
