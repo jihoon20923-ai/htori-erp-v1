@@ -2,103 +2,319 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>HTORI ERP Realtime - v1.1</title>
+  <title>HTORI ERP Realtime - v2.0</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="style.css">
-
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
-  <!-- Excel Parser -->
+  <!-- XLSX for Excel upload -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header class="site-header">
-    <div class="header-left">
-      <button id="hamburger" class="hamburger">☰</button>
-      <div class="brand">
-        <img src="logo.png" alt="Htori" style="height:34px;margin-right:10px;">
-        <span id="brand-title">HTORI ERP Realtime</span>
-        <small style="opacity:.7;margin-left:8px;">v1.1</small>
-      </div>
-    </div>
-
-    <div class="header-right">
-      <span id="user-info" class="user-info">
-        User: <span id="user-name">Guest</span>
-        (<span id="user-role">viewer</span>)
-      </span>
-
-      <div class="lang-buttons">
-        <button class="lang-btn" data-lang="EN">EN</button>
-        <button class="lang-btn" data-lang="KR">KR</button>
-        <button class="lang-btn" data-lang="ID">ID</button>
-      </div>
-
-      <button id="logoutBtn" class="btn small hidden">Logout</button>
-    </div>
-  </header>
-
-  <!-- LAYOUT -->
-  <div class="layout">
-    <!-- SIDEBAR -->
-    <nav id="sidebar" class="sidebar">
-      <ul id="menuList"></ul>
-    </nav>
-
-    <!-- CONTENT -->
-    <main id="content" class="content"></main>
+<header class="site-header">
+  <div class="left">
+    <button id="hamburger" class="hamburger" aria-label="toggle menu">☰</button>
+    <img id="brand-logo" src="logo.png" alt="Htori" />
+    <div id="brand-title">HTORI ERP Realtime</div>
   </div>
 
-  <!-- LOGIN MODAL -->
-  <div id="loginModal" class="modal-backdrop">
-    <div class="modal-card">
-      <h2>HTORI ERP LOGIN</h2>
-
-      <div class="form-row">
-        <input id="loginId" placeholder="ID">
-      </div>
-
-      <div class="form-row">
-        <input id="loginPw" type="password" placeholder="Password">
-      </div>
-
-      <div class="form-row form-actions">
-        <button id="loginBtn" class="btn primary">Login</button>
-        <button id="demoBtn" class="btn">Demo</button>
-      </div>
+  <div class="right">
+    <div id="user-info">User: <span id="user-name">Guest</span> (<span id="user-role">viewer</span>)</div>
+    <div class="lang-buttons">
+      <button class="lang-btn" data-lang="EN">EN</button>
+      <button class="lang-btn" data-lang="KR">KR</button>
+      <button class="lang-btn" data-lang="ID">ID</button>
     </div>
+    <button id="logoutBtn" class="btn small hidden">Logout</button>
   </div>
+</header>
 
-  <!-- DEFAULT PAGE TEMPLATE -->
-  <template id="tpl-dashboard">
-    <h1>Dashboard</h1>
-    <div class="card">
-      <h3>Today / This Month</h3>
-      <p class="muted">KPIs will be displayed here.</p>
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="modal-backdrop">
+  <div class="modal-card">
+    <h2 id="loginTitle">HTORI ERP LOGIN</h2>
+    <input id="loginId" placeholder="ID" autocomplete="username">
+    <input id="loginPw" type="password" placeholder="Password" autocomplete="current-password">
+    <div class="actions">
+      <button id="loginBtn" class="btn primary">Login</button>
+      <button id="demoBtn" class="btn">Demo</button>
     </div>
-  </template>
+    <div id="loginNotice" class="muted small"></div>
+  </div>
+</div>
 
-  <!-- SETTINGS PAGE -->
-  <template id="tpl-settings">
-    <h1>Settings</h1>
+<!-- MAIN LAYOUT -->
+<div class="layout">
+  <nav id="sidebar" class="sidebar">
+    <ul id="menuList" class="menu-list"></ul>
+  </nav>
+
+  <main id="content" class="content">
+    <!-- content injected by app.js -->
+  </main>
+</div>
+
+<!-- TEMPLATES -->
+
+<!-- Dashboard -->
+<template id="tpl-dashboard">
+  <section class="page">
+    <h1 data-i18n="menu.dashboard">Dashboard</h1>
     <div class="card">
-      <label>Default Language</label>
-      <select id="settingDefaultLang">
-        <option>EN</option>
-        <option>KR</option>
-        <option>ID</option>
-      </select>
-
-      <label style="margin-top:12px">Menu Order</label>
-      <input id="settingMenuOrder">
+      <h3>Summary</h3>
+      <p class="muted">Realtime KPIs and status summary will appear here.</p>
     </div>
-  </template>
+  </section>
+</template>
 
-  <script src="lang.js"></script>
-  <script src="app.js"></script>
+<!-- Order -->
+<template id="tpl-order">
+  <section class="page">
+    <h1 data-i18n="menu.order">Order</h1>
+
+    <div class="card">
+      <div class="form-row">
+        <input id="oNo" placeholder="EX: ORD-2025-001">
+        <input id="oCustomer" placeholder="EX: Hair Trend">
+        <input id="oDue" type="date">
+        <button id="oAddBtn" class="btn">Add Order</button>
+      </div>
+
+      <table class="erp-table" id="orderTable">
+        <thead><tr><th>Order No</th><th>Product</th><th>Qty</th><th>Price</th><th>Due</th><th>Actions</th></tr></thead>
+        <tbody id="orderBody"></tbody>
+      </table>
+    </div>
+  </section>
+</template>
+
+<!-- MRP -->
+<template id="tpl-mrp">
+  <section class="page">
+    <h1 data-i18n="menu.mrp">MRP</h1>
+    <div class="card">
+      <p class="muted">Orders → BOM pull → Material requirements. Review purchase suggestions below.</p>
+      <button id="mrpRunBtn" class="btn primary">Run MRP</button>
+      <table class="erp-table" id="mrpTable">
+        <thead><tr><th>Material Code</th><th>Required</th><th>On Hand</th><th>To Purchase</th></tr></thead>
+        <tbody id="mrpBody"></tbody>
+      </table>
+    </div>
+  </section>
+</template>
+
+<!-- Receiving -->
+<template id="tpl-receiving">
+  <section class="page">
+    <h1 data-i18n="menu.receiving">Receiving</h1>
+
+    <div class="card">
+      <div class="form-row">
+        <input id="recDate" type="date">
+        <input id="recVendor" placeholder="EX: Supplier A">
+        <select id="recMethod"><option>SEA</option><option>AIR</option></select>
+        <input id="recCode" placeholder="EX: MAT-001">
+        <input id="recQty" type="number" placeholder="EX: 1000">
+        <button id="recSaveBtn" class="btn">Save Receiving</button>
+      </div>
+
+      <table class="erp-table" id="receivingLog">
+        <thead><tr><th>Date</th><th>Vendor</th><th>Method</th><th>Code</th><th>Qty</th></tr></thead>
+        <tbody id="receivingBody"></tbody>
+      </table>
+    </div>
+  </section>
+</template>
+
+<!-- Stock -->
+<template id="tpl-stock">
+  <section class="page">
+    <h1 data-i18n="menu.stock">Stock</h1>
+    <div class="card">
+      <div class="form-row">
+        <input id="stockFilter" placeholder="Filter code / name">
+        <button id="stockExportBtn" class="btn">Export CSV</button>
+      </div>
+
+      <table class="erp-table" id="stockTable">
+        <thead><tr><th>Code</th><th>Name</th><th>Qty</th><th>Last Update</th></tr></thead>
+        <tbody id="stockBody"></tbody>
+      </table>
+    </div>
+  </section>
+</template>
+
+<!-- Production -->
+<template id="tpl-production">
+  <section class="page">
+    <h1 data-i18n="menu.production">Production</h1>
+    <div class="card">
+      <div class="form-row">
+        <input id="prodProduct" placeholder="EX: VC100-CP01">
+        <input id="prodQty" type="number" placeholder="EX: 1000">
+        <input id="prodProcess" placeholder="EX: Process 1">
+        <button id="prodStartBtn" class="btn primary">Register Production</button>
+      </div>
+
+      <table class="erp-table">
+        <thead><tr><th>Date</th><th>Product</th><th>Qty</th><th>Process</th></tr></thead>
+        <tbody id="prodBody"></tbody>
+      </table>
+    </div>
+  </section>
+</template>
+
+<!-- Outsourcing -->
+<template id="tpl-outsource">
+  <section class="page">
+    <h1 data-i18n="menu.outsource">Outsourcing</h1>
+    <div class="card">
+      <div class="form-row">
+        <input id="outProd" placeholder="EX: F002">
+        <input id="outQty" type="number" placeholder="EX: 2000">
+        <input id="outVendor" placeholder="EX: VD-001">
+        <input id="outPrice" type="number" placeholder="EX: 0.02">
+        <button id="outSendBtn" class="btn">Send Out</button>
+      </div>
+
+      <table class="erp-table" id="outTable">
+        <thead><tr><th>Product</th><th>Qty</th><th>Vendor</th><th>Status</th></tr></thead>
+        <tbody id="outBody"></tbody>
+      </table>
+    </div>
+  </section>
+</template>
+
+<!-- Shipment -->
+<template id="tpl-shipment">
+  <section class="page">
+    <h1 data-i18n="menu.shipment">Shipment</h1>
+    <div class="card">
+      <div class="form-row">
+        <input id="shipNo" placeholder="EX: SHIP-001">
+        <input id="shipBuyer" placeholder="EX: Hair Trend">
+        <input id="shipDate" type="date">
+        <button id="shipAddBtn" class="btn">Add Item</button>
+      </div>
+
+      <table class="erp-table" id="shipTable">
+        <thead><tr><th>Shipment No</th><th>Buyer</th><th>Date</th><th>Total</th></tr></thead>
+        <tbody id="shipBody"></tbody>
+      </table>
+    </div>
+  </section>
+</template>
+
+<!-- Cost -->
+<template id="tpl-cost">
+  <section class="page">
+    <h1 data-i18n="menu.cost">Cost</h1>
+    <div class="card">
+      <div class="form-row">
+        <input id="costRent" type="number" placeholder="Factory rent (monthly)">
+        <input id="costContainer" type="number" placeholder="Container cost">
+        <input id="costTax" type="number" placeholder="Tax">
+        <button id="costCalcBtn" class="btn">Calc Cost</button>
+      </div>
+      <div id="costResult" class="muted"></div>
+    </div>
+  </section>
+</template>
+
+<!-- Employees (template inserted by app.js render) -->
+<template id="tpl-employees">
+  <section class="page">
+    <h1 data-i18n="menu.employees">Employees</h1>
+
+    <div class="card">
+      <h3 id="empFormTitle">Add / Edit Employee</h3>
+
+      <div class="form-row">
+        <input id="empId" placeholder="EX: EMP001">
+        <input id="empName" placeholder="EX: JIHOON KIM">
+        <select id="empRole">
+          <option value="master">Master</option>
+          <option value="production">Production</option>
+          <option value="outsourcing">Outsourcing</option>
+          <option value="hr">HR</option>
+          <option value="accounting">Accounting</option>
+        </select>
+        <select id="empType">
+          <option value="PKWT">PKWT</option>
+          <option value="PKWTT">PKWTT</option>
+          <option value="Intern">Intern</option>
+          <option value="Contract">Contract</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <input id="basicSalary" type="number" placeholder="EX: 4500000">
+        <input id="hourRate" type="number" placeholder="EX: 20000">
+        <input id="pieceRate" type="number" placeholder="EX: 0.015">
+        <label><input type="checkbox" id="empProbation"> Probation</label>
+      </div>
+
+      <div class="form-row">
+        <input id="bankName" placeholder="EX: BCA / BNI">
+        <input id="bankAccount" placeholder="EX: 1234567890">
+        <input id="accountHolder" placeholder="EX: JIHOON KIM">
+        <input id="taxNumber" placeholder="EX: 12.345.678.9-012.345">
+      </div>
+
+      <div class="form-row">
+        <textarea id="empMemo" placeholder="EX: Note..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <button id="empSaveBtn" class="btn primary">Save</button>
+        <button id="empCancelBtn" class="btn">Cancel</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Employee List</h3>
+      <table class="erp-table">
+        <thead>
+          <tr>
+            <th data-i18n="employees.table.empId">Emp ID</th>
+            <th data-i18n="employees.table.name">Name</th>
+            <th data-i18n="employees.table.role">Role</th>
+            <th data-i18n="employees.table.bank">Bank</th>
+            <th data-i18n="employees.table.account">Account</th>
+            <th data-i18n="employees.table.tax">Tax No.</th>
+            <th data-i18n="employees.table.actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="empTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+</template>
+
+<!-- Settings -->
+<template id="tpl-settings">
+  <section class="page">
+    <h1 data-i18n="menu.settings">Settings</h1>
+
+    <div class="card">
+      <label>Default language</label>
+      <select id="settingDefaultLang"><option>EN</option><option>KR</option><option>ID</option></select>
+
+      <label style="margin-top:8px">Menu order (comma separated)</label>
+      <input id="settingMenuOrder" placeholder="dashboard,order,mrp,receiving,stock,production,outsource,shipment,cost,employees,settings">
+
+      <div style="margin-top:12px">
+        <button id="saveSettingsBtn" class="btn primary">Save</button>
+        <button id="resetDataBtn" class="btn warning">Reset Data</button>
+      </div>
+    </div>
+  </section>
+</template>
+
+<!-- App scripts loaded below -->
+<script src="lang.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
