@@ -144,20 +144,22 @@
   <!-- SCRIPTS: 앱 로직 -->
   <script>
   /* =================================================
-     CONFIG (Firebase)
-     - 이미 주신 config를 사용합니다.
-  ================================================= */
-  const firebaseConfig = {
-    apiKey: "AIzaSyDwiTlPtoXraEtA7TzTctdH6DJS6gdSEGQ",
-    authDomain: "htori-erp-3c22b.firebaseapp.com",
-   databaseURL: "https://htori-erp-3c22b-default-rtdb.asia-southeast1.firebasedatabase.app"
-    projectId: "htori-erp-3c22b",
-    storageBucket: "htori-erp-3c22b.firebasestorage.app",
-    messagingSenderId: "975336397666",
-    appId: "1:975336397666:web:ae45a471e51bf71e9dea3b"
-  };
-  firebase.initializeApp(firebaseConfig);
+   CONFIG (Firebase)
+   - 이미 주신 config를 사용합니다.
+================================================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyDwiTlPtoXraEtA7TzTctdH6DJS6gdSEGQ",
+  authDomain: "htori-erp-3c22b.firebaseapp.com",
+  databaseURL: "https://htori-erp-3c22b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "htori-erp-3c22b",
+  storageBucket: "htori-erp-3c22b.firebasestorage.app",
+  messagingSenderId: "975336397666",
+  appId: "1:975336397666:web:ae45a471e51bf71e9dea3b"
+};
+
+firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+
 
 /* =================================================
    AUTO CREATE ADMIN (FINAL, FIXED VERSION)
