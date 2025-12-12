@@ -157,7 +157,43 @@
     appId: "1:975336397666:web:ae45a471e51bf71e9dea3b"
   };
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+const db = firebase.database();
+
+/* =================================================
+   AUTO CREATE ADMIN (FINAL, FIXED VERSION)
+================================================= */
+(async function ensureAdmin(){
+  try {
+    const snap = await db.ref("employees").once("value");
+    let needCreate = false;
+
+    if(!snap.exists()){
+      needCreate = true;
+    } else {
+      const list = snap.val() || {};
+      const hasAdmin = Object.values(list).some(e => e && e.id === "admin");
+      const hasValid = Object.values(list).some(e => e && e.id && e.pw);
+      if(!hasAdmin || !hasValid) needCreate = true;
+    }
+
+    if(needCreate){
+      const admin = {
+        id: "admin",
+        pw: "1234",
+        name: "Master",
+        role: "master",
+        createdAt: new Date().toISOString()
+      };
+      await db.ref("employees").push(admin);
+      console.log("✅ Admin auto-created");
+    } else {
+      console.log("ℹ Admin exists");
+    }
+  } catch(err){
+    console.error("❌ ensureAdmin error:", err);
+  }
+})();
+
 
   /* =================================================
      App State
