@@ -292,18 +292,25 @@
     onLogin();
   }
 
-  function login(){
+ function login(){
     const id = document.getElementById("loginId").value.trim();
     const pw = document.getElementById("loginPw").value.trim();
+
     if(!id || !pw) return alert("Enter credentials");
+
     db.ref("employees").once("value").then(s=>{
-      const list = s.val() || {};
-      const found = Object.values(list).find(x=>x.id===id && x.pw===pw);
-      if(!found) return alert("LOGIN FAIL");
-      currentUser = found;
-      onLogin();
+        const list = s.val() || {};
+
+        const found = Object.values(list).find(x=>x.id===id && x.pw===pw);
+        if(!found){
+            alert("LOGIN FAIL");
+            return;
+        }
+
+        currentUser = found;
+        onLogin();      // 클래식 erp UI show 삭제됨 → 지금은 이게 필요함
     });
-  }
+}
 
   function logout(){
     currentUser = null;
