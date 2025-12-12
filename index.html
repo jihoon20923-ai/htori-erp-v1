@@ -5,44 +5,19 @@
   <title>HTORI ERP Realtime - v1</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    /* --- 기본 레이아웃 / 스타일 (간결) --- */
-    :root{--nav-w:220px;--accent:#1F3C88;--bg:#f2f5f8;--card:#fff}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:#222}
-    .site-header{height:60px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:fixed;left:0;right:0;top:0;z-index:40}
-    .brand{font-weight:700;display:flex;align-items:center;gap:8px}
-    .layout{display:flex;padding-top:60px;min-height:calc(100vh - 60px)}
-    .sidebar{width:var(--nav-w);background:#11151a;color:#fff;padding:12px;min-height:calc(100vh - 60px)}
-    .menu-list{list-style:none;padding:0;margin:0}
-    .menu-list li{margin-bottom:8px}
-    .menu-btn{display:block;width:100%;text-align:left;padding:10px;border-radius:6px;background:transparent;color:#ddd;border:0;cursor:pointer}
-    .menu-btn.active{background:#222}
-    .content{flex:1;padding:20px}
-    .card{background:var(--card);padding:14px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.06);margin-bottom:12px}
-    h1,h2{margin:0 0 12px 0}
-    .btn{display:inline-block;padding:8px 12px;border-radius:6px;border:0;cursor:pointer}
-    .btn.primary{background:var(--accent);color:#fff}
-    .btn.warning{background:#ff7a59;color:#fff}
-    .muted{color:#666}
-    label{display:block;margin-bottom:6px;font-weight:600}
-    input[type=text], select, input[type=number], textarea, input[type=date]{width:100%;padding:8px;border:1px solid #d4d9df;border-radius:6px}
-    .form-row{display:flex;gap:10px}
-    .form-col{flex:1}
-    .small{font-size:13px}
-    .hidden{display:none}
-    .top-right{display:flex;gap:8px;align-items:center}
-    table{width:100%;border-collapse:collapse}
-    th,td{border:1px solid #e6e9ec;padding:8px;text-align:left}
-    .modal-backdrop{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);z-index:80}
-    .modal-card{width:420px;background:#fff;padding:18px;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
-    .sr-only{position:absolute;left:-9999px}
-    .topbar-right{display:flex;gap:8px;align-items:center}
-    .lang-btn{background:#fff;border:1px solid #ddd;padding:6px;border-radius:6px;cursor:pointer}
-    .help{color:#999;font-size:13px}
-    .notice{padding:8px;background:#eef7ff;border-left:4px solid #1F3C88}
-    .flex{display:flex;gap:8px;align-items:center}
-    .mb8{margin-bottom:8px}
-  </style>
+<!-- LAYOUT -->
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <ul id="menuList" class="menu-list"></ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main id="content" class="content">
+    <!-- content injected -->
+  </main>
+</div>
+
 
   <!-- Firebase + XLSX CDN (인터넷 필요) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
