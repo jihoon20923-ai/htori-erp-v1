@@ -258,15 +258,6 @@ const db = firebase.database();
   const userNameSpan = document.getElementById("user-name");
   const userRoleSpan = document.getElementById("user-role");
 
-  /* =================================================
-     Initialization: ensure admin exists (once)
-  ================================================= */
-  db.ref("employees").once("value").then(snap=>{
-    if(!snap.exists()){
-      db.ref("employees").push({ id:"admin", pw:"1234", name:"Master", role:"master", bank:"", account:"", tax:"", salaryBase:0, payPerHour:0, payPerPiece:0, probation:false });
-      console.log("admin created");
-    }
-  });
 
   /* =================================================
      Render Menu according to settings & role
