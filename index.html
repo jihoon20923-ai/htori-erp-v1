@@ -1,147 +1,207 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>HTORI ERP Realtime - v1</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<title>HTORI ERP v1</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
-:root{--nav-w:220px;--accent:#1F3C88;--bg:#f2f5f8;--card:#fff}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg)}
-.site-header{height:60px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:fixed;left:0;right:0;top:0;z-index:10}
-.layout{display:flex;padding-top:60px;min-height:100vh}
-.sidebar{width:var(--nav-w);background:#111;color:#fff;padding:12px}
-.menu-list{list-style:none;padding:0;margin:0}
-.menu-btn{width:100%;padding:10px;border:0;background:none;color:#ddd;text-align:left;border-radius:6px;cursor:pointer}
+body{margin:0;font-family:Arial;background:#f2f5f8}
+header{height:56px;background:#1F3C88;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:fixed;top:0;left:0;right:0}
+.layout{display:flex;padding-top:56px;height:100vh}
+aside{width:220px;background:#111;color:#fff;padding:10px}
+main{flex:1;padding:20px;overflow:auto}
+button{padding:8px 12px;border:0;border-radius:6px;cursor:pointer}
+.menu-btn{width:100%;margin-bottom:6px;background:none;color:#ddd;text-align:left}
 .menu-btn.active{background:#222}
-.content{flex:1;padding:20px}
 .card{background:#fff;padding:14px;border-radius:8px;margin-bottom:12px}
 .hidden{display:none}
-.btn{padding:8px 12px;border-radius:6px;border:0;cursor:pointer}
-.btn.primary{background:var(--accent);color:#fff}
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center}
-.modal-card{background:#fff;padding:20px;border-radius:10px;width:360px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center}
+.modal-box{background:#fff;padding:20px;border-radius:10px;width:320px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:6px}
 </style>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 
 <body>
 
-<header class="site-header">
-  <div><strong>HTORI ERP Realtime</strong></div>
+<header>
+  <div>HTORI ERP</div>
   <div>
-    User: <span id="user-name">Guest</span>
-    <button id="logoutBtn" class="btn hidden">Logout</button>
+    <span id="userLabel">Guest</span>
+    <button id="logoutBtn" class="hidden">Logout</button>
   </div>
 </header>
 
 <div class="layout">
-  <aside class="sidebar">
-    <ul id="menuList" class="menu-list"></ul>
+  <aside>
+    <div id="menu"></div>
   </aside>
-  <main id="content" class="content"></main>
+  <main id="content"></main>
 </div>
 
 <!-- LOGIN -->
-<div id="loginModal" class="modal-backdrop">
-  <div class="modal-card">
-    <h3>LOGIN</h3>
-    <input id="loginId" placeholder="admin" style="width:100%;margin-bottom:8px">
-    <input id="loginPw" type="password" placeholder="1234" style="width:100%;margin-bottom:12px">
-    <button id="loginBtn" class="btn primary" style="width:100%">Login</button>
+<div id="loginModal" class="modal">
+  <div class="modal-box">
+    <h3>Login</h3>
+    <input id="loginId" placeholder="admin" style="width:100%;margin-bottom:6px">
+    <input id="loginPw" type="password" placeholder="1234" style="width:100%;margin-bottom:10px">
+    <button id="loginBtn" style="width:100%">Login</button>
   </div>
 </div>
 
-<template id="tpl-dashboard">
-  <div>
-    <h1>Dashboard</h1>
-    <div class="card">Welcome to HTORI ERP</div>
-  </div>
-</template>
-
 <script>
-/* ================= FIREBASE ================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyDwiTlPtoXraEtA7TzTctdH6DJS6gdSEGQ",
-  authDomain: "htori-erp-3c22b.firebaseapp.com",
-  databaseURL: "https://htori-erp-3c22b-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "htori-erp-3c22b"
-};
-firebase.initializeApp(firebaseConfig);
+/* ========= Firebase ========= */
+firebase.initializeApp({
+  apiKey:"AIzaSyDwiTlPtoXraEtA7TzTctdH6DJS6gdSEGQ",
+  databaseURL:"https://htori-erp-3c22b-default-rtdb.asia-southeast1.firebasedatabase.app"
+});
 const db = firebase.database();
 
-/* ================= STATE ================= */
+/* ========= State ========= */
 let currentUser = null;
-const DEFAULT_MENU = ["dashboard","employees","settings"];
 
-/* ================= DOM ================= */
-const content = document.getElementById("content");
-const menuList = document.getElementById("menuList");
-const loginModal = document.getElementById("loginModal");
-const logoutBtn = document.getElementById("logoutBtn");
-
-/* ================= INIT ADMIN ================= */
+/* ========= Ensure Admin ========= */
 db.ref("employees").once("value").then(s=>{
   if(!s.exists()){
     db.ref("employees").push({id:"admin",pw:"1234",name:"Master"});
   }
 });
 
-/* ================= MENU ================= */
-function renderMenu(){
-  menuList.innerHTML="";
-  DEFAULT_MENU.forEach(k=>{
-    const li=document.createElement("li");
-    li.innerHTML=`<button class="menu-btn" data-key="${k}">${k}</button>`;
-    menuList.appendChild(li);
-  });
-
-  document.querySelectorAll(".menu-btn").forEach(btn=>{
-    btn.onclick=()=>{
-      document.querySelectorAll(".menu-btn").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      showPage(btn.dataset.key);
-    };
-  });
-}
-
-/* ================= LOGIN ================= */
-document.getElementById("loginBtn").onclick=()=>{
-  const id=loginId.value.trim();
-  const pw=loginPw.value.trim();
+/* ========= Login ========= */
+loginBtn.onclick = () => {
+  const id = loginId.value.trim();
+  const pw = loginPw.value.trim();
 
   db.ref("employees").once("value").then(s=>{
-    const u=Object.values(s.val()||{}).find(e=>e.id===id && e.pw===pw);
+    const u = Object.values(s.val()||{}).find(e=>e.id===id && e.pw===pw);
     if(!u) return alert("LOGIN FAIL");
-    currentUser=u;
-    document.getElementById("user-name").innerText=u.name;
+    currentUser = u;
+    userLabel.innerText = u.name;
     loginModal.classList.add("hidden");
     logoutBtn.classList.remove("hidden");
     renderMenu();
-    showPage("dashboard");
+    showDashboard();
   });
 };
 
-logoutBtn.onclick=()=>{
-  location.reload();
-};
+logoutBtn.onclick = () => location.reload();
 
-/* ================= PAGES ================= */
-function showPage(k){
-  if(k==="dashboard"){
-    const tpl=document.getElementById("tpl-dashboard").content.cloneNode(true);
-    content.innerHTML="";
-    content.appendChild(tpl);
-    return;
-  }
-  content.innerHTML=`
-    <h1>${k}</h1>
-    <div class="card">Page ready</div>
+/* ========= Menu ========= */
+function renderMenu(){
+  menu.innerHTML = `
+    <button class="menu-btn" onclick="showDashboard()">Dashboard</button>
+    <button class="menu-btn" onclick="showEmployees()">Employees</button>
+    <button class="menu-btn" onclick="showProduction()">Production</button>
+    <button class="menu-btn" onclick="showReceiving()">Receiving</button>
   `;
+}
+
+/* ========= Pages ========= */
+function showDashboard(){
+  content.innerHTML = `
+    <h1>Dashboard</h1>
+    <div class="card">Login success. System ready.</div>
+  `;
+}
+
+function showEmployees(){
+  content.innerHTML = `
+    <h1>Employees</h1>
+    <div class="card">
+      <input id="e_id" placeholder="ID">
+      <input id="e_name" placeholder="Name">
+      <button onclick="saveEmp()">Save</button>
+    </div>
+    <div class="card"><div id="empList">Loading...</div></div>
+  `;
+  loadEmp();
+}
+
+function saveEmp(){
+  const id=e_id.value.trim();
+  const name=e_name.value.trim();
+  if(!id) return alert("ID required");
+  db.ref("employees").push({id,name});
+  loadEmp();
+}
+
+function loadEmp(){
+  db.ref("employees").once("value").then(s=>{
+    let html="<table><tr><th>ID</th><th>Name</th></tr>";
+    Object.values(s.val()||{}).forEach(e=>{
+      html+=`<tr><td>${e.id||""}</td><td>${e.name||""}</td></tr>`;
+    });
+    html+="</table>";
+    empList.innerHTML=html;
+  });
+}
+
+function showProduction(){
+  content.innerHTML=`
+    <h1>Production</h1>
+    <div class="card">
+      <input id="p_code" placeholder="Product">
+      <input id="p_qty" type="number" placeholder="Qty">
+      <button onclick="saveProd()">Save</button>
+    </div>
+    <div class="card"><div id="prodList"></div></div>
+  `;
+  loadProd();
+}
+
+function saveProd(){
+  db.ref("production").push({
+    code:p_code.value,
+    qty:Number(p_qty.value||0),
+    at:new Date().toISOString()
+  });
+  loadProd();
+}
+
+function loadProd(){
+  db.ref("production").once("value").then(s=>{
+    let html="<table><tr><th>Product</th><th>Qty</th></tr>";
+    Object.values(s.val()||{}).forEach(r=>{
+      html+=`<tr><td>${r.code}</td><td>${r.qty}</td></tr>`;
+    });
+    html+="</table>";
+    prodList.innerHTML=html;
+  });
+}
+
+function showReceiving(){
+  content.innerHTML=`
+    <h1>Receiving</h1>
+    <div class="card">
+      <input id="r_code" placeholder="Material">
+      <input id="r_qty" type="number" placeholder="Qty">
+      <button onclick="saveRecv()">Save</button>
+    </div>
+    <div class="card"><div id="stockList"></div></div>
+  `;
+  loadStock();
+}
+
+function saveRecv(){
+  const code=r_code.value;
+  const qty=Number(r_qty.value||0);
+  db.ref("stock").push({code,qty});
+  loadStock();
+}
+
+function loadStock(){
+  db.ref("stock").once("value").then(s=>{
+    let html="<table><tr><th>Code</th><th>Qty</th></tr>";
+    Object.values(s.val()||{}).forEach(r=>{
+      html+=`<tr><td>${r.code}</td><td>${r.qty}</td></tr>`;
+    });
+    html+="</table>";
+    stockList.innerHTML=html;
+  });
 }
 </script>
 
