@@ -24,3 +24,28 @@
   로그인 테스트 화면
 </body>
 </html>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const loginBtn = document.getElementById("loginBtn");
+  const loginModal = document.getElementById("loginModal");
+
+  if (!loginBtn) {
+    console.error("loginBtn not found");
+    return;
+  }
+
+  loginBtn.addEventListener("click", () => {
+    // 임시 로그인 성공 처리
+    localStorage.setItem("htori_login", "Y");
+    loginModal.style.display = "none";
+
+    // 상단 User 표시 변경 (선택)
+    const userBox = document.querySelector(".user-box");
+    if (userBox) userBox.textContent = "User: Master";
+
+    console.log("LOGIN SUCCESS");
+  });
+
+});
+</script>
