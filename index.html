@@ -1,153 +1,206 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <title>HTORI ERP v1</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<!-- ================= STYLE ================= -->
 <style>
-:root{--nav:220px;--accent:#1F3C88;--bg:#f2f5f8}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:var(--bg)}
-header{height:56px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
-.layout{display:flex;height:calc(100vh - 56px)}
-.sidebar{width:var(--nav);background:#111;color:#fff;padding:12px}
-.sidebar button{width:100%;margin-bottom:6px;padding:8px;border:0;background:#222;color:#fff;cursor:pointer}
-.sidebar button.active{background:#444}
-.content{flex:1;padding:16px}
-.card{background:#fff;padding:16px;border-radius:8px}
-.hidden{display:none}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center}
-.modal .box{background:#fff;padding:20px;width:320px;border-radius:8px}
+:root {
+  --accent:#1F3C88;
+  --bg:#f2f5f8;
+  --dark:#11151a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+}
+
+/* HEADER */
+.header {
+  height:60px;
+  background:var(--accent);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
+}
+
+/* LAYOUT */
+.layout {
+  display:flex;
+  min-height: calc(100vh - 60px);
+}
+
+/* SIDEBAR */
+.sidebar {
+  width:220px;
+  background:var(--dark);
+  color:#fff;
+  padding:10px;
+}
+
+.sidebar button {
+  width:100%;
+  margin-bottom:8px;
+  padding:10px;
+  background:#222;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+
+.sidebar button:hover {
+  background:#333;
+}
+
+/* CONTENT */
+.content {
+  flex:1;
+  padding:20px;
+}
+
+/* LOGIN MODAL */
+#loginModal {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.login-box {
+  background:#fff;
+  padding:30px;
+  width:300px;
+  border-radius:8px;
+}
+
+.login-box input {
+  width:100%;
+  padding:8px;
+  margin-bottom:10px;
+}
+
+.login-box button {
+  width:100%;
+  padding:10px;
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
 </style>
-
-<!-- ================= FIREBASE ================= -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
-<script>
-/* Firebase init */
-const firebaseConfig = {
-  apiKey: "AIzaSyDwiTlPtoXraEtA7TzTctdH6DJS6gdSEGQ",
-  authDomain: "htori-erp-3c22b.firebaseapp.com",
-  databaseURL: "https://htori-erp-3c22b-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "htori-erp-3c22b"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-console.log("Firebase OK");
-</script>
 </head>
 
 <body>
 
-<header>
-  <div>HTORI ERP v1</div>
-  <div id="userInfo">Guest</div>
-</header>
-
-<div class="layout">
-  <aside class="sidebar" id="menu"></aside>
-  <main class="content" id="content"></main>
+<!-- HEADER -->
+<div class="header">
+  <strong>HTORI ERP v1</strong>
+  <button onclick="logout()">Logout</button>
 </div>
 
-<!-- ================= LOGIN MODAL ================= -->
-<div id="loginModal" class="modal">
-  <div class="box">
-    <h3>LOGIN</h3>
-    <input id="loginId" placeholder="admin"><br><br>
-    <input id="loginPw" type="password" placeholder="1234"><br><br>
-    <button onclick="login()">Login</button>
-    <p style="font-size:12px">default: admin / 1234</p>
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <button onclick="loadPage('dashboard')">Dashboard</button>
+    <button onclick="loadPage('employees')">Employees</button>
+    <button onclick="loadPage('settings')">Settings</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content" id="content">
+    <!-- dynamic -->
   </div>
 </div>
 
-<!-- ================= APP SCRIPT ================= -->
+<!-- LOGIN MODAL -->
+<div id="loginModal">
+  <div class="login-box">
+    <h3>LOGIN</h3>
+    <input id="loginId" placeholder="ID" value="admin">
+    <input id="loginPw" type="password" placeholder="Password" value="1234">
+    <button onclick="login()">Login</button>
+    <p style="font-size:12px;margin-top:10px;">default: admin / 1234</p>
+  </div>
+</div>
+
 <script>
-let currentUser = null;
+/* =============================
+   AUTH
+============================= */
 
-const MENU = ["dashboard","employees","settings"];
+function login() {
+  const id = loginId.value;
+  const pw = loginPw.value;
 
-function ensureAdmin(){
-  db.ref("employees").once("value").then(s=>{
-    if(!s.exists()){
-      db.ref("employees").push({
-        id:"admin", pw:"1234", name:"Master", role:"master"
-      });
-      console.log("Admin created");
-    }
-  });
-}
-ensureAdmin();
-
-/* -------- LOGIN -------- */
-function login(){
-  const id = loginId.value.trim();
-  const pw = loginPw.value.trim();
-
-  db.ref("employees").once("value").then(s=>{
-    const list = Object.values(s.val()||{});
-    const user = list.find(u=>u.id===id && u.pw===pw);
-
-    if(!user){
-      alert("LOGIN FAIL");
-      return;
-    }
-    currentUser = user;
-    onLogin();
-  });
+  if (id === "admin" && pw === "1234") {
+    localStorage.setItem("htori_login", "Y");
+    initApp();
+  } else {
+    alert("Login failed");
+  }
 }
 
-function onLogin(){
-  document.getElementById("loginModal").classList.add("hidden");
-  document.getElementById("userInfo").innerText = currentUser.name;
-  renderMenu();
-  openPage("dashboard");
+function logout() {
+  localStorage.removeItem("htori_login");
+  location.reload();
 }
 
-/* -------- MENU -------- */
-function renderMenu(){
-  const menu = document.getElementById("menu");
-  menu.innerHTML = "";
-  MENU.forEach(key=>{
-    const btn = document.createElement("button");
-    btn.innerText = key;
-    btn.onclick = ()=>openPage(key);
-    menu.appendChild(btn);
-  });
+/* =============================
+   APP INIT
+============================= */
+
+function initApp() {
+  const loggedIn = localStorage.getItem("htori_login") === "Y";
+
+  document.getElementById("loginModal").style.display =
+    loggedIn ? "none" : "flex";
+
+  if (loggedIn) {
+    loadPage("dashboard");
+  }
 }
 
-function openPage(key){
-  document.querySelectorAll(".sidebar button")
-    .forEach(b=>b.classList.remove("active"));
-  [...menu.children].find(b=>b.innerText===key)?.classList.add("active");
+window.onload = initApp;
 
-  if(key==="dashboard") renderDashboard();
-  if(key==="employees") renderEmployees();
-  if(key==="settings") renderSettings();
-}
+/* =============================
+   PAGES
+============================= */
 
-/* -------- PAGES -------- */
-function renderDashboard(){
-  content.innerHTML = `
-    <h2>Dashboard</h2>
-    <div class="card">Login Success 🎉</div>
-  `;
-}
+function loadPage(page) {
+  const el = document.getElementById("content");
 
-function renderEmployees(){
-  content.innerHTML = `
-    <h2>Employees</h2>
-    <div class="card">Employee page</div>
-  `;
-}
+  if (page === "dashboard") {
+    el.innerHTML = `
+      <h2>Dashboard</h2>
+      <p>Login Success 🎉</p>
+    `;
+  }
 
-function renderSettings(){
-  content.innerHTML = `
-    <h2>Settings</h2>
-    <div class="card">Settings page</div>
-  `;
+  if (page === "employees") {
+    el.innerHTML = `
+      <h2>Employees</h2>
+      <p>Employee management page</p>
+    `;
+  }
+
+  if (page === "settings") {
+    el.innerHTML = `
+      <h2>Settings</h2>
+      <p>System settings</p>
+    `;
+  }
 }
 </script>
 
