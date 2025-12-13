@@ -1,4 +1,3 @@
-
 name: Deploy HTORI ERP
 
 on:
@@ -18,7 +17,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,14 +25,13 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./   # dist 필요 없음
+          path: ./docs   # 🔴 핵심 변경
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Deploy to Github Pages
