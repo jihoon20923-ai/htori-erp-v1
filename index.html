@@ -275,7 +275,7 @@ const db = firebase.database();
   function setLanguage(l){
     lang = l;
     localStorage.setItem("htori_lang", l);
-    renderMenu();
+    
     // refresh current page title if applicable
     const active = document.querySelector(".menu-btn.active");
     if(active) showPage(active.dataset.key);
@@ -959,7 +959,11 @@ const db = firebase.database();
   renderMenu();
 
   // show login modal if not logged in
+  document.addEventListener("DOMContentLoaded", () => {
+  renderMenu();
   loginModal.classList.remove("hidden");
+});
+
 
   // quick hotkeys: open employees when logged in for convenience
   document.addEventListener("keydown", (e)=>{
