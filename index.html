@@ -2,205 +2,146 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>HTORI ERP v1</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HTORI ERP Realtime - v1</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 
 <style>
-:root {
-  --accent:#1F3C88;
-  --bg:#f2f5f8;
-  --dark:#11151a;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin:0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: var(--bg);
-}
-
-/* HEADER */
-.header {
-  height:60px;
-  background:var(--accent);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 20px;
-}
-
-/* LAYOUT */
-.layout {
-  display:flex;
-  min-height: calc(100vh - 60px);
-}
-
-/* SIDEBAR */
-.sidebar {
-  width:220px;
-  background:var(--dark);
-  color:#fff;
-  padding:10px;
-}
-
-.sidebar button {
-  width:100%;
-  margin-bottom:8px;
-  padding:10px;
-  background:#222;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-}
-
-.sidebar button:hover {
-  background:#333;
-}
-
-/* CONTENT */
-.content {
-  flex:1;
-  padding:20px;
-}
-
-/* LOGIN MODAL */
-#loginModal {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-
-.login-box {
-  background:#fff;
-  padding:30px;
-  width:300px;
-  border-radius:8px;
-}
-
-.login-box input {
-  width:100%;
-  padding:8px;
-  margin-bottom:10px;
-}
-
-.login-box button {
-  width:100%;
-  padding:10px;
-  background:var(--accent);
-  color:#fff;
-  border:none;
-  cursor:pointer;
-}
+:root{--nav-w:220px;--accent:#1F3C88;--bg:#f2f5f8;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg)}
+.site-header{height:60px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:fixed;left:0;right:0;top:0;z-index:10}
+.layout{display:flex;padding-top:60px;min-height:100vh}
+.sidebar{width:var(--nav-w);background:#111;color:#fff;padding:12px}
+.menu-list{list-style:none;padding:0;margin:0}
+.menu-btn{width:100%;padding:10px;border:0;background:none;color:#ddd;text-align:left;border-radius:6px;cursor:pointer}
+.menu-btn.active{background:#222}
+.content{flex:1;padding:20px}
+.card{background:#fff;padding:14px;border-radius:8px;margin-bottom:12px}
+.hidden{display:none}
+.btn{padding:8px 12px;border-radius:6px;border:0;cursor:pointer}
+.btn.primary{background:var(--accent);color:#fff}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center}
+.modal-card{background:#fff;padding:20px;border-radius:10px;width:360px}
 </style>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <strong>HTORI ERP v1</strong>
-  <button onclick="logout()">Logout</button>
-</div>
+<header class="site-header">
+  <div><strong>HTORI ERP Realtime</strong></div>
+  <div>
+    User: <span id="user-name">Guest</span>
+    <button id="logoutBtn" class="btn hidden">Logout</button>
+  </div>
+</header>
 
-<!-- MAIN LAYOUT -->
 <div class="layout">
-
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <button onclick="loadPage('dashboard')">Dashboard</button>
-    <button onclick="loadPage('employees')">Employees</button>
-    <button onclick="loadPage('settings')">Settings</button>
-  </div>
-
-  <!-- CONTENT -->
-  <div class="content" id="content">
-    <!-- dynamic -->
-  </div>
+  <aside class="sidebar">
+    <ul id="menuList" class="menu-list"></ul>
+  </aside>
+  <main id="content" class="content"></main>
 </div>
 
-<!-- LOGIN MODAL -->
-<div id="loginModal">
-  <div class="login-box">
+<!-- LOGIN -->
+<div id="loginModal" class="modal-backdrop">
+  <div class="modal-card">
     <h3>LOGIN</h3>
-    <input id="loginId" placeholder="ID" value="admin">
-    <input id="loginPw" type="password" placeholder="Password" value="1234">
-    <button onclick="login()">Login</button>
-    <p style="font-size:12px;margin-top:10px;">default: admin / 1234</p>
+    <input id="loginId" placeholder="admin" style="width:100%;margin-bottom:8px">
+    <input id="loginPw" type="password" placeholder="1234" style="width:100%;margin-bottom:12px">
+    <button id="loginBtn" class="btn primary" style="width:100%">Login</button>
   </div>
 </div>
+
+<template id="tpl-dashboard">
+  <div>
+    <h1>Dashboard</h1>
+    <div class="card">Welcome to HTORI ERP</div>
+  </div>
+</template>
 
 <script>
-/* =============================
-   AUTH
-============================= */
+/* ================= FIREBASE ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyDwiTlPtoXraEtA7TzTctdH6DJS6gdSEGQ",
+  authDomain: "htori-erp-3c22b.firebaseapp.com",
+  databaseURL: "https://htori-erp-3c22b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "htori-erp-3c22b"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-function login() {
-  const id = loginId.value;
-  const pw = loginPw.value;
+/* ================= STATE ================= */
+let currentUser = null;
+const DEFAULT_MENU = ["dashboard","employees","settings"];
 
-  if (id === "admin" && pw === "1234") {
-    localStorage.setItem("htori_login", "Y");
-    initApp();
-  } else {
-    alert("Login failed");
+/* ================= DOM ================= */
+const content = document.getElementById("content");
+const menuList = document.getElementById("menuList");
+const loginModal = document.getElementById("loginModal");
+const logoutBtn = document.getElementById("logoutBtn");
+
+/* ================= INIT ADMIN ================= */
+db.ref("employees").once("value").then(s=>{
+  if(!s.exists()){
+    db.ref("employees").push({id:"admin",pw:"1234",name:"Master"});
   }
+});
+
+/* ================= MENU ================= */
+function renderMenu(){
+  menuList.innerHTML="";
+  DEFAULT_MENU.forEach(k=>{
+    const li=document.createElement("li");
+    li.innerHTML=`<button class="menu-btn" data-key="${k}">${k}</button>`;
+    menuList.appendChild(li);
+  });
+
+  document.querySelectorAll(".menu-btn").forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll(".menu-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      showPage(btn.dataset.key);
+    };
+  });
 }
 
-function logout() {
-  localStorage.removeItem("htori_login");
+/* ================= LOGIN ================= */
+document.getElementById("loginBtn").onclick=()=>{
+  const id=loginId.value.trim();
+  const pw=loginPw.value.trim();
+
+  db.ref("employees").once("value").then(s=>{
+    const u=Object.values(s.val()||{}).find(e=>e.id===id && e.pw===pw);
+    if(!u) return alert("LOGIN FAIL");
+    currentUser=u;
+    document.getElementById("user-name").innerText=u.name;
+    loginModal.classList.add("hidden");
+    logoutBtn.classList.remove("hidden");
+    renderMenu();
+    showPage("dashboard");
+  });
+};
+
+logoutBtn.onclick=()=>{
   location.reload();
-}
+};
 
-/* =============================
-   APP INIT
-============================= */
-
-function initApp() {
-  const loggedIn = localStorage.getItem("htori_login") === "Y";
-
-  document.getElementById("loginModal").style.display =
-    loggedIn ? "none" : "flex";
-
-  if (loggedIn) {
-    loadPage("dashboard");
+/* ================= PAGES ================= */
+function showPage(k){
+  if(k==="dashboard"){
+    const tpl=document.getElementById("tpl-dashboard").content.cloneNode(true);
+    content.innerHTML="";
+    content.appendChild(tpl);
+    return;
   }
-}
-
-window.onload = initApp;
-
-/* =============================
-   PAGES
-============================= */
-
-function loadPage(page) {
-  const el = document.getElementById("content");
-
-  if (page === "dashboard") {
-    el.innerHTML = `
-      <h2>Dashboard</h2>
-      <p>Login Success 🎉</p>
-    `;
-  }
-
-  if (page === "employees") {
-    el.innerHTML = `
-      <h2>Employees</h2>
-      <p>Employee management page</p>
-    `;
-  }
-
-  if (page === "settings") {
-    el.innerHTML = `
-      <h2>Settings</h2>
-      <p>System settings</p>
-    `;
-  }
+  content.innerHTML=`
+    <h1>${k}</h1>
+    <div class="card">Page ready</div>
+  `;
 }
 </script>
 
