@@ -42,6 +42,10 @@
     .notice{padding:8px;background:#eef7ff;border-left:4px solid #1F3C88}
     .flex{display:flex;gap:8px;align-items:center}
     .mb8{margin-bottom:8px}
+    .modal-backdrop.hidden {
+  display: none;
+}
+
   </style>
 
   <!-- Firebase + XLSX CDN (인터넷 필요) -->
@@ -85,29 +89,52 @@
     </main>
   </div>
 
-  <!-- LOGIN MODAL -->
-  <div id="loginModal" class="modal-backdrop">
-    <div class="modal-card">
-      <h2 style="text-align:center;margin-bottom:12px">HTORI ERP LOGIN</h2>
+<script>
+/* =========================
+   LOGIN MODULE (FINAL)
+========================= */
 
-      <div class="mb8">
-        <label for="loginId">ID</label>
-        <input id="loginId" placeholder="admin">
-      </div>
+function enableMenu() {
+  document.querySelectorAll(".nav-item, nav a, nav li").forEach(el => {
+    el.style.pointerEvents = "auto";
+    el.style.opacity = "1";
+  });
+}
 
-      <div class="mb8">
-        <label for="loginPw">Password</label>
-        <input id="loginPw" type="password" placeholder="1234">
-      </div>
+function disableMenu() {
+  document.querySelectorAll(".nav-item, nav a, nav li").forEach(el => {
+    el.style.pointerEvents = "none";
+    el.style.opacity = "0.5";
+  });
+}
 
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button id="demoBtn" class="btn">Demo</button>
-        <button id="loginBtn" class="btn primary">Login</button>
-      </div>
+function doLogin() {
+  const id = document.getElementById("loginId").value.trim();
+  const pw = document.getElementById("loginPw").value.trim();
 
-      <div id="loginNotice" class="muted small" style="margin-top:8px">첫 실행 시 기본 계정: admin / 1234</div>
-    </div>
-  </div>
+  if (id === "admin" && pw === "1234") {
+    localStorage.setItem("htori_login", "Y");
+    localStorage.setItem("htori_user", "admin");
+
+    document.getElementById("loginModal").classList.add("hidden");
+    enableMenu();
+  } else {
+    alert("Invalid ID or Password");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const loginBtn = document.getElementById("loginBtn");
+  if (loginBtn) loginBtn.onclick = doLogin;
+
+  if (localStorage.getItem("htori_login") === "Y") {
+    document.getElementById("loginModal").classList.add("hidden");
+    enableMenu();
+  } else {
+    disableMenu();
+  }
+});
+</script>
 
   <!-- TEMPLATES (간단한 마크업 틀) -->
   <template id="tpl-dashboard">
