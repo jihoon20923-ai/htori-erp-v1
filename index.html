@@ -88,6 +88,56 @@
       <!-- content injected -->
     </main>
   </div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const loginModal = document.getElementById("loginModal");
+  const loginBtn   = document.getElementById("loginBtn");
+
+  if (!loginModal || !loginBtn) {
+    console.error("Login DOM not found");
+    return;
+  }
+
+  function enableMenu() {
+    document.querySelectorAll(".nav-item, nav a, nav li").forEach(el => {
+      el.style.pointerEvents = "auto";
+      el.style.opacity = "1";
+    });
+  }
+
+  function disableMenu() {
+    document.querySelectorAll(".nav-item, nav a, nav li").forEach(el => {
+      el.style.pointerEvents = "none";
+      el.style.opacity = "0.5";
+    });
+  }
+
+  loginBtn.addEventListener("click", () => {
+    const id = document.getElementById("loginId").value.trim();
+    const pw = document.getElementById("loginPw").value.trim();
+
+    if (id === "admin" && pw === "1234") {
+      localStorage.setItem("htori_login", "Y");
+      localStorage.setItem("htori_user", "admin");
+
+      loginModal.classList.add("hidden");
+      enableMenu();
+    } else {
+      alert("Invalid ID or Password");
+    }
+  });
+
+  // 새로고침 시 상태 복구
+  if (localStorage.getItem("htori_login") === "Y") {
+    loginModal.classList.add("hidden");
+    enableMenu();
+  } else {
+    disableMenu();
+  }
+
+});
+</script>
 
 <script>
 
