@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HTORI ERP Realtime - v1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      height: 56px;
+      background: #1f3c88;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+    }
+
+    /* ===== LAYOUT ===== */
+    .layout {
+      display: flex;
+      height: calc(100vh - 56px);
+    }
+
+    nav {
+      width: 220px;
+      background: #111;
+      color: #fff;
+      padding: 12px;
+    }
+
+    nav a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 8px;
+      margin-bottom: 4px;
+      border-radius: 4px;
+    }
+
+    nav a:hover {
+      background: #333;
+    }
+
+    main {
+      flex: 1;
+      padding: 24px;
+      background: #f2f5f8;
+    }
+
+    /* ===== LOGIN MODAL ===== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .modal-backdrop.hidden {
+      display: none;
+    }
+
+    .modal-card {
+      background: #fff;
+      padding: 24px;
+      width: 300px;
+      border-radius: 8px;
+    }
+
+    .modal-card input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 6px;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: #1f3c88;
+      color: #fff;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  HTORI ERP Realtime
+</header>
+
+<div class="layout">
+  <nav id="sideMenu">
+    <a href="#">Dashboard</a>
+    <a href="#">Orders</a>
+    <a href="#">Stock</a>
+    <a href="#">Production</a>
+    <a href="#">Shipment</a>
+  </nav>
+
+  <main>
+    <h1>Dashboard</h1>
+    <p>Welcome to HTORI ERP</p>
+  </main>
+</div>
+
+<!-- ===== LOGIN MODAL ===== -->
+<div id="loginModal" class="modal-backdrop">
+  <div class="modal-card">
+    <h3>HTORI ERP LOGIN</h3>
+    <input id="loginId" placeholder="admin">
+    <input id="loginPw" type="password" placeholder="1234">
+
+    <div style="text-align:right">
+      <button id="loginBtn" class="btn primary">Login</button>
+    </div>
+
+    <small>admin / 1234</small>
+  </div>
+</div>
+
+<!-- ===== JS (BODY 맨 마지막) ===== -->
+<script>
+(function () {
+
+  const loginModal = document.getElementById("loginModal");
+  const loginBtn   = document.getElementById("loginBtn");
+
+  function disableMenu() {
+    document.querySelectorAll("nav a").forEach(a => {
+      a.style.pointerEvents = "none";
+      a.style.opacity = "0.4";
+    });
+  }
+
+  function enableMenu() {
+    document.querySelectorAll("nav a").forEach(a => {
+      a.style.pointerEvents = "auto";
+      a.style.opacity = "1";
+    });
+  }
+
+  function loginSuccess() {
+    localStorage.setItem("htori_login", "Y");
+    loginModal.classList.add("hidden");
+    enableMenu();
+  }
+
+  loginBtn.addEventListener("click", () => {
+    const id = document.getElementById("loginId").value;
+    const pw = document.getElementById("loginPw").value;
+
+    if (id === "admin" && pw === "1234") {
+      loginSuccess();
+    } else {
+      alert("Invalid ID or Password");
+    }
+  });
+
+  // 초기 상태
+  if (localStorage.getItem("htori_login") === "Y") {
+    loginModal.classList.add("hidden");
+    enableMenu();
+  } else {
+    disableMenu();
+  }
+
+})();
+</script>
+
+</body>
+</html>
